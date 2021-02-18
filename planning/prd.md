@@ -1,13 +1,14 @@
 |     |     |
 | --- | --- |
-| Target release | 26 Mar 2021 |
+| Target release | 19 April 2021 |
 | Epic | lonely v0 |
-| Document status | DRAFT |
-| Document owner | [Shreya Shankar](https://ml-db.atlassian.net/wiki/people/602d739f1bf1ce006bb5fec1?ref=confluence) |
-| Designer | [Shreya Shankar](https://ml-db.atlassian.net/wiki/people/602d739f1bf1ce006bb5fec1?ref=confluence) |
-| Tech lead | [Shreya Shankar](https://ml-db.atlassian.net/wiki/people/602d739f1bf1ce006bb5fec1?ref=confluence) |
-| Technical writers | [Shreya Shankar](https://ml-db.atlassian.net/wiki/people/602d739f1bf1ce006bb5fec1?ref=confluence) |
-| QA  | [Shreya Shankar](https://ml-db.atlassian.net/wiki/people/602d739f1bf1ce006bb5fec1?ref=confluence) |
+| Document status | [v0, here](https://ml-db.atlassian.net/l/c/sbx2SgYN) |
+| Document owner | Shreya Shankar |
+| Designer | Shreya Shankar |
+| Tech lead | Shreya Shankar |
+| Technical writers | Shreya Shankar |
+| QA  | Shreya Shankar |
+
 
 Objective
 ---------
@@ -45,7 +46,7 @@ Assumptions
 Milestones
 ----------
 
-![](/wiki/plugins/servlet/roadmap/image/327682/1/c013a8cf46e3276583f2ddb4893243e4.png)
+![](./roadmap.png)
 
 Requirements
 ------------
