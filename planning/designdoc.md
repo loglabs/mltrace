@@ -60,11 +60,20 @@ We may reconsider the pipeline concept, as the output of a DAG may come from dif
 
 ## Development Methods
 
-Briefly describe the method or approach used for this software design. If one or more formal/published methods were adopted or adapted, then include a reference to a more detailed description of these methods. If several methods were seriously considered, then each such method should be mentioned, along with a brief explanation of why all or part of it was used or not used.
+We will be using the following tools / technologies:
 
-# 3.Architectural Strategies
+- Python classes to represent components
+- Python API for creating and registering new components
+- Postgres tables to represent the entities and relations between them
+- (undecided technology) to query the Postgres table to show the backtrace
 
-Describe any design decisions and/or strategies that affect the overall organization of the system and its higher-level structures. These strategies should provide insight into the key abstractions and mechanisms used in the system architecture. Describe the reasoning employed for each decision and/or strategy (possibly referring to previously stated design goals and principles) and how any design goals or priorities were balanced or traded-off. Such decisions might concern (but are not limited to) things like the following:
+# Architectural Strategies
+
+For this version of the product, we stick to Python for ease and because most production ML systems have significant parts implemented in Python. 
+
+It is an open question whether to use Django or not. One one hand we can write all the abstractions in pure Python; on the other hand we could probably build this on top of MLFlow. Since this is a fairly simple tool, it makes sense to make it abstract and generalizable to different production pipelines, as not all production piplelines use MLFlow for example.
+
+<!-- Describe any design decisions and/or strategies that affect the overall organization of the system and its higher-level structures. These strategies should provide insight into the key abstractions and mechanisms used in the system architecture. Describe the reasoning employed for each decision and/or strategy (possibly referring to previously stated design goals and principles) and how any design goals or priorities were balanced or traded-off. Such decisions might concern (but are not limited to) things like the following:
 
 - Use of a particular type of product (programming language, database, library, etc. ...)
 - Reuse of existing software components to implement various parts/features of the system
@@ -80,10 +89,18 @@ Describe any design decisions and/or strategies that affect the overall organiza
 - Communication mechanisms
 - Management of other resources
 
-Each significant strategy employed should probably be discussed in its own subsection, or (if it is complex enough) in a separate design document (with an appropriate reference here of course). Make sure that when describing a design decision that you also discuss any other significant alternatives that were considered, and your reasons for rejecting them (as well as your reasons for accepting the alternative you finally chose). Sometimes it may be most effective to employ the &quot;pattern format&quot; for describing a strategy.
+Each significant strategy employed should probably be discussed in its own subsection, or (if it is complex enough) in a separate design document (with an appropriate reference here of course). Make sure that when describing a design decision that you also discuss any other significant alternatives that were considered, and your reasons for rejecting them (as well as your reasons for accepting the alternative you finally chose). Sometimes it may be most effective to employ the &quot;pattern format&quot; for describing a strategy. -->
 
-# 4.System Architecture
+# System Architecture
 
+At a high level, the system is an abstraction to track runs of various components in a production pipeline and print a trace for any specified output.
+
+An ER diagram is as follows:
+
+![](./er.png)
+
+
+<!-- 
 This section should provide a high-level overview of how the functionality and responsibilities of the system were partitioned and then assigned to subsystems or components. Don&#39;t go into too much detail about the individual components themselves (there is a subsequent section for detailed component descriptions). The main purpose here is to gain a general understanding of how and why the system was decomposed, and how the individual parts work together to provide the desired functionality.
 
 At the top-most level, describe the major responsibilities that the software must undertake and the various roles that the system (or portions of the system) must play. Describe how the system was broken down into its components/subsystems (identifying each top-level component/subsystem and the roles/responsibilities assigned to it). Describe how the higher-level components collaborate with each other in order to achieve the required results. Don&#39;t forget to provide some sort of rationale for choosing this particular decomposition of the system (perhaps discussing other proposed decompositions and why they were rejected). Feel free to make use of design patterns, either in describing parts of the architecture (in pattern format), or for referring to elements of the architecture that employ them.
@@ -92,7 +109,7 @@ If there are any diagrams, models, flowcharts, documented scenarios or use-cases
 
 Note:
 
-This section (and its subsections) really applies only to newly developed (or yet-to-be developed) portions of the system. If there are parts of the system that already existed before this development effort began, then you only need to describe the pre-existing parts that the new parts of the system depend upon, and only in enough detail sufficient to describe the relationships and interactions between the old parts and the new parts. Pre-existing parts that are modified or enhanced need to be described only to the extent that is necessary for the reader to gain a sufficient understanding of the nature of the changes that were made.
+This section (and its subsections) really applies only to newly developed (or yet-to-be developed) portions of the system. If there are parts of the system that already existed before this development effort began, then you only need to describe the pre-existing parts that the new parts of the system depend upon, and only in enough detail sufficient to describe the relationships and interactions between the old parts and the new parts. Pre-existing parts that are modified or enhanced need to be described only to the extent that is necessary for the reader to gain a sufficient understanding of the nature of the changes that were made. -->
 
 ## 4.1.Subsystem Architecture
 
