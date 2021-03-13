@@ -10,11 +10,15 @@
 
 * close the tickets
 
-## Thursday 3/11 - Friday 3/12
+## Thursday 3/11
 
 * release the example application
 * ticketing for the actual system `mltrace`
 * make sure to do the `Component` abstraction properly!
+
+## Friday 3/12
+
+* vaccine lol
 
 ## Tuesday 3/16 - Friday 3/19
 
