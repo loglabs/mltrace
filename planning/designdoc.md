@@ -240,6 +240,7 @@ We will need to test all the modules in the system. Some ideas of tests:
 - error on duplicate components
 - error on cyclic graph of components
 - versioning code snapshot
+- timestamping the outputs
 
 ## DB
 
