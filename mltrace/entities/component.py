@@ -13,13 +13,13 @@ class Component(Base):
         self._owner = owner
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def description(self):
+    def description(self) -> str:
         return self._description
 
     @property
-    def owner(self):
+    def owner(self) -> str:
         return self._owner
