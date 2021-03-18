@@ -11,7 +11,9 @@ setup(
     install_requires=[
         'numpy',
         'pandas',
+        'psycopg2-binary',
         'pytest',
-        'sklearn'
+        'sklearn',
+        'sqlalchemy'
     ]
 )
