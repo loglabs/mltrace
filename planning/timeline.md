@@ -20,12 +20,12 @@
 
 * vaccine lol
 
-## Tuesday 3/16 - Friday 3/19
+## Tuesday 3/16 - Friday 3/26
 
 * close the `mltrace` tickets
 * incorporate into example application
 
-## Tuesday 3/19 - onwards
+## Tuesday 3/30 - onwards
 
 * incorporate `mltrace` into example application
 * plan out versioning for the example application
