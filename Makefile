@@ -1,4 +1,4 @@
-.PHONY: help test run
+.PHONY: help test run query
 # include .env
 
 # Makefile variables
@@ -35,4 +35,7 @@ test: venv
 	${PYTHON} -m pytest -s utils/tests.py
 
 run: venv
-	${PYTHON} main.py
+	${PYTHON} populate_db.py
+
+query: venv
+	${PYTHON} query.py
