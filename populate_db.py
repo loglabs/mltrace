@@ -1,6 +1,5 @@
 from datetime import datetime
-from mltrace.db.base import Session, engine, Base
-from mltrace.db.models import Component, ComponentRun, IOPointer
+from mltrace.db import Component, ComponentRun, IOPointer, Session, engine, Base
 from mltrace.db.utils import drop_everything
 
 import time
