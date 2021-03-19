@@ -1,17 +1,19 @@
-from mltrace.db.utils import todict
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(
-    'postgresql://usr:pass@localhost:5432/sqlalchemy')
-Session = sessionmaker(bind=engine)
+
+def _todict(obj: object) -> dict:
+    """ Return the object's dict excluding private attributes, 
+    sqlalchemy state and relationship attributes.
+    """
+    excl = ('_sa_adapter', '_sa_instance_state')
+    return {k: v for k, v in vars(obj).items() if not k.startswith('_') and
+            not any(hasattr(v, a) for a in excl)}
 
 
 class BaseWithRepr:
 
     def __repr__(self):
-        params = ', '.join(f'{k}={v}' for k, v in todict(self).items())
+        params = ', '.join(f'{k}={v}' for k, v in _todict(self).items())
         return f"{self.__class__.__name__}({params})"
 
 

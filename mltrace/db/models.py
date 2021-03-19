@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
-from mltrace.db import Base
+from mltrace.db.base import Base
 from sqlalchemy import Column, String, LargeBinary, Integer, DateTime, Table, ForeignKey
 from sqlalchemy.orm import relationship
 
