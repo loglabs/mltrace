@@ -38,38 +38,38 @@ inference_code_snapshot = b'def main(): print(\'This is inference\')'
 serving_code_snapshot = b'def main(): print(\'This is serving\')'
 
 # "Run" etl
-etl_component_run.inputs = [raw_data_path]
-etl_component_run.outputs = [features_path]
-etl_component_run.code_snapshot = etl_code_snapshot
-etl_component_run.start_timestamp = datetime.now()
+etl_component_run.add_input(raw_data_path)
+etl_component_run.add_output(features_path)
+etl_component_run.set_code_snapshot(etl_code_snapshot)
+etl_component_run.set_start_timestamp()
 time.sleep(2)
-etl_component_run.end_timestamp = datetime.now()
+etl_component_run.set_end_timestamp()
 
 # "Run" training
-train_component_run.inputs = [train_set_path, test_set_path]
-train_component_run.outputs = [model_path]
-train_component_run.code_snapshot = train_code_snapshot
-train_component_run.start_timestamp = datetime.now()
+train_component_run.add_inputs([train_set_path, test_set_path])
+train_component_run.add_output(model_path)
+train_component_run.set_code_snapshot(train_code_snapshot)
+train_component_run.set_start_timestamp()
 time.sleep(5)
-train_component_run.end_timestamp = datetime.now()
+train_component_run.set_end_timestamp()
 
 # "Run" inference
-inference_component_run.inputs = [features_path, model_path]
-inference_component_run.outputs = [predictions_path]
-inference_component_run.code_snapshot = inference_code_snapshot
-inference_component_run.start_timestamp = datetime.now()
+inference_component_run.add_inputs([features_path, model_path])
+inference_component_run.add_output(predictions_path)
+inference_component_run.set_code_snapshot(inference_code_snapshot)
+inference_component_run.set_start_timestamp()
 time.sleep(2)
-inference_component_run.end_timestamp = datetime.now()
-inference_component_run.dependencies = [etl_component_run, train_component_run]
+inference_component_run.set_end_timestamp()
+inference_component_run.set_upstream([etl_component_run, train_component_run])
 
 # "Run" serve
-serve_component_run.inputs = [predictions_path]
-serve_component_run.outputs = [serving_output]
-serve_component_run.code_snapshot = serving_code_snapshot
-serve_component_run.start_timestamp = datetime.now()
+serve_component_run.add_input(predictions_path)
+serve_component_run.add_output(serving_output)
+serve_component_run.set_end_timestamp(serving_code_snapshot)
+serve_component_run.set_start_timestamp()
 time.sleep(2)
-serve_component_run.end_timestamp = datetime.now()
-serve_component_run.dependencies = [inference_component_run]
+serve_component_run.set_end_timestamp()
+serve_component_run.set_upstream(inference_component_run)
 
 # Add to session
 session.add(etl_component)
