@@ -1,4 +1,5 @@
 from mltrace.db.base import Base
+from mltrace.db.models import ComponentRun
 from sqlalchemy import create_engine
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.schema import (
@@ -66,3 +67,16 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
         con.execute(DropTable(table))
 
     trans.commit()
+
+
+def _traverse(node: ComponentRun, depth: int):
+    # Print node as a step
+    print(''.join(['\t' for _ in range(depth)]) + str(node))
+
+    # Base case
+    if len(node.dependencies) == 0:
+        return
+
+    # Recurse on neighbors
+    for neighbor in node.dependencies:
+        _traverse(neighbor, depth + 1)

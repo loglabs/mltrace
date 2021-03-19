@@ -4,7 +4,14 @@ from mltrace.db.base import Base
 from sqlalchemy import Column, String, LargeBinary, Integer, DateTime, Table, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
+import enum
 import typing
+
+
+class PointerTypeEnum(enum.Enum):
+    data_file = 1
+    model_file = 2
+    output_id = 3
 
 
 class Component(Base):
@@ -132,10 +139,10 @@ class ComponentRun(Base):
     def check_completeness(self) -> dict:
         """Returns a dictionary of success indicator and error messages."""
         status_dict = {'success': True, 'msg': ''}
-        if component_run.start_timestamp is None:
+        if self.start_timestamp is None:
             status_dict['success'] = False
             status_dict['msg'] += f'{self.component_name} ComponentRun has no start timestamp. '
-        if component_run.end_timestamp is None:
+        if self.end_timestamp is None:
             status_dict['success'] = False
             status_dict['msg'] += f'{self.component_name} ComponentRun has no end timestamp. '
         return status_dict
