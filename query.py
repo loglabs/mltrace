@@ -2,11 +2,13 @@ from mltrace.db.base import Session
 from mltrace.db.models import Component, ComponentRun, IOPointer, component_run_output_association
 
 
-output = 'some_id_of_choice'
+output = '12345'
 session = Session()
 
 component_run_object = session.query(ComponentRun).join(
     IOPointer, ComponentRun.outputs).filter(IOPointer.name == output).first()
+
+print(f'Printing trace for output {output}...')
 
 # Recurse!
 
