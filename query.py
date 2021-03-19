@@ -1,8 +1,10 @@
-from mltrace.db import Session, Component, ComponentRun, IOPointer, component_run_output_association
+from mltrace.db import Component, ComponentRun, IOPointer, component_run_output_association, Store
 
+DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
+store = Store(DB_URI, delete_first=False)
+session = store.Session()
 
 sample_output = '12345'
-session = Session()
 
 component_run_object = session.query(ComponentRun).join(
     IOPointer, ComponentRun.outputs).filter(IOPointer.name == sample_output).first()

@@ -1,13 +1,14 @@
 from datetime import datetime
-from mltrace.db import Component, ComponentRun, IOPointer, Session, engine, Base
-from mltrace.db.utils import drop_everything
+from mltrace.db import Component, ComponentRun, IOPointer, Store
 
 import time
 
 # Generate database schema and new session
-drop_everything(engine)
-Base.metadata.create_all(engine)
-session = Session()
+# drop_everything(engine)
+# Base.metadata.create_all(engine)
+DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
+store = Store(DB_URI, delete_first=True)
+session = store.Session()
 
 
 # Create components
