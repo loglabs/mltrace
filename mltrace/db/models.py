@@ -55,8 +55,8 @@ class ComponentRun(Base):
     component_name = Column(String, ForeignKey('components.name'))
     git_hash = Column(String)
     code_snapshot = Column(LargeBinary)
-    start_time = Column(DateTime)
-    end_time = Column(DateTime)
+    start_timestamp = Column(DateTime)
+    end_timestamp = Column(DateTime)
     inputs = relationship(
         "IOPointer", secondary=component_run_input_association, cascade='all, delete-orphan', single_parent=True)
     outputs = relationship(
