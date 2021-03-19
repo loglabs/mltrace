@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 from mltrace.db.base import Base
-from sqlalchemy import Column, String, LargeBinary, Integer, DateTime, Table, ForeignKey
+from sqlalchemy import Column, String, LargeBinary, Integer, DateTime, Table, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 import typing
@@ -25,9 +25,15 @@ class IOPointer(Base):
     __tablename__ = 'io_pointers'
 
     name = Column(String, primary_key=True)
+    pointer_type = Column(Enum(PointerTypeEnum))
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, pointer_type: PointerTypeEnum = None):
         self.name = name
+        if pointer_type:
+            self.pointer_type = pointer_type
+
+    def set_pointer_type(self, pointer_type: PointerTypeEnum):
+        self.pointer_type = pointer_type
 
 
 component_run_input_association = Table(
@@ -122,3 +128,14 @@ class ComponentRun(Base):
             dependencies, list) else dependencies
 
         self.dependencies += dependencies
+
+    def check_completeness(self) -> dict:
+        """Returns a dictionary of success indicator and error messages."""
+        status_dict = {'success': True, 'msg': ''}
+        if component_run.start_timestamp is None:
+            status_dict['success'] = False
+            status_dict['msg'] += f'{self.component_name} ComponentRun has no start timestamp. '
+        if component_run.end_timestamp is None:
+            status_dict['success'] = False
+            status_dict['msg'] += f'{self.component_name} ComponentRun has no end timestamp. '
+        return status_dict
