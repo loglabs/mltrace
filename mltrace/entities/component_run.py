@@ -13,7 +13,7 @@ def get_timestamp() -> int:
 class ComponentRun(Base):
     """Component Run abstraction."""
 
-    def __init__(self, component_name: str, start_timestamp: int, end_timestamp: int, inputs: typing.List[str], outputs: typing.List[str], git_hash: str, code: str, metadata: dict):
+    def __init__(self, component_name: str, start_timestamp: int, end_timestamp: int, inputs: typing.List[str], outputs: typing.List[str], git_hash: str, code: str):
         """Set class attributes. Note that timestamps are represented in seconds since epoch."""
         self._component_name = component_name
         self._start_timestamp = start_timestamp
@@ -22,11 +22,10 @@ class ComponentRun(Base):
         self._outputs = outputs
         self._git_hash = git_hash
         self._code = code
-        self._metadata = metadata
 
     @property
     def component_name(self) -> str:
-        return self._component_name
+        return self._component_names
 
     @property
     def inputs(self) -> typing.List[str]:
