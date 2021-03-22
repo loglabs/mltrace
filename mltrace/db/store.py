@@ -88,8 +88,8 @@ class Store(object):
         res = self.session.query(IOPointer).filter(
             IOPointer.pointer_type == PointerTypeEnum.output_id).all()
 
-        start_index = 0 if len(res) == 0 else max(
-            res, key=lambda x: x['output_id']) + 1
+        start_index = 0 if len(res) == 0 else int(max(
+            res, key=lambda x: int(x.name)).name) + 1
 
         return [f"{i}" for i in range(start_index, start_index + num_outputs)]
 

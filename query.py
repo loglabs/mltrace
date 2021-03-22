@@ -8,4 +8,4 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
 store = Store(DB_URI, delete_first=False)
 
-store.trace('asdlfasdf')
+store.trace('99')
