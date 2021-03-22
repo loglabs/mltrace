@@ -98,7 +98,7 @@ class Store(object):
     def create_output_ids(self, num_outputs=1) -> typing.List[str]:
         """Returns a list of num_outputs ids that don't already exist in the DB."""
         res = self.session.query(IOPointer).filter(
-            IOPointer.pointer_type == PointerTypeEnum.OUTPUT_ID).all()
+            IOPointer.pointer_type == PointerTypeEnum.ENDPOINT).all()
 
         start_index = 0 if len(res) == 0 else int(max(
             res, key=lambda x: int(x.name)).name) + 1

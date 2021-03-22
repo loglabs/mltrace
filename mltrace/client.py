@@ -1,4 +1,4 @@
-from mltrace.db import Store
+from mltrace.db import Store, PointerTypeEnum
 
 import functools
 import git
@@ -20,7 +20,7 @@ def create_component(name: str, description: str, owner: str):
     store.create_component(name, description, owner)
 
 
-def register(component_name: str, inputs: typing.List[str], outputs: typing.List[str]):
+def register(component_name: str, inputs: typing.List[str], outputs: typing.List[str], endpoint: bool = False):
     def actual_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -35,7 +35,8 @@ def register(component_name: str, inputs: typing.List[str], outputs: typing.List
             # Log relevant info
             component_run.set_end_timestamp()
             input_pointers = [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers = [store.get_io_pointer(out) for out in outputs]
+            output_pointers = [store.get_io_pointer(
+                out, PointerTypeEnum.ENDPOINT) for out in outputs] if endpoint else [store.get_io_pointer(out) for out in outputs]
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
             store.set_dependencies_from_inputs(component_run)
