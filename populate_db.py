@@ -33,9 +33,10 @@ for i in range(NUM_OUTER):
     def inference():
         print(f'do model inference')
 
-    etl(i)
-    training(i)
-    inference(i)
+    etl()
+    training()
+    inference()
+
     for j in range(NUM_INNER):
         idx = i * NUM_OUTER + j
 
@@ -43,4 +44,4 @@ for i in range(NUM_OUTER):
         def serve():
             print(f'serve output')
 
-        serve(j)
+        serve()

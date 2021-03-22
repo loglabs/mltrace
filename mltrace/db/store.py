@@ -1,4 +1,4 @@
-from mltrace.db.utils import _create_engine_wrapper, _initialize_db_tables, _drop_everything, _traverse
+from mltrace.db.utils import _create_engine_wrapper, _initialize_db_tables, _drop_everything, _traverse, _map_extension_to_enum
 from mltrace.db import Component, ComponentRun, IOPointer, PointerTypeEnum
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
@@ -69,6 +69,9 @@ class Store(object):
         # Must create new IOPointer
         if len(res) == 0:
             logging.info(f'Creating new IOPointer with name "{name}".')
+            if pointer_type == None:
+                pointer_type = _map_extension_to_enum(name)
+
             iop = IOPointer(name=name, pointer_type=pointer_type)
             self.session.add(iop)
             self.session.commit()
@@ -95,7 +98,7 @@ class Store(object):
     def create_output_ids(self, num_outputs=1) -> typing.List[str]:
         """Returns a list of num_outputs ids that don't already exist in the DB."""
         res = self.session.query(IOPointer).filter(
-            IOPointer.pointer_type == PointerTypeEnum.output_id).all()
+            IOPointer.pointer_type == PointerTypeEnum.OUTPUT_ID).all()
 
         start_index = 0 if len(res) == 0 else int(max(
             res, key=lambda x: int(x.name)).name) + 1

@@ -9,9 +9,10 @@ import typing
 
 
 class PointerTypeEnum(enum.Enum):
-    data_file = 1
-    model_file = 2
-    output_id = 3
+    DATA_FILE = 1
+    MODEL_FILE = 2
+    OUTPUT_ID = 3
+    UNKNOWN = 4
 
 
 class Component(Base):
@@ -36,7 +37,7 @@ class IOPointer(Base):
 
     def __init__(self, name: str, pointer_type: PointerTypeEnum = None):
         self.name = name
-        if pointer_type:
+        if pointer_type is not None:
             self.pointer_type = pointer_type
 
     def set_pointer_type(self, pointer_type: PointerTypeEnum):
