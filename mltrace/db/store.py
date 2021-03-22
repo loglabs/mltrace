@@ -103,6 +103,23 @@ class Store(object):
         session.commit()
         session.close()
 
+    def set_dependencies_from_inputs(self, component_run: ComponentRun, input_id: str):
+        """Gets IOPointer associated with input_id, checks against
+        any ComponentRun's outputs, and if there are any matches, 
+        sets the ComponentRun's dependency on the most recent match."""
+        session = self.Session()
+        matches = session.query(ComponentRun).join(
+            IOPointer, ComponentRun.outputs).filter(IOPointer.name == input_id).all()
+
+        # If there are no matches, return
+        if len(matches) == 0:
+            return
+
+        # Get match with the max timestamp and set upstream
+        match = max(matches, key=lambda x: x.start_timestamp)
+        component_run.set_upstream(match)
+        session.close()
+
     def trace(self, output_id: str):
         """Prints trace for an output id."""
         # TODO(shreyashankar): return json instead of printing
