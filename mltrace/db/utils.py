@@ -1,5 +1,5 @@
 from mltrace.db.base import Base
-from mltrace.db.models import ComponentRun
+from mltrace.db.models import ComponentRun, PointerTypeEnum
 from sqlalchemy import create_engine
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.schema import (
@@ -68,6 +68,7 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
         con.execute(DropTable(table))
 
     trans.commit()
+    Base.metadata.drop_all(engine)
 
 
 def _traverse(node: ComponentRun, depth: int):
@@ -82,3 +83,27 @@ def _traverse(node: ComponentRun, depth: int):
     # Recurse on neighbors
     for neighbor in node.dependencies:
         _traverse(neighbor, depth + 1)
+
+
+def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
+    """Infers the relevnat enum for the filename."""
+    data_extensions = ['csv', 'pq', 'parquet',
+                       'txt', 'md', 'rtf', 'tsv', 'xml', 'pdf']
+    model_extensions = ['h5', 'hdf5', 'joblib',
+                        'pkl', 'pickle', 'ckpt', 'mlmodel']
+
+    words = filename.split('.')
+
+    if len(words) < 1:
+        return PointerTypeEnum.UNKNOWN
+
+    extension = words[-1].lower()
+
+    if extension in data_extensions:
+        return PointerTypeEnum.DATA
+
+    if extension in model_extensions:
+        return PointerTypeEnum.MODEL
+
+    # TODO(shreyashankar): figure out how to handle output id
+    return PointerTypeEnum.UNKNOWN
