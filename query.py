@@ -8,4 +8,13 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
 store = Store(DB_URI, delete_first=False)
 
-store.trace('99')
+while(True):
+    inp = input(
+        'Input output id you want to trace or press enter to quit. ').strip()
+    if inp == '':
+        exit(0)
+    try:
+        store.trace(inp)
+    except:
+        print(f'{inp} not recognized. Please try again.')
+        continue
