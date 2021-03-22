@@ -38,10 +38,19 @@ class Store(object):
         self.session.close()
 
     def create_component(self, name: str, description: str, owner: str):
-        """Creates a component entity in the database."""
+        """Creates a component entity in the database if it does not already exist."""
+        res = self.session.query(Component).filter(
+            Component.name == name).first()
+
+        if res:
+            logging.info(f'Component with name "{name}" already exists.')
+            return
+
+        # Add to the DB if it is not already there
         logging.info(
             f'Creating new Component with name "{name}", description "{description}", and owner "{owner}".')
-        component = Component(name=name, description=description, owner=owner)
+        component = Component(
+            name=name, description=description, owner=owner)
         self.session.add(component)
         self.session.commit()
 
