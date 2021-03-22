@@ -9,6 +9,7 @@ setup(
     # license='MIT',
     packages=find_packages(exclude=['tests']),
     install_requires=[
+        'gitpython',
         'numpy',
         'pandas',
         'psycopg2-binary',
