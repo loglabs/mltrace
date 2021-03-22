@@ -1,5 +1,6 @@
 from mltrace.db.utils import _create_engine_wrapper, _initialize_db_tables, _drop_everything, _traverse
 from mltrace.db import Component, ComponentRun, IOPointer, PointerTypeEnum
+from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
 
 import logging
@@ -30,16 +31,19 @@ class Store(object):
 
         # Initialize session
         self.Session = sessionmaker(self.engine)
+        self.session = self.Session()
+
+    def __del__(self):
+        """On destruction, close session."""
+        self.session.close()
 
     def create_component(self, name: str, description: str, owner: str):
         """Creates a component entity in the database."""
         logging.info(
             f'Creating new Component with name "{name}", description "{description}", and owner "{owner}".')
         component = Component(name=name, description=description, owner=owner)
-        session = self.Session()
-        session.add(component)
-        session.commit()
-        session.close()
+        self.session.add(component)
+        self.session.commit()
 
     def initialize_empty_component_run(self, component_name: str) -> ComponentRun:
         """Initializes an empty run for the specified component. Does not
@@ -51,21 +55,17 @@ class Store(object):
         """ Creates an io pointer around the specified path. 
         Retrieves existing io pointer if exists in DB, 
         otherwise creates a new one."""
-
-        session = self.Session()
-        res = session.query(IOPointer).filter(IOPointer.name == name).all()
+        res = self.session.query(IOPointer).filter(IOPointer.name == name).all()
 
         # Must create new IOPointer
         if len(res) == 0:
             logging.info(f'Creating new IOPointer with name "{name}".')
             iop = IOPointer(name=name, pointer_type=pointer_type)
-            session.add(iop)
-            session.commit()
-            session.close()
+            self.session.add(iop)
+            self.session.commit()
             return iop
 
         # Return existing object
-        session.close()
         return res[0]
 
     def delete_component(self):
@@ -79,14 +79,12 @@ class Store(object):
 
     def create_output_ids(self, num_outputs=1) -> typing.List[str]:
         """Returns a list of num_outputs ids that don't already exist in the DB."""
-        session = self.Session()
-        res = session.query(IOPointer).filter(
+        res = self.session.query(IOPointer).filter(
             IOPointer.pointer_type == PointerTypeEnum.output_id).all()
 
         start_index = 0 if len(res) == 0 else max(
             res, key=lambda x: x['output_id']) + 1
 
-        session.close()
         return [f"{i}" for i in range(start_index, start_index + num_outputs)]
 
     def commit_component_run(self, component_run: ComponentRun):
@@ -96,24 +94,36 @@ class Store(object):
             raise(status_dict['msg'])
 
         # Commit to DB
-        session = self.Session()
-        session.add(component_run)
+        self.session.add(component_run)
         logging.info(
             f'Committing ComponentRun of type "{component_run.component_name}" to the database.')
-        session.commit()
-        session.close()
+        self.session.commit()
+
+    def set_dependencies_from_inputs(self, component_run: ComponentRun):
+        """ Gets IOPointers associated with component_run's inputs, checks
+        against any ComponentRun's outputs, and if there are any matches, 
+        sets the ComponentRun's dependency on the most recent match."""
+        input_ids = [inp.name for inp in component_run.inputs]
+        matches = self.session.query(ComponentRun, func.max(ComponentRun.start_timestamp).over(partition_by=ComponentRun.component_name)).join(
+            IOPointer, ComponentRun.outputs).filter(IOPointer.name.in_(input_ids)).all()
+        matches = [m[0] for m in matches]
+
+        # If there are no matches, return
+        if len(matches) == 0:
+            return
+
+        # Get match with the max timestamp and set upstream
+        component_run.set_upstream(matches)
 
     def trace(self, output_id: str):
         """Prints trace for an output id."""
         # TODO(shreyashankar): return json instead of printing
-        session = self.Session()
-        component_run_object = session.query(ComponentRun).join(
+        component_run_object = self.session.query(ComponentRun).join(
             IOPointer, ComponentRun.outputs).filter(IOPointer.name == output_id).first()
 
         print(f'Printing trace for output {output_id}...')
 
         _traverse(component_run_object, 1)
-        session.close()
 
     def trace_batch(self, output_ids: typing.List[str]):
         pass
