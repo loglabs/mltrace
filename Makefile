@@ -1,4 +1,4 @@
-.PHONY: help test run query
+.PHONY: help test run query scratch
 # include .env
 
 # Makefile variables
@@ -39,3 +39,6 @@ run: venv
 
 query: venv
 	${PYTHON} query.py
+
+scratch: venv
+	${PYTHON} scratch.py
