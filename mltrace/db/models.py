@@ -11,7 +11,7 @@ import typing
 class PointerTypeEnum(enum.Enum):
     DATA = 1
     MODEL = 2
-    OUTPUT_ID = 3
+    ENDPOINT = 3
     UNKNOWN = 4
 
 

@@ -40,7 +40,7 @@ for i in range(NUM_OUTER):
     for j in range(NUM_INNER):
         idx = i * NUM_OUTER + j
 
-        @register('serve', inputs=[f'preds_{i}.pq'], outputs=[f'serve_output_{idx}.pq'])
+        @register('serve', inputs=[f'preds_{i}.pq'], outputs=[f'serve_output_{idx}'], endpoint=True)
         def serve():
             print(f'serve output')
 
