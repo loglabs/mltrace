@@ -1,6 +1,7 @@
 from datetime import datetime
 from mltrace.db import Store
 
+import git
 import logging
 import time
 
@@ -9,6 +10,8 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 
 DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
 store = Store(DB_URI, delete_first=True)
+repo = git.Repo(search_parent_directories=True)
+sha = str(repo.head.object.hexsha)
 
 
 # Create components
@@ -41,6 +44,7 @@ serving_code_snapshot = b'def main(): print(\'This is serving\')'
 # "Run" etl
 etl_component_run.add_input(raw_data_path)
 etl_component_run.add_output(features_path)
+etl_component_run.set_git_hash(sha)
 etl_component_run.set_code_snapshot(etl_code_snapshot)
 etl_component_run.set_start_timestamp()
 time.sleep(2)
@@ -50,6 +54,7 @@ store.commit_component_run(etl_component_run)
 # "Run" training
 train_component_run.add_inputs([train_set_path, test_set_path])
 train_component_run.add_output(model_path)
+train_component_run.set_git_hash(sha)
 train_component_run.set_code_snapshot(train_code_snapshot)
 train_component_run.set_start_timestamp()
 time.sleep(5)
@@ -59,6 +64,7 @@ store.commit_component_run(train_component_run)
 # "Run" inference
 inference_component_run.add_inputs([features_path, model_path])
 inference_component_run.add_output(predictions_path)
+inference_component_run.set_git_hash(sha)
 inference_component_run.set_code_snapshot(inference_code_snapshot)
 inference_component_run.set_start_timestamp()
 time.sleep(2)
@@ -69,6 +75,7 @@ store.commit_component_run(inference_component_run)
 # "Run" serve
 serve_component_run.add_input(predictions_path)
 serve_component_run.add_output(serving_output)
+serve_component_run.set_git_hash(sha)
 serve_component_run.set_end_timestamp(serving_code_snapshot)
 serve_component_run.set_start_timestamp()
 time.sleep(2)
