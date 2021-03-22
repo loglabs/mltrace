@@ -87,8 +87,10 @@ def _traverse(node: ComponentRun, depth: int):
 
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevnat enum for the filename."""
-    data_extensions = ['csv', 'pq', 'parquet', 'txt', 'md', 'rtf', 'tsv']
-    model_extensions = ['hd5', 'joblib', 'pkl', 'pickle', 'ckpt']
+    data_extensions = ['csv', 'pq', 'parquet',
+                       'txt', 'md', 'rtf', 'tsv', 'xml', 'pdf']
+    model_extensions = ['h5', 'hdf5', 'joblib',
+                        'pkl', 'pickle', 'ckpt', 'mlmodel']
 
     words = filename.split('.')
 
