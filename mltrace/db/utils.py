@@ -10,6 +10,7 @@ from sqlalchemy.schema import (
     ForeignKeyConstraint,
 )
 
+import pprint
 import sqlalchemy
 
 
@@ -71,7 +72,8 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
 
 def _traverse(node: ComponentRun, depth: int):
     # Print node as a step
-    print(''.join(['\t' for _ in range(depth)]) + str(node))
+    print(''.join(['\t' for _ in range(depth)] +
+          [l for l in pprint.pformat(node).splitlines(True)]))
 
     # Base case
     if len(node.dependencies) == 0:

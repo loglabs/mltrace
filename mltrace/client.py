@@ -9,6 +9,11 @@ import typing
 DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
 
 
+def clean_db():
+    """Deletes database and reinitializes tables."""
+    store = Store(DB_URI, delete_first=True)
+
+
 def create_component(name: str, description: str, owner: str):
     """Creates a component entity in the database."""
     store = Store(DB_URI)
@@ -33,6 +38,7 @@ def register(component_name: str, inputs: typing.List[str], outputs: typing.List
             output_pointers = [store.get_io_pointer(out) for out in outputs]
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
+            store.set_dependencies_from_inputs(component_run)
 
             # Add code versions
             try:
