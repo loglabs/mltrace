@@ -68,14 +68,20 @@ class Store(object):
         # Return existing object
         return res[0]
 
-    def delete_component(self):
-        pass
+    def delete_component(self, component: Component):
+        self.session.delete(component)
+        logging.info(
+            f'Successfully deleted Component with name "{component.name}".')
 
-    def delete_component_run(self):
-        pass
+    def delete_component_run(self, component_run: ComponentRun):
+        self.session.delete(component_run)
+        logging.info(
+            f'Successfully deleted ComponentRun with id "{component_run.id}" and name "{component_run.component_name}".')
 
-    def delete_io_pointer(self):
-        pass
+    def delete_io_pointer(self, io_pointer: IOPointer):
+        self.session.delete(io_pointer)
+        logging.info(
+            f'Successfully deleted IOPointer with name "{io_pointer.name}".')
 
     def create_output_ids(self, num_outputs=1) -> typing.List[str]:
         """Returns a list of num_outputs ids that don't already exist in the DB."""
