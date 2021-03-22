@@ -68,6 +68,7 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
         con.execute(DropTable(table))
 
     trans.commit()
+    Base.metadata.drop_all(engine)
 
 
 def _traverse(node: ComponentRun, depth: int):
@@ -97,10 +98,10 @@ def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     extension = words[-1].lower()
 
     if extension in data_extensions:
-        return PointerTypeEnum.DATA_FILE
+        return PointerTypeEnum.DATA
 
     if extension in model_extensions:
-        return PointerTypeEnum.MODEL_FILE
+        return PointerTypeEnum.MODEL
 
     # TODO(shreyashankar): figure out how to handle output id
     return PointerTypeEnum.UNKNOWN
