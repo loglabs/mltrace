@@ -15,10 +15,16 @@ def clean_db():
     store = Store(DB_URI, delete_first=True)
 
 
-def create_component(name: str, description: str, owner: str):
+def create_component(name: str, description: str, owner: str, tags: typing.List[str] = []):
     """Creates a component entity in the database."""
     store = Store(DB_URI)
-    store.create_component(name, description, owner)
+    store.create_component(name, description, owner, tags)
+
+
+def tag_component(component_name: str, tags: typing.List[str]):
+    """Adds tags to existing component."""
+    store = Store(DB_URI)
+    store.add_tags_to_component(component_name, tags)
 
 
 def backtrace(output_pointer: str):
@@ -45,6 +51,7 @@ def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRu
     """ Returns a list of ComponentRuns that are part of the component's
     history."""
     store = Store(DB_URI)
+
     history = store.get_history(component_name, limit)
 
     # Convert to client-facing ComponentRuns
@@ -60,14 +67,47 @@ def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRu
     return component_runs
 
 
-def get_components_for_owner(owner: str) -> typing.List[Component]:
+def get_components_with_owner(owner: str) -> typing.List[Component]:
     """ Returns a list of all the components associated with the specified
         order."""
     store = Store(DB_URI)
-    res = store.get_components_for_owner(owner)
+    res = store.get_components_with_owner(owner)
 
     # Convert to client-facing Components
-    return [Component.from_dictionary(c.__dict__) for c in res]
+    components = []
+    for c in res:
+        tags = [tag.name for tag in c.tags]
+        d = c.__dict__
+        d.update({'tags': tags})
+        components.append(Component.from_dictionary(d))
+
+    return components
+
+
+def get_component_information(component_name: str) -> Component:
+    """Returns a Component with the name, info, owner, and tags."""
+    store = Store(DB_URI)
+    c = store._get_component(component_name)
+    tags = [tag.name for tag in c.tags]
+    d = c.__dict__
+    d.update({'tags': tags})
+    return Component.from_dictionary(d)
+
+
+def get_components_with_tag(tag: str) -> typing.List[Component]:
+    """Returns a list of components with the specified tag."""
+    store = Store(DB_URI)
+    res = store.get_components_with_tag(tag)
+
+    # Convert to client-facing Components
+    components = []
+    for c in res:
+        tags = [tag.name for tag in c.tags]
+        d = c.__dict__
+        d.update({'tags': tags})
+        components.append(Component.from_dictionary(d))
+
+    return components
 
 
 def register(component_name: str, inputs: typing.List[str], outputs: typing.List[str], endpoint: bool = False):

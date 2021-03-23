@@ -1,4 +1,4 @@
-from mltrace.db.models import IOPointer, Component, ComponentRun, PointerTypeEnum
+from mltrace.db.models import IOPointer, Component, ComponentRun, PointerTypeEnum, Tag
 from mltrace.db.store import Store
 
 __all__ = [
@@ -6,5 +6,6 @@ __all__ = [
     "ComponentRun",
     "IOPointer",
     "Store",
-    "PointerTypeEnum"
+    "PointerTypeEnum",
+    "Tag"
 ]

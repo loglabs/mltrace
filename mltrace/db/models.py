@@ -15,6 +15,13 @@ class PointerTypeEnum(enum.Enum):
     UNKNOWN = 4
 
 
+component_tag_association = Table(
+    'component_tags', Base.metadata,
+    Column('component_name', String, ForeignKey('components.name')),
+    Column('tag_name', String, ForeignKey('tags.name'))
+)
+
+
 class Component(Base):
     __tablename__ = 'components'
 
@@ -22,11 +29,26 @@ class Component(Base):
     description = Column(String)
     owner = Column(String)
     component_runs = relationship("ComponentRun", cascade='all, delete-orphan')
+    tags = relationship(
+        "Tag", secondary=component_tag_association, cascade='all')
 
-    def __init__(self, name: str, description: str, owner: str):
+    def __init__(self, name: str, description: str, owner: str, tags: typing.List[Tag] = []):
         self.name = name
         self.description = description
         self.owner = owner
+        self.tags = []
+
+    def add_tags(self, tags: typing.List[Tag]):
+        self.tags += tags
+
+
+class Tag(Base):
+    __tablename__ = 'tags'
+
+    name = Column(String, primary_key=True)
+
+    def __init__(self, name: str):
+        self.name = name
 
 
 class IOPointer(Base):
@@ -74,11 +96,11 @@ class ComponentRun(Base):
     start_timestamp = Column(DateTime)
     end_timestamp = Column(DateTime)
     inputs = relationship(
-        "IOPointer", secondary=component_run_input_association, cascade='all, delete-orphan', single_parent=True)
+        "IOPointer", secondary=component_run_input_association, cascade='all')
     outputs = relationship(
-        "IOPointer", secondary=component_run_output_association, cascade='all, delete-orphan', single_parent=True)
+        "IOPointer", secondary=component_run_output_association, cascade='all')
     dependencies = relationship('ComponentRun', secondary=component_run_dependencies, primaryjoin=id == component_run_dependencies.c.component_run_id,
-                                secondaryjoin=id == component_run_dependencies.c.depends_on_component_run_id, backref="left_component_run_ids", cascade='all, delete-orphan', single_parent=True)
+                                secondaryjoin=id == component_run_dependencies.c.depends_on_component_run_id, backref="left_component_run_ids", cascade='all')
 
     def __init__(self, component_name):
         """Initialize ComponentRun, or an instance of a Component's 'run.'"""

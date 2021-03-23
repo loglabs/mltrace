@@ -1,6 +1,6 @@
 # TODO(shreyashankar): handle output ids gracefully
 from mltrace.db import Store, PointerTypeEnum
-from mltrace import clean_db, create_component, register
+from mltrace import clean_db, create_component, register, tag_component
 
 import logging
 
@@ -13,7 +13,9 @@ clean_db()
 
 # Create components
 create_component('etl', 'generating some features', 'shreya')
+tag_component('etl', ['fuck'])
 create_component('training', 'training a model', 'shreya')
+tag_component('training', ['fuck'])
 create_component('inference', 'running a model', 'shreya')
 create_component('serve', 'serving a model', 'shreya')
 

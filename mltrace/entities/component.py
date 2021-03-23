@@ -1,16 +1,19 @@
 from mltrace.entities.base import Base
 
 import pprint
+import typing
 
 
 class Component(Base):
     """Component abstraction."""
 
-    def __init__(self, name: str, description: str, owner: str):
-        """Components should have a name, description, and owner."""
+    def __init__(self, name: str, description: str, owner: str, tags: typing.List[str] = None):
+        """ Components should have a name, description, and owner. 
+        Optionally they will have tags."""
         self._name = name
         self._description = description
         self._owner = owner
+        self._tags = tags
 
     @property
     def name(self) -> str:
@@ -23,6 +26,10 @@ class Component(Base):
     @property
     def owner(self) -> str:
         return self._owner
+
+    @property
+    def tags(self) -> str:
+        return self._tags
 
     def __repr__(self):
         params = self.to_dictionary()
