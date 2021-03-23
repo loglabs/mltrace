@@ -1,7 +1,9 @@
 from datetime import datetime
 from mltrace.entities.base import Base
+from mltrace.entities.io_pointer import IOPointer
 
 import pickle
+import pprint
 import typing
 
 
@@ -13,7 +15,7 @@ def get_timestamp() -> int:
 class ComponentRun(Base):
     """Component Run abstraction."""
 
-    def __init__(self, component_name: str, start_timestamp: int, end_timestamp: int, inputs: typing.List[str], outputs: typing.List[str], git_hash: str, code_snapshot: str):
+    def __init__(self, component_name: str, start_timestamp: datetime, end_timestamp: datetime, inputs: typing.List[IOPointer], outputs: typing.List[IOPointer], git_hash: str, code_snapshot: str):
         """Set class attributes. Note that timestamps are represented in seconds since epoch."""
         self._component_name = component_name
         self._start_timestamp = start_timestamp
@@ -25,14 +27,14 @@ class ComponentRun(Base):
 
     @property
     def component_name(self) -> str:
-        return self._component_names
+        return self._component_name
 
     @property
-    def inputs(self) -> typing.List[str]:
+    def inputs(self) -> typing.List[IOPointer]:
         return self._inputs
 
     @property
-    def outputs(self) -> typing.List[str]:
+    def outputs(self) -> typing.List[IOPointer]:
         return self._outputs
 
     @property
@@ -45,14 +47,16 @@ class ComponentRun(Base):
 
     @property
     def start_timestamp(self) -> datetime:
-        return datetime.utcfromtimestamp(self._start_timestamp)
-
-    def set_start_timestamp(self):
-        self._start_timestamp = get_timestamp()
+        return self._start_timestamp
 
     @property
     def end_timestamp(self) -> datetime:
-        return datetime.utcfromtimestamp(self._end_timestamp)
+        return self._end_timestamp
 
-    def set_end_timestamp(self):
-        self._end_timestamp = get_timestamp()
+    def __repr__(self):
+        params = self.to_dictionary()
+        params['start_timestamp'] = params['start_timestamp'].strftime(
+            '%Y-%m-%dT%l:%M:%S%z')
+        params['end_timestamp'] = params['end_timestamp'].strftime(
+            '%Y-%m-%dT%l:%M:%S%z')
+        return pprint.pformat(params)

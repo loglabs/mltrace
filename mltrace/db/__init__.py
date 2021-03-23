@@ -1,4 +1,4 @@
-from mltrace.db.models import Component, ComponentRun, IOPointer, PointerTypeEnum
+from mltrace.db.models import IOPointer, Component, ComponentRun, PointerTypeEnum
 from mltrace.db.store import Store
 
 __all__ = [

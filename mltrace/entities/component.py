@@ -1,6 +1,6 @@
 from mltrace.entities.base import Base
 
-import pickle
+import pprint
 
 
 class Component(Base):
@@ -23,3 +23,7 @@ class Component(Base):
     @property
     def owner(self) -> str:
         return self._owner
+
+    def __repr__(self):
+        params = self.to_dictionary()
+        return pprint.pformat(params)
