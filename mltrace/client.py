@@ -22,9 +22,23 @@ def create_component(name: str, description: str, owner: str):
 
 
 def backtrace(output_pointer: str):
-    """Print a trace of versioned components that produced the output_pointer."""
+    """Prints trace for an output id.
+        Returns list of tuples (level, ComponentRun) where level is how
+        many hops away the node is from the node that produced the output_id."""
     store = Store(DB_URI)
-    store.trace(output_pointer)
+    trace = store.trace(output_pointer)
+
+    # Convert to entities.ComponentRun
+    component_runs = []
+    for depth, cr in trace:
+        inputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.inputs]
+        outputs = [IOPointer.from_dictionary(
+            iop.__dict__) for iop in cr.outputs]
+        d = cr.__dict__
+        d.update({'inputs': inputs, 'outputs': outputs})
+        component_runs.append((depth, ComponentRun.from_dictionary(d)))
+
+    return component_runs
 
 
 def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRun]:

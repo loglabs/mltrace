@@ -1,4 +1,4 @@
-from mltrace.db.utils import _create_engine_wrapper, _initialize_db_tables, _drop_everything, _traverse, _map_extension_to_enum
+from mltrace.db.utils import _create_engine_wrapper, _initialize_db_tables, _drop_everything, _map_extension_to_enum
 from mltrace.db import Component, ComponentRun, IOPointer, PointerTypeEnum
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
@@ -133,15 +133,32 @@ class Store(object):
         # Get match with the max timestamp and set upstream
         component_run.set_upstream(matches)
 
+    def _traverse(self, node: ComponentRun, depth: int, node_list: typing.List[ComponentRun]):
+        # Print node as a step
+        node_list.append((depth, node))
+        # print(''.join(['\t' for _ in range(depth)] +
+        #               [l for l in pprint.pformat(node).splitlines(True)]))
+
+        # Base case
+        if len(node.dependencies) == 0:
+            return
+
+        # Recurse on neighbors
+        for neighbor in node.dependencies:
+            self._traverse(neighbor, depth + 1, node_list)
+
     def trace(self, output_id: str):
-        """Prints trace for an output id."""
-        # TODO(shreyashankar): return json instead of printing
+        """Prints trace for an output id.
+        Returns list of tuples (level, ComponentRun) where level is how
+        many hops away the node is from the node that produced the output_id."""
         component_run_object = self.session.query(ComponentRun).join(
             IOPointer, ComponentRun.outputs).filter(IOPointer.name == output_id).first()
 
         print(f'Printing trace for output {output_id}...')
 
-        _traverse(component_run_object, 1)
+        node_list = []
+        self._traverse(component_run_object, 1, node_list)
+        return node_list
 
     def trace_batch(self, output_ids: typing.List[str]):
         pass
