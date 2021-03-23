@@ -145,3 +145,17 @@ class Store(object):
 
     def trace_batch(self, output_ids: typing.List[str]):
         pass
+
+    def get_history(self, component_name: str, limit: int = 10) -> typing.List[ComponentRun]:
+        """Gets lineage for the component, or a history of all its runs."""
+        history = self.session.query(ComponentRun).filter(ComponentRun.component_name == component_name).order_by(
+            ComponentRun.start_timestamp.desc()).limit(limit).all()
+
+        return history
+
+    def get_components_for_owner(self, owner: str) -> typing.List[Component]:
+        """ Returns a list of all the components associated with the specified
+        order."""
+        components = self.session.query(Component).filter(
+            Component.owner == owner).all()
+        return components

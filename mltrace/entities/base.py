@@ -1,6 +1,7 @@
+from abc import ABC, abstractmethod
 
 
-class Base(object):
+class Base(ABC):
     """The Base class provides methods to save and store attributes as well as print them out."""
 
     def __iter__(self):
@@ -19,3 +20,7 @@ class Base(object):
 
     def to_dictionary(self):
         return {k: self.__getattribute__(k) for k in self._properties()}
+
+    @abstractmethod
+    def __repr__(self):
+        pass

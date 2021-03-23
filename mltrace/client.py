@@ -1,4 +1,5 @@
 from mltrace.db import Store, PointerTypeEnum
+from mltrace.entities import Component, ComponentRun, IOPointer
 
 import functools
 import git
@@ -18,6 +19,41 @@ def create_component(name: str, description: str, owner: str):
     """Creates a component entity in the database."""
     store = Store(DB_URI)
     store.create_component(name, description, owner)
+
+
+def backtrace(output_pointer: str):
+    """Print a trace of versioned components that produced the output_pointer."""
+    store = Store(DB_URI)
+    store.trace(output_pointer)
+
+
+def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRun]:
+    """ Returns a list of ComponentRuns that are part of the component's
+    history."""
+    store = Store(DB_URI)
+    history = store.get_history(component_name, limit)
+
+    # Convert to client-facing ComponentRuns
+    component_runs = []
+    for cr in history:
+        inputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.inputs]
+        outputs = [IOPointer.from_dictionary(
+            iop.__dict__) for iop in cr.outputs]
+        d = cr.__dict__
+        d.update({'inputs': inputs, 'outputs': outputs})
+        component_runs.append(ComponentRun.from_dictionary(d))
+
+    return component_runs
+
+
+def get_components_for_owner(owner: str) -> typing.List[Component]:
+    """ Returns a list of all the components associated with the specified
+        order."""
+    store = Store(DB_URI)
+    res = store.get_components_for_owner(owner)
+
+    # Convert to client-facing Components
+    return [Component.from_dictionary(c.__dict__) for c in res]
 
 
 def register(component_name: str, inputs: typing.List[str], outputs: typing.List[str], endpoint: bool = False):
