@@ -71,20 +71,6 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
     Base.metadata.drop_all(engine)
 
 
-def _traverse(node: ComponentRun, depth: int):
-    # Print node as a step
-    print(''.join(['\t' for _ in range(depth)] +
-          [l for l in pprint.pformat(node).splitlines(True)]))
-
-    # Base case
-    if len(node.dependencies) == 0:
-        return
-
-    # Recurse on neighbors
-    for neighbor in node.dependencies:
-        _traverse(neighbor, depth + 1)
-
-
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevnat enum for the filename."""
     data_extensions = ['csv', 'pq', 'parquet',
