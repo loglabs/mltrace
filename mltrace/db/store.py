@@ -134,10 +134,8 @@ class Store(object):
         component_run.set_upstream(matches)
 
     def _traverse(self, node: ComponentRun, depth: int, node_list: typing.List[ComponentRun]):
-        # Print node as a step
+        # Add node to node_list as the step
         node_list.append((depth, node))
-        # print(''.join(['\t' for _ in range(depth)] +
-        #               [l for l in pprint.pformat(node).splitlines(True)]))
 
         # Base case
         if len(node.dependencies) == 0:
