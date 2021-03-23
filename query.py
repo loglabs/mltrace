@@ -1,4 +1,4 @@
-from mltrace import backtrace, get_history, get_components_for_owner
+from mltrace import backtrace, get_history, get_components_with_owner, get_components_with_tag
 
 import logging
 import pprint
@@ -7,7 +7,8 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
                     datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 
 logging.info(get_history('etl'))
-logging.info(get_components_for_owner('shreya'))
+logging.info(get_components_with_owner('shreya'))
+logging.info(get_components_with_tag('fuck'))
 
 while(True):
     inp = input(
