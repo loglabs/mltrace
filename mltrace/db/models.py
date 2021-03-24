@@ -157,6 +157,8 @@ class ComponentRun(Base):
             dependencies, list) else dependencies
 
         self.dependencies += dependencies
+        # Drop duplicates
+        self.dependencies = list(set(self.dependencies))
 
     def check_completeness(self) -> dict:
         """Returns a dictionary of success indicator and error messages."""

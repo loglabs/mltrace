@@ -1,4 +1,4 @@
-from mltrace.client import clean_db, create_component, register, backtrace, get_history, get_components_with_owner, tag_component, get_components_with_tag
+from mltrace.client import clean_db, create_component, register, backtrace, get_history, get_components_with_owner, tag_component, get_components_with_tag, log_component_run
 
 __all__ = [
     "clean_db",
@@ -8,5 +8,6 @@ __all__ = [
     "get_history",
     "get_components_with_owner",
     'tag_component',
-    'get_components_with_tag'
+    'get_components_with_tag',
+    'log_component_run'
 ]
