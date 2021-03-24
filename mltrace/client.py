@@ -110,6 +110,41 @@ def get_components_with_tag(tag: str) -> typing.List[Component]:
     return components
 
 
+def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=True):
+    """Takes client-facing ComponentRun object and logs it to the DB."""
+    store = Store(DB_URI)
+
+    # Make dictionary object
+    component_run_dict = component_run.to_dictionary()
+
+    component_run_sql = store.initialize_empty_component_run(
+        component_run.component_name)
+
+    # Add relevant attributes
+    component_run_sql.set_start_timestamp(component_run_dict['start_timestamp'])
+    component_run_sql.set_end_timestamp(component_run_dict['end_timestamp'])
+    component_run_sql.set_git_hash(component_run_dict['git_hash'])
+    component_run_sql.set_code_snapshot(component_run_dict['code_snapshot'])
+
+    # Add I/O
+    component_run_sql.add_inputs([store.get_io_pointer(
+        inp.name, inp.pointer_type) for inp in component_run_dict['inputs']])
+    component_run_sql.add_outputs([store.get_io_pointer(
+        out.name, out.pointer_type) for out in component_run_dict['outputs']])
+
+    # Add dependencies if there is flag to automatically set
+    if set_dependencies_from_inputs:
+        store.set_dependencies_from_inputs(component_run_sql)
+
+    # Add dependencies explicitly stored in the component run
+    for dependency in component_run.get_dependencies():
+        cr = store.get_history(dependency, 1)[0]
+        # TODO(shreyashankar): eliminate duplicates in componentrun db object
+        component_run_sql.set_upstream(cr)
+
+    store.commit_component_run(component_run_sql)
+
+
 def register(component_name: str, inputs: typing.List[str], outputs: typing.List[str], endpoint: bool = False):
     def actual_decorator(func):
         @functools.wraps(func)

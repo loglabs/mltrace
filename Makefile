@@ -1,4 +1,4 @@
-.PHONY: help test run query scratch
+.PHONY: help test run query scratch logrun
 # include .env
 
 # Makefile variables
@@ -36,6 +36,9 @@ test: venv
 
 run: venv
 	${PYTHON} populate_db.py
+
+logrun: venv
+	${PYTHON} populate_db_logging.py
 
 query: venv
 	${PYTHON} query.py

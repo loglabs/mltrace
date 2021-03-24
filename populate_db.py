@@ -1,5 +1,5 @@
 # TODO(shreyashankar): handle output ids gracefully
-from mltrace.db import Store, PointerTypeEnum
+from mltrace.db import Store
 from mltrace import clean_db, create_component, register, tag_component
 
 import logging

@@ -181,8 +181,8 @@ class Store(object):
         """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
         many hops away the node is from the node that produced the output_id."""
-        component_run_object = self.session.query(ComponentRun).options(
-            joinedload('outputs')).filter(IOPointer.name == output_id).first()
+        component_run_object = self.session.query(ComponentRun).outerjoin(
+            IOPointer, ComponentRun.outputs).filter(IOPointer.name == output_id).first()
 
         print(f'Printing trace for output {output_id}...')
 
