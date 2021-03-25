@@ -24,7 +24,7 @@ def _create_engine_wrapper(uri: str, max_retries=5) -> sqlalchemy.engine.base.En
         except Exception as e:
             print(f'DB could not be created with exception {e}. Trying again.')
         retries += 1
-    raise('Max retries hit.')
+    raise RuntimeError('Max retries hit.')
 
 
 def _initialize_db_tables(engine: sqlalchemy.engine.base.Engine):
