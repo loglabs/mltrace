@@ -2,7 +2,29 @@ from abc import ABC, abstractmethod
 
 
 class Base(ABC):
-    """The Base class provides methods to save and store attributes as well as print them out."""
+    """ The Base class provides methods to save and store attributes as well as
+    print them out."""
+
+    # Taken from https://dev.to/mattconway1984/python-creating-instance-properties-2ej0
+    def __setattr__(self, attr, value):
+        try:
+            # Try invoking the descriptor protocol __set__ "manually"
+            got_attr = super().__getattribute__(attr)
+            got_attr.__set__(self, value)
+        except AttributeError:
+            # Attribute is not a descriptor, just set it:
+            super().__setattr__(attr, value)
+
+    def __getattribute__(self, attr):
+        # If the attribute does not exist, super().__getattribute__()
+        # will raise an AttributeError
+        got_attr = super().__getattribute__(attr)
+        try:
+            # Try "manually" invoking the descriptor protocol __get__()
+            return got_attr.__get__(self, type(self))
+        except AttributeError:
+            # Attribute is not a descriptor, just return it:
+            return got_attr
 
     def __iter__(self):
         for k in self._properties():

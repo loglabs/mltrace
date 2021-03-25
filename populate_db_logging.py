@@ -20,7 +20,7 @@ tag_component('training', ['fuck'])
 create_component('inference', 'running a model', 'shreya')
 create_component('serve', 'serving a model', 'shreya')
 
-cr = ComponentRun(component_name='etl')
+cr = ComponentRun('etl')
 cr.add_input('raw_data.csv')
 cr.add_input('cleaning_criteria.txt')
 cr.add_output('features.pq')
@@ -37,19 +37,21 @@ def train():
 
 train()
 
-cr = ComponentRun(component_name='inference')
-cr.add_input('model.joblib')
-cr.add_input('features.pq')
-cr.add_output('preds.pq')
-cr.set_start_timestamp()
+inference_cr = ComponentRun('inference')
+inference_cr.add_input('model.joblib')
+inference_cr.add_input('model.joblib')
+inference_cr.add_input('features.pq')
+inference_cr.add_output('preds.pq')
+inference_cr.set_start_timestamp()
 time.sleep(1)
-cr.set_end_timestamp()
-log_component_run(cr)
+inference_cr.set_end_timestamp()
+inference_cr.set_upstream('training')
+log_component_run(inference_cr, False)
 
 
 @register(component_name='serve', inputs=['preds.pq'], outputs=['serve_output_101'], endpoint=True)
-def serve():
-    print('serving output 101!')
+def serve(x):
+    print(f'serving output {x}!')
 
 
-serve()
+serve(x=101)
