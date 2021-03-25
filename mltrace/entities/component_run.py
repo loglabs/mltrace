@@ -1,4 +1,4 @@
-from __future__ import annotations
+# from __future__ import annotations
 from datetime import datetime
 from mltrace.db import PointerTypeEnum
 from mltrace.db.utils import _map_extension_to_enum
@@ -19,7 +19,8 @@ class ComponentRun(Base):
     """Component Run abstraction."""
 
     def __init__(self, component_name: str, start_timestamp: datetime = None, end_timestamp: datetime = None, inputs: typing.List[IOPointer] = [], outputs: typing.List[IOPointer] = [], git_hash: str = None, code_snapshot: str = None, dependencies: typing.List[str] = []):
-        """Set class attributes. Note that timestamps are represented in seconds since epoch."""
+        """ Set class attributes. Note that timestamps are represented in
+seconds since epoch."""
         self._component_name = component_name
         self._start_timestamp = start_timestamp
         self._end_timestamp = end_timestamp
@@ -37,9 +38,25 @@ class ComponentRun(Base):
     def inputs(self) -> typing.List[IOPointer]:
         return self._inputs
 
+    @inputs.setter
+    def inputs(self, inputs: typing.List[IOPointer]):
+        self._inputs = inputs
+
+    @inputs.deleter
+    def inputs(self):
+        del self._inputs
+
     @property
     def outputs(self) -> typing.List[IOPointer]:
         return self._outputs
+
+    @outputs.setter
+    def outputs(self, outputs: typing.List[IOPointer]):
+        self._outputs = outputs
+
+    @outputs.deleter
+    def outputs(self):
+        del self._outputs
 
     @property
     def git_hash(self) -> str:
@@ -99,9 +116,9 @@ class ComponentRun(Base):
         # Elems can be a list or a single IOPointer. Set to a list.
         elems = [elems] if not isinstance(elems, list) else elems
         if input:
-            self._inputs += elems
+            self.inputs = self.inputs + elems
         else:
-            self._outputs += elems
+            self.outputs = self.outputs + elems
 
     def set_upstream(self, dependencies: typing.Union[str, typing.List[str]]):
         """ Set dependencies for this ComponentRun. API similar to Airflow
@@ -111,13 +128,15 @@ class ComponentRun(Base):
         dependencies = [dependencies] if not isinstance(
             dependencies, list) else dependencies
 
-        self.dependencies += dependencies
-        self.dependencies = list(str(self.dependencies))
+        self._dependencies += dependencies
+        self._dependencies = list(set(self._dependencies))
 
     def __repr__(self):
         params = self.to_dictionary()
-        params['start_timestamp'] = params['start_timestamp'].strftime(
-            '%Y-%m-%dT%l:%M:%S%z')
-        params['end_timestamp'] = params['end_timestamp'].strftime(
-            '%Y-%m-%dT%l:%M:%S%z')
+        if params['start_timestamp'] is not None:
+            params['start_timestamp'] = params['start_timestamp'].strftime(
+                '%Y-%m-%dT%l:%M:%S%z')
+        if params['end_timestamp'] is not None:
+            params['end_timestamp'] = params['end_timestamp'].strftime(
+                '%Y-%m-%dT%l:%M:%S%z')
         return pprint.pformat(params)

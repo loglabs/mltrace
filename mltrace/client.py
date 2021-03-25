@@ -139,13 +139,15 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
     # Add dependencies explicitly stored in the component run
     for dependency in component_run.get_dependencies():
         cr = store.get_history(dependency, 1)[0]
-        # TODO(shreyashankar): eliminate duplicates in componentrun db object
         component_run_sql.set_upstream(cr)
 
     store.commit_component_run(component_run_sql)
 
 
-def register(component_name: str, inputs: typing.List[str], outputs: typing.List[str], endpoint: bool = False):
+# Log input strings
+# function to apply to outputs to log those
+
+def register(component_name: str, inputs: typing.List[str] = [], outputs: typing.List[str] = [], input_vars: typing.List[str] = [], endpoint: bool = False):
     def actual_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
