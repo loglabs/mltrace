@@ -6,6 +6,7 @@ import git
 import inspect
 import logging
 import typing
+import uuid
 
 DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
 
@@ -110,6 +111,12 @@ def get_components_with_tag(tag: str) -> typing.List[Component]:
     return components
 
 
+def create_random_ids(num_outputs=1) -> typing.List[str]:
+    """Returns a list of num_outputs ids."""
+
+    return [uuid.uuid4() for _ in range(num_outputs)]
+
+
 def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=True):
     """Takes client-facing ComponentRun object and logs it to the DB."""
     store = Store(DB_URI)
@@ -147,7 +154,7 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
 # Log input strings
 # function to apply to outputs to log those
 
-def register(component_name: str, inputs: typing.List[str] = [], outputs: typing.List[str] = [], input_vars: typing.List[str] = [], endpoint: bool = False):
+def register(component_name: str, inputs: typing.List[str] = [], outputs: typing.List[str] = [], input_vars: typing.List[str] = [], output_vars: typing.List[str] = [], endpoint: bool = False):
     def actual_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -156,8 +163,11 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
             component_run = store.initialize_empty_component_run(component_name)
             component_run.set_start_timestamp()
 
-            # Add input_vars as pointers
-            input_pointers = [str(kwargs[var]) for var in input_vars]
+            # Add input_vars and output_vars as pointers
+            input_pointers = [store.get_io_pointer(
+                str(kwargs[var])) for var in input_vars]
+            output_pointers = [store.get_io_pointer(str(kwargs[var]), PointerTypeEnum.ENDPOINT) for var in output_vars] if endpoint else [
+                store.get_io_pointer(str(kwargs[var])) for var in output_vars]
 
             # Run function
             value = func(*args, **kwargs)
@@ -165,7 +175,7 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
             # Log relevant info
             component_run.set_end_timestamp()
             input_pointers += [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers = [store.get_io_pointer(
+            output_pointers += [store.get_io_pointer(
                 out, PointerTypeEnum.ENDPOINT) for out in outputs] if endpoint else [store.get_io_pointer(out) for out in outputs]
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)

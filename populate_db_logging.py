@@ -1,5 +1,5 @@
 from mltrace.db import Store
-from mltrace import clean_db, create_component, register, tag_component, log_component_run, register
+from mltrace import clean_db, create_component, register, tag_component, log_component_run, register, create_random_ids
 from mltrace.entities import ComponentRun, IOPointer
 
 import logging
@@ -46,12 +46,15 @@ inference_cr.set_start_timestamp()
 time.sleep(1)
 inference_cr.set_end_timestamp()
 inference_cr.set_upstream('training')
+inference_cr.set_upstream('etl')
 log_component_run(inference_cr, False)
 
 
-@register(component_name='serve', inputs=['preds.pq'], outputs=['serve_output_101'], endpoint=True)
+@register(component_name='serve', inputs=['preds.pq'], output_vars=['x'], endpoint=True)
 def serve(x):
     print(f'serving output {x}!')
 
 
-serve(x=101)
+random_ids = create_random_ids(10)
+for rid in random_ids:
+    serve(x=rid)

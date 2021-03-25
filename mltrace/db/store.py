@@ -19,7 +19,8 @@ class Store(object):
             uri (str): URI string to connect to the SQLAlchemy database.
         """
         if not uri.startswith('postgresql://'):
-            raise('Database URI must be prefixed with `postgresql://`')
+            raise RuntimeError(
+                'Database URI must be prefixed with `postgresql://`')
         self.engine = _create_engine_wrapper(uri)
 
         # TODO(shreyashankar) remove this line
@@ -64,7 +65,8 @@ class Store(object):
         component = self._get_component(component_name)
 
         if not component:
-            raise(f'Component with name "{component_name}" not found.')
+            raise RuntimeError(
+                f'Component with name "{component_name}" not found.')
 
         tag_objects = [self.get_tag(t) for t in tags]
         component.add_tags(tag_objects)
@@ -126,21 +128,11 @@ class Store(object):
         logging.info(
             f'Successfully deleted IOPointer with name "{io_pointer.name}".')
 
-    def create_output_ids(self, num_outputs=1) -> typing.List[str]:
-        """Returns a list of num_outputs ids that don't already exist in the DB."""
-        res = self.session.query(IOPointer).filter(
-            IOPointer.pointer_type == PointerTypeEnum.ENDPOINT).all()
-
-        start_index = 0 if len(res) == 0 else int(max(
-            res, key=lambda x: int(x.name)).name) + 1
-
-        return [f"{i}" for i in range(start_index, start_index + num_outputs)]
-
     def commit_component_run(self, component_run: ComponentRun):
         """Commits a fully initialized component run to the DB."""
         status_dict = component_run.check_completeness()
         if not status_dict['success']:
-            raise(status_dict['msg'])
+            raise RuntimeError(status_dict['msg'])
 
         # Commit to DB
         self.session.add(component_run)
@@ -183,6 +175,9 @@ class Store(object):
         many hops away the node is from the node that produced the output_id."""
         component_run_object = self.session.query(ComponentRun).outerjoin(
             IOPointer, ComponentRun.outputs).filter(IOPointer.name == output_id).first()
+
+        if component_run_object is None:
+            raise RuntimeError(f'ID {output_id} does not exist.')
 
         print(f'Printing trace for output {output_id}...')
 
