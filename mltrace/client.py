@@ -156,12 +156,15 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
             component_run = store.initialize_empty_component_run(component_name)
             component_run.set_start_timestamp()
 
+            # Add input_vars as pointers
+            input_pointers = [str(kwargs[var]) for var in input_vars]
+
             # Run function
             value = func(*args, **kwargs)
 
             # Log relevant info
             component_run.set_end_timestamp()
-            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
+            input_pointers += [store.get_io_pointer(inp) for inp in inputs]
             output_pointers = [store.get_io_pointer(
                 out, PointerTypeEnum.ENDPOINT) for out in outputs] if endpoint else [store.get_io_pointer(out) for out in outputs]
             component_run.add_inputs(input_pointers)
