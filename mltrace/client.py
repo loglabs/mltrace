@@ -41,8 +41,10 @@ def backtrace(output_pointer: str):
         inputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.inputs]
         outputs = [IOPointer.from_dictionary(
             iop.__dict__) for iop in cr.outputs]
+        dependencies = [dep.component_name for dep in cr.dependencies]
         d = cr.__dict__
-        d.update({'inputs': inputs, 'outputs': outputs})
+        d.update({'inputs': inputs, 'outputs': outputs,
+                 'dependencies': dependencies})
         component_runs.append((depth, ComponentRun.from_dictionary(d)))
 
     return component_runs
@@ -61,8 +63,10 @@ def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRu
         inputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.inputs]
         outputs = [IOPointer.from_dictionary(
             iop.__dict__) for iop in cr.outputs]
+        dependencies = [dep.component_name for dep in cr.dependencies]
         d = cr.__dict__
-        d.update({'inputs': inputs, 'outputs': outputs})
+        d.update({'inputs': inputs, 'outputs': outputs,
+                 'dependencies': dependencies})
         component_runs.append(ComponentRun.from_dictionary(d))
 
     return component_runs
@@ -144,10 +148,11 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
         store.set_dependencies_from_inputs(component_run_sql)
 
     # Add dependencies explicitly stored in the component run
-    for dependency in component_run.get_dependencies():
+    for dependency in component_run_dict['dependencies']:
         cr = store.get_history(dependency, 1)[0]
         component_run_sql.set_upstream(cr)
 
+    print(component_run_sql)
     store.commit_component_run(component_run_sql)
 
 

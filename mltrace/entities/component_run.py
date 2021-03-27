@@ -82,13 +82,18 @@ seconds since epoch."""
     def end_timestamp(self) -> datetime:
         return self._end_timestamp
 
-    def get_dependencies(self) -> typing.List[str]:
+    @property
+    def dependencies(self) -> typing.List[str]:
         return self._dependencies
 
-    def set_start_timestamp(self, ts=datetime.now()):
+    def set_start_timestamp(self, ts=None):
+        if ts is None:
+            ts = datetime.now()
         self._start_timestamp = ts
 
-    def set_end_timestamp(self, ts=datetime.now()):
+    def set_end_timestamp(self, ts=None):
+        if ts is None:
+            ts = datetime.now()
         self._end_timestamp = ts
 
     def add_input(self, name: str, pointer_type: PointerTypeEnum = None):
@@ -128,7 +133,7 @@ seconds since epoch."""
         dependencies = [dependencies] if not isinstance(
             dependencies, list) else dependencies
 
-        self._dependencies += dependencies
+        self._dependencies = self._dependencies + dependencies
         self._dependencies = list(set(self._dependencies))
 
     def __repr__(self):
