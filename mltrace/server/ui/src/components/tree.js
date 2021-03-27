@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Tree } from "@blueprintjs/core";
+import { CustomToaster } from "./toaster.js";
+import { Intent } from "@blueprintjs/core";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
@@ -49,7 +51,14 @@ export default class TreeView extends Component {
                 styleLabels(data);
                 this.setState({ nodes: [data], output_id: this.props.output_id });
             }
-        ).catch(e => { });
+        ).catch(e => {
+            CustomToaster.show({
+                message: e.message,
+                icon: "error",
+                intent: Intent.DANGER,
+            });;
+            this.setState({ output_id: this.props.output_id });
+        });
     }
 
     render() {
