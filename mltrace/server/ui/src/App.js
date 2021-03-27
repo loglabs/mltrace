@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import { Chart } from "react-google-charts";
 import ReactJson from 'react-json-view'
+import Header from "./components/header.js"
+import TreeView from "./components/tree.js"
 
 const columns = [
   { type: "string", label: "Task ID" },
@@ -34,7 +36,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        <div className="gantt-container">
+        <div className="top-container">
+          <Header />
+          <TreeView />
           <h1>{"Output: " + output_id}</h1>
           <h2>{"Showing metadata for the \"" + rows[this.state.selectedRow][0] + "\" component:"}</h2>
           <ReactJson src={output_json[this.state.selectedRow]} />
