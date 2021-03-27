@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Chart } from "react-google-charts";
-import ReactJson from 'react-json-view'
+// import { Chart } from "react-google-charts";
+// import ReactJson from 'react-json-view'
 import Header from "./components/header.js"
 import TreeView from "./components/tree.js"
-import { Classes } from "@blueprintjs/core";
+import { CustomToaster } from "./components/toaster.js";
+import { Classes, Intent } from "@blueprintjs/core";
 
 const columns = [
   { type: "string", label: "Task ID" },
@@ -57,7 +58,15 @@ class App extends Component {
     args.shift();
 
     if (command === "trace") {
-      // TODO(shreyashankar): error check here
+      if (args.length !== 1) {
+        CustomToaster.show({
+          message: "Please enter a valid name or ID to trace.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
       this.setState({ output_id: args[0] });
     }
   }
@@ -71,18 +80,17 @@ class App extends Component {
       backgroundColor: this.state.useDarkTheme === true ? '#293742' : '',
     };
     return (
-      <div>
-        <div className={darkstr} style={style}>
-          <Header
-            useDarkTheme={this.state.useDarkTheme}
-            onToggleTheme={this.handleDarkSwitchChange}
-            onCommand={this.handleCommand}
-          />
-          <TreeView output_id={this.state.output_id} />
-          {/* <h1>{"Output: " + output_id}</h1>
+      <div className={darkstr} style={style}>
+        <Header
+          useDarkTheme={this.state.useDarkTheme}
+          onToggleTheme={this.handleDarkSwitchChange}
+          onCommand={this.handleCommand}
+        />
+        <TreeView output_id={this.state.output_id} />
+        {/* <h1>{"Output: " + output_id}</h1>
           <h2>{"Showing metadata for the \"" + rows[this.state.selectedRow][0] + "\" component:"}</h2> */}
-          {/* <ReactJson src={output_json[this.state.selectedRow]} /> */}
-          {/* <Chart
+        {/* <ReactJson src={output_json[this.state.selectedRow]} /> */}
+        {/* <Chart
             chartType="Gantt"
             data={[columns, ...rows]}
             width="100%"
@@ -124,7 +132,6 @@ class App extends Component {
             }}
             legendToggle
           /> */}
-        </div>
       </div>
     );
   }
