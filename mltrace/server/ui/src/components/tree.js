@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Classes, Tree } from "@blueprintjs/core";
+import { Tree } from "@blueprintjs/core";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
@@ -26,23 +26,30 @@ export default class TreeView extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            output_id: '',
             nodes: []
         }
     }
 
-    componentDidMount() {
-        // Call API
+    componentDidUpdate() {
+        if (this.props.output_id === "") {
+            return null;
+        }
+
+        if (this.state.output_id === this.props.output_id) {
+            return null;
+        }
+
         axios.get(TRACE_API_URL, {
             params: {
-                output_id: '9f6fc446-169d-48d2-8484-44b55ac7c83c'
+                output_id: this.props.output_id
             }
         }).then(
             ({ data }) => {
-                // thing to do
                 styleLabels(data);
-                this.setState({ nodes: [data] });
+                this.setState({ nodes: [data], output_id: this.props.output_id });
             }
-        ).catch(e => { console.log(e); });
+        ).catch(e => { });
     }
 
     render() {

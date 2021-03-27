@@ -4,6 +4,7 @@ import { Chart } from "react-google-charts";
 import ReactJson from 'react-json-view'
 import Header from "./components/header.js"
 import TreeView from "./components/tree.js"
+import { Classes } from "@blueprintjs/core";
 
 const columns = [
   { type: "string", label: "Task ID" },
@@ -30,19 +31,58 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { selectedRow: 0 };
+    this.state = {
+      selectedRow: 0,
+      themeName: getTheme(),
+      useDarkTheme: getTheme() === DARK_THEME,
+      output_id: ""
+    };
+
+    this.handleDarkSwitchChange = this.handleDarkSwitchChange.bind(this);
+    this.handleCommand = this.handleCommand.bind(this);
+  }
+
+  handleDarkSwitchChange(useDark) {
+    const nextThemeName = useDark ? DARK_THEME : LIGHT_THEME;
+    setTheme(nextThemeName);
+    this.setState({ themeName: nextThemeName, useDarkTheme: useDark });
+  };
+
+  handleCommand(input) {
+    var args = input.split(" ").filter(str => str !== "");
+
+    if (args.length === 0) return;
+
+    var command = args[0].toLowerCase();
+    args.shift();
+
+    if (command === "trace") {
+      // TODO(shreyashankar): error check here
+      this.setState({ output_id: args[0] });
+    }
   }
 
   render() {
+    let darkstr = "";
+    if (this.state.useDarkTheme === true) {
+      darkstr = "bp3-dark";
+    }
+    let style = {
+      backgroundColor: this.state.useDarkTheme === true ? '#293742' : '',
+    };
     return (
       <div>
-        <div className="top-container">
-          <Header />
-          <TreeView />
-          <h1>{"Output: " + output_id}</h1>
-          <h2>{"Showing metadata for the \"" + rows[this.state.selectedRow][0] + "\" component:"}</h2>
-          <ReactJson src={output_json[this.state.selectedRow]} />
-          <Chart
+        <div className={darkstr} style={style}>
+          <Header
+            useDarkTheme={this.state.useDarkTheme}
+            onToggleTheme={this.handleDarkSwitchChange}
+            onCommand={this.handleCommand}
+          />
+          <TreeView output_id={this.state.output_id} />
+          {/* <h1>{"Output: " + output_id}</h1>
+          <h2>{"Showing metadata for the \"" + rows[this.state.selectedRow][0] + "\" component:"}</h2> */}
+          {/* <ReactJson src={output_json[this.state.selectedRow]} /> */}
+          {/* <Chart
             chartType="Gantt"
             data={[columns, ...rows]}
             width="100%"
@@ -70,12 +110,12 @@ class App extends Component {
                   stroke: '#ddd',
                   strokeWidth: 1,
                 },
-                'innerGridTrack': {
-                  fill: 'white'
-                },
-                'innerGridDarkTrack': {
-                  fill: 'white'
-                },
+                // 'innerGridTrack': {
+                //   fill: 'white'
+                // },
+                // 'innerGridDarkTrack': {
+                //   fill: 'white'
+                // },
                 arrow: {
                   width: 3,
                   radius: 0
@@ -83,10 +123,26 @@ class App extends Component {
               }
             }}
             legendToggle
-          />
+          /> */}
         </div>
       </div>
     );
   }
 }
+
+const DARK_THEME = Classes.DARK;
+const LIGHT_THEME = "";
+const THEME_LOCAL_STORAGE_KEY = "blueprint-docs-theme";
+
+/** Return the current theme className. */
+export function getTheme() {
+  return localStorage.getItem(THEME_LOCAL_STORAGE_KEY) || LIGHT_THEME;
+}
+
+/** Persist the current theme className in local storage. */
+export function setTheme(themeName) {
+  localStorage.setItem(THEME_LOCAL_STORAGE_KEY, themeName);
+}
+
+
 export default App;
