@@ -32,6 +32,7 @@ log_component_run(cr)
 
 @register(component_name='training', inputs=['train_set.pq', 'test_set.pq'], outputs=['model.joblib', 'metrics.txt'])
 def train():
+    time.sleep(4)
     print("training model")
 
 
