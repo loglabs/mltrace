@@ -1,4 +1,4 @@
-.PHONY: help test run query scratch logrun
+.PHONY: help test run query scratch logrun server
 # include .env
 
 # Makefile variables
@@ -43,5 +43,5 @@ logrun: venv
 query: venv
 	${PYTHON} query.py
 
-scratch: venv
-	${PYTHON} scratch.py
+server: venv
+	${PYTHON} -m flask run

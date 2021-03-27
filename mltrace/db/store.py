@@ -169,6 +169,47 @@ class Store(object):
         for neighbor in node.dependencies:
             self._traverse(neighbor, depth + 1, node_list)
 
+    def _web_trace_helper(self, component_run_object: ComponentRun):
+        """ Helper function that populates the dictionary of ComponentRuns for
+        the web trace. Returns dictionary and counter."""
+        res = {}
+        res['id'] = component_run_object.id
+        res['label'] = component_run_object.component_name
+        res['hasCaret'] = True
+        res['isExpanded'] = True
+        res['childNodes'] = []
+
+        for out in component_run_object.outputs:
+            out_dict = {
+                'id': out.name,
+                'label': out.name,
+                'hasCaret': False
+            }
+
+            # Settle on icon
+            if out.pointer_type == PointerTypeEnum.DATA:
+                out_dict['icon'] = 'database'
+            elif out.pointer_type == PointerTypeEnum.MODEL:
+                out_dict['icon'] = 'function'
+
+            res['childNodes'].append(out_dict)
+
+        for dep in component_run_object.dependencies:
+            child_res = self._web_trace_helper(dep)
+            res['childNodes'].append(child_res)
+
+        return res
+
+    def web_trace(self, output_id: str):
+        """Prints dictionary of ComponentRuns to display in the UI."""
+        component_run_object = self.session.query(ComponentRun).outerjoin(
+            IOPointer, ComponentRun.outputs).filter(IOPointer.name == output_id).first()
+
+        if component_run_object is None:
+            raise RuntimeError(f'ID {output_id} does not exist.')
+
+        return self._web_trace_helper(component_run_object)
+
     def trace(self, output_id: str):
         """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
