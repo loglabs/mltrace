@@ -9,11 +9,13 @@ setup(
     # license='MIT',
     packages=find_packages(exclude=['tests']),
     install_requires=[
+        'flask',
         'gitpython',
         'numpy',
         'pandas',
         'psycopg2-binary',
         'pytest',
+        'python-dotenv',
         'sklearn',
         'sqlalchemy'
     ]
