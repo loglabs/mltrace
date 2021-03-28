@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Tree } from "@blueprintjs/core";
+import { Tree, Card } from "@blueprintjs/core";
 import { CustomToaster } from "./toaster.js";
 import { Intent } from "@blueprintjs/core";
+import ReactJson from 'react-json-view'
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
@@ -29,8 +30,16 @@ export default class TreeView extends Component {
         super(props);
         this.state = {
             output_id: '',
-            nodes: []
+            nodes: [],
+            selected_node: {}
         }
+
+        this.onNodeClick = this.onNodeClick.bind(this);
+    }
+
+    onNodeClick(node) {
+        // const type = node.hasCaret === true ? 'component' : 'io';
+        this.setState({ selected_node: node });
     }
 
     componentDidUpdate() {
@@ -49,21 +58,42 @@ export default class TreeView extends Component {
         }).then(
             ({ data }) => {
                 styleLabels(data);
-                this.setState({ nodes: [data], output_id: this.props.output_id });
+                this.setState({ nodes: [data], output_id: this.props.output_id, selected_node: data });
             }
         ).catch(e => {
             CustomToaster.show({
                 message: e.message,
                 icon: "error",
                 intent: Intent.DANGER,
-            });;
+            });
             this.setState({ output_id: this.props.output_id });
         });
     }
 
     render() {
+        var clone = Object.assign({}, this.state.selected_node);
+        delete clone.childNodes;
+
+        let childStyle = {
+            flex: 1,
+            margin: '10px',
+        }
+
         return (
-            <Tree contents={this.state.nodes} className="bp3-minimal" />
+            <div style={{ display: 'flex', margin: '10px' }}>
+                <Tree
+                    contents={this.state.nodes}
+                    className="bp3-minimal"
+                    onNodeClick={this.onNodeClick}
+                    style={childStyle}
+                />
+                <Card interactive={false} style={childStyle}>
+                    <h1>{this.state.selected_node.label}</h1>
+                    <ReactJson
+                        src={clone}
+                    />
+                </Card>
+            </div>
         )
     }
 }
