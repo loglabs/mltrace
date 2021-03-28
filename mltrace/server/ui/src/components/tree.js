@@ -31,7 +31,7 @@ export default class TreeView extends Component {
         this.state = {
             output_id: '',
             nodes: [],
-            selected_node: {}
+            selectedNode: {}
         }
 
         this.onNodeClick = this.onNodeClick.bind(this);
@@ -39,7 +39,7 @@ export default class TreeView extends Component {
 
     onNodeClick(node) {
         // const type = node.hasCaret === true ? 'component' : 'io';
-        this.setState({ selected_node: node });
+        this.setState({ selectedNode: node });
     }
 
     componentDidUpdate() {
@@ -58,7 +58,7 @@ export default class TreeView extends Component {
         }).then(
             ({ data }) => {
                 styleLabels(data);
-                this.setState({ nodes: [data], output_id: this.props.output_id, selected_node: data });
+                this.setState({ nodes: [data], output_id: this.props.output_id, selectedNode: data });
             }
         ).catch(e => {
             CustomToaster.show({
@@ -71,13 +71,22 @@ export default class TreeView extends Component {
     }
 
     render() {
-        var clone = Object.assign({}, this.state.selected_node);
+        var clone = Object.assign({}, this.state.selectedNode);
         delete clone.childNodes;
 
         let childStyle = {
             flex: 1,
             margin: '10px',
         }
+
+        let cardComponent = this.state.selectedNode.length != null ? (
+            < Card interactive={false} style={childStyle} >
+                <h1>{this.state.selectedNode.label}</h1>
+                <ReactJson
+                    src={clone}
+                />
+            </Card >
+        ) : null;
 
         return (
             <div style={{ display: 'flex', margin: '10px' }}>
@@ -87,13 +96,8 @@ export default class TreeView extends Component {
                     onNodeClick={this.onNodeClick}
                     style={childStyle}
                 />
-                <Card interactive={false} style={childStyle}>
-                    <h1>{this.state.selected_node.label}</h1>
-                    <ReactJson
-                        src={clone}
-                    />
-                </Card>
-            </div>
+                {cardComponent}
+            </div >
         )
     }
 }
