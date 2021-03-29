@@ -8,11 +8,11 @@ import enum
 import typing
 
 
-class PointerTypeEnum(enum.Enum):
-    DATA = 1
-    MODEL = 2
-    ENDPOINT = 3
-    UNKNOWN = 4
+class PointerTypeEnum(str, enum.Enum):
+    DATA = 'DATA'
+    MODEL = 'MODEL'
+    ENDPOINT = 'ENDPOINT'
+    UNKNOWN = 'UNKNOWN'
 
 
 component_tag_association = Table(

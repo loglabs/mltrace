@@ -1,5 +1,6 @@
 from mltrace.entities.base import Base
 
+import json
 import pprint
 import typing
 
@@ -28,9 +29,9 @@ class Component(Base):
         return self._owner
 
     @property
-    def tags(self) -> str:
+    def tags(self) -> typing.List[str]:
         return self._tags
 
     def __repr__(self):
         params = self.to_dictionary()
-        return pprint.pformat(params)
+        return json.dumps(params)

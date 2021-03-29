@@ -1,6 +1,7 @@
 from mltrace.db.models import PointerTypeEnum
 from mltrace.entities.base import Base
 
+import json
 import pprint
 
 
@@ -20,4 +21,5 @@ class IOPointer(Base):
 
     def __repr__(self):
         params = self.to_dictionary()
-        return pprint.pformat(params)
+        params['pointer_type'] = params['pointer_type'].value
+        return json.dumps(params)
