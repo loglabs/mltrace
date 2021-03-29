@@ -1,8 +1,10 @@
 from flask import Flask, request, Response
 from http import HTTPStatus
-from mltrace.db import Store, PointerTypeEnum, ComponentRun as SQLComponentRun
+from mltrace.db import Store, PointerTypeEnum, Component as SQLComponent, ComponentRun as SQLComponentRun
 from mltrace.entities import Component, ComponentRun, IOPointer
+from mltrace import get_component_information, get_component_run_information
 
+import copy
 import json
 
 app = Flask(__name__)
@@ -13,43 +15,16 @@ def error(err_msg, status_code):
     return Response(json.dumps({"error": err_msg}), status=status_code)
 
 
-def serialize(trace: dict):
-    """Serializes the result of web_trace."""
-    if 'object' not in trace:
-        return
-
-    cr = trace['object']
-    inputs = [IOPointer.from_dictionary(
-        iop.__dict__).to_dictionary() for iop in cr.inputs]
-    outputs = [IOPointer.from_dictionary(
-        iop.__dict__).to_dictionary() for iop in cr.outputs]
-    dependencies = [dep.component_name for dep in cr.dependencies]
-    d = cr.__dict__
-    if cr.code_snapshot:
-        cr.code_snapshot = cr.code_snapshot.decode('utf-8')
-    d.update({'inputs': inputs, 'outputs': outputs,
-              'dependencies': dependencies})
-    trace['object'] = str(ComponentRun.from_dictionary(d))
-
-    # Recursively apply for child nodes
-    if 'childNodes' in trace:
-        for child_node in trace['childNodes']:
-            serialize(child_node)
-
-
-def serialize_component_run(cr: SQLComponentRun) -> str:
+def serialize_component_run(c: Component, cr: ComponentRun) -> str:
     """Serializes component run to display info on a card."""
-    inputs = [IOPointer.from_dictionary(
-        iop.__dict__).to_dictionary() for iop in cr.inputs]
-    outputs = [IOPointer.from_dictionary(
-        iop.__dict__).to_dictionary() for iop in cr.outputs]
-    dependencies = [dep.component_name for dep in cr.dependencies]
-    d = cr.__dict__
-    if cr.code_snapshot:
-        cr.code_snapshot = cr.code_snapshot.decode('utf-8')
-    d.update({'inputs': inputs, 'outputs': outputs,
-              'dependencies': dependencies})
-    return str(ComponentRun.from_dictionary(d))
+    web_cr_dict = json.loads(str(cr))
+
+    # Add component information
+    web_cr_dict['owner'] = c.owner
+    web_cr_dict['description'] = c.description
+    web_cr_dict['tags'] = c.tags
+
+    return json.dumps(web_cr_dict)
 
 
 @app.route('/component_run', methods=['GET'])
@@ -58,10 +33,10 @@ def get_component_run():
         return error(f'id not specified.', HTTPStatus.NOT_FOUND)
 
     component_run_id = request.args['id']
-    store = Store(DB_URI)
     try:
-        res = store.get_component_run(component_run_id)
-        return json.dumps(serialize_component_run(res))
+        component_run = get_component_run_information(component_run_id)
+        component = get_component_information(component_run.component_name)
+        return serialize_component_run(component, component_run)
     except RuntimeError:
         return error(f'Component run ID {component_run_id} not found', HTTPStatus.NOT_FOUND)
 
@@ -88,8 +63,6 @@ def trace():
     store = Store(DB_URI)
     try:
         res = store.web_trace(output_id)
-        cr = store.get_component_run(res['id'].replace('componentrun_', ''))
-        serialize(res)
         return json.dumps(res)
     except RuntimeError:
         return error(f'Output {output_id} not found', HTTPStatus.NOT_FOUND)

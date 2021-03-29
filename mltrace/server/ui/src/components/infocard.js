@@ -23,10 +23,10 @@ export default class InfoCard extends Component {
             type: null
         }
 
-        this.updateState = this.updateState.bind(this);
+        // this.updateState = this.updateState.bind(this);
     }
 
-    updateState() {
+    componentDidUpdate() {
         if (this.props.selected_id === '') return;
         if (this.state.selected_id === this.props.selected_id) return;
 
@@ -54,13 +54,14 @@ export default class InfoCard extends Component {
                 icon: "error",
                 intent: Intent.DANGER,
             });
-            this.setState({ selected_id: this.props.selected_id, type: type });
+            // this.setState({ selected_id: this.props.selected_id, type: type });
         });
 
     }
 
     render() {
-        this.updateState();
+        // this.updateState();
+        if (this.props.selected_id === '') return null;
 
         let cardContent = null;
         if (this.state.type === 'componentrun') {

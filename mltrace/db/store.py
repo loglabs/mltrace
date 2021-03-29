@@ -57,8 +57,7 @@ class Store(object):
 
     def get_component(self, name: str) -> Component:
         """Retrieves component if exists."""
-        return self.session.query(Component).filter(
-            Component.name == name).first()
+        return self.session.query(Component).outerjoin(Tag, Component.tags).filter(Component.name == name).first()
 
     def get_component_run(self, id: str) -> ComponentRun:
         """Retrieves component run if exists."""
@@ -178,7 +177,6 @@ class Store(object):
         """ Helper function that populates the dictionary of ComponentRuns for
         the web trace. Returns dictionary and counter."""
         res = {}
-        res['object'] = component_run_object
         res['id'] = f'componentrun_{component_run_object.id}'
         res['label'] = component_run_object.component_name
         res['hasCaret'] = True
