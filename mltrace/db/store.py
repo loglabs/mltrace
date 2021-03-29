@@ -173,6 +173,7 @@ class Store(object):
         """ Helper function that populates the dictionary of ComponentRuns for
         the web trace. Returns dictionary and counter."""
         res = {}
+        res['object'] = component_run_object
         res['id'] = component_run_object.id
         res['label'] = component_run_object.component_name
         res['hasCaret'] = True

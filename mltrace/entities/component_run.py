@@ -5,6 +5,7 @@ from mltrace.db.utils import _map_extension_to_enum
 from mltrace.entities.base import Base
 from mltrace.entities.io_pointer import IOPointer
 
+import json
 import pickle
 import pprint
 import typing
@@ -140,8 +141,8 @@ seconds since epoch."""
         params = self.to_dictionary()
         if params['start_timestamp'] is not None:
             params['start_timestamp'] = params['start_timestamp'].strftime(
-                '%Y-%m-%dT%l:%M:%S%z')
+                '%Y-%m-%d%l:%M:%S%z')
         if params['end_timestamp'] is not None:
             params['end_timestamp'] = params['end_timestamp'].strftime(
-                '%Y-%m-%dT%l:%M:%S%z')
-        return pprint.pformat(params)
+                '%Y-%m-%d%l:%M:%S%z')
+        return json.dumps(params)

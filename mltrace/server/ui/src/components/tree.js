@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Tree, Card } from "@blueprintjs/core";
+import { Tree } from "@blueprintjs/core";
 import { CustomToaster } from "./toaster.js";
 import { Intent } from "@blueprintjs/core";
-import ReactJson from 'react-json-view'
+import InfoCard from "./infocard.js";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
@@ -39,6 +39,7 @@ export default class TreeView extends Component {
 
     onNodeClick(node) {
         // const type = node.hasCaret === true ? 'component' : 'io';
+
         this.setState({ selectedNode: node });
     }
 
@@ -75,27 +76,32 @@ export default class TreeView extends Component {
         delete clone.childNodes;
 
         let childStyle = {
-            flex: 1,
-            margin: '10px',
+            flex: '1',
+            margin: '1em',
+            // paddingRight: '10em'
         }
 
-        let cardComponent = this.state.selectedNode.length != null ? (
-            < Card interactive={false} style={childStyle} >
-                <h1>{this.state.selectedNode.label}</h1>
-                <ReactJson
-                    src={clone}
-                />
-            </Card >
-        ) : null;
+        // let treeStyle = childStyle;
+        // treeStyle.width
+
+        let cardComponent = null;
+        if (this.state.selectedNode.object != null) {
+            cardComponent = (<InfoCard label={clone.label} src={clone.object} style={childStyle} />);
+
+            // Set selected node
+            //let selectedID = this.state.selectedNode.id;
+            // isSelected
+        }
 
         return (
-            <div style={{ display: 'flex', margin: '10px' }}>
-                <Tree
-                    contents={this.state.nodes}
-                    className="bp3-minimal"
-                    onNodeClick={this.onNodeClick}
-                    style={childStyle}
-                />
+            <div style={{ display: 'flex', margin: '1em', width: '85%' }}>
+                <div style={childStyle}>
+                    <Tree
+                        contents={this.state.nodes}
+                        className="bp3-minimal"
+                        onNodeClick={this.onNodeClick}
+                    />
+                </div>
                 {cardComponent}
             </div >
         )
