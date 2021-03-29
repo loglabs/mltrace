@@ -31,7 +31,8 @@ export default class TreeView extends Component {
         this.state = {
             output_id: '',
             nodes: [],
-            selectedNode: {}
+            selectedNode: {},
+            selected_id: ''
         }
 
         this.onNodeClick = this.onNodeClick.bind(this);
@@ -39,8 +40,8 @@ export default class TreeView extends Component {
 
     onNodeClick(node) {
         // const type = node.hasCaret === true ? 'component' : 'io';
-
-        this.setState({ selectedNode: node });
+        let id = (node.parent !== undefined) ? node.parent : node.id;
+        this.setState({ selectedNode: node, selected_id: id });
     }
 
     componentDidUpdate() {
@@ -59,7 +60,7 @@ export default class TreeView extends Component {
         }).then(
             ({ data }) => {
                 styleLabels(data);
-                this.setState({ nodes: [data], output_id: this.props.output_id, selectedNode: data });
+                this.setState({ nodes: [data], output_id: this.props.output_id, selectedNode: data, selected_id: data.id });
             }
         ).catch(e => {
             CustomToaster.show({
@@ -85,8 +86,10 @@ export default class TreeView extends Component {
         // treeStyle.width
 
         let cardComponent = null;
-        if (this.state.selectedNode.object != null) {
-            cardComponent = (<InfoCard label={clone.label} src={clone.object} style={childStyle} />);
+        if (this.state.selected_id !== '') {
+            // cardComponent = (<InfoCard label={clone.label} src={clone.object}
+            // style={childStyle} />);
+            cardComponent = <InfoCard style={childStyle} selected_id={this.state.selected_id} />
 
             // Set selected node
             //let selectedID = this.state.selectedNode.id;

@@ -45,7 +45,8 @@ export default class Header extends Component {
                         <Button
                             className="bp3-minimal"
                             icon={this.props.useDarkTheme ? "flash" : "moon"}
-                            // text={this.props.useDarkTheme ? "Light theme" : "Dark theme"}
+                            // text={this.props.useDarkTheme ? "Use light theme"
+                            // : "Use dark theme"}
                             text=""
                             onClick={this.onToggleTheme}
                         />
