@@ -40,7 +40,7 @@ class Store(object):
 
     def create_component(self, name: str, description: str, owner: str, tags: typing.List[str]):
         """Creates a component entity in the database if it does not already exist."""
-        res = self._get_component(name)
+        res = self.get_component(name)
 
         if res:
             logging.info(f'Component with name "{name}" already exists.')
@@ -55,14 +55,19 @@ class Store(object):
         self.session.add(component)
         self.session.commit()
 
-    def _get_component(self, name: str) -> Component:
+    def get_component(self, name: str) -> Component:
         """Retrieves component if exists."""
         return self.session.query(Component).filter(
             Component.name == name).first()
 
+    def get_component_run(self, id: str) -> ComponentRun:
+        """Retrieves component run if exists."""
+        return self.session.query(ComponentRun).filter(
+            ComponentRun.id == id).first()
+
     def add_tags_to_component(self, component_name: str, tags: typing.List[str]):
         """Retreives existing component and adds tags."""
-        component = self._get_component(component_name)
+        component = self.get_component(component_name)
 
         if not component:
             raise RuntimeError(
@@ -93,14 +98,14 @@ class Store(object):
         # Return existing Tag
         return res[0]
 
-    def get_io_pointer(self, name=str, pointer_type: PointerTypeEnum = None) -> IOPointer:
+    def get_io_pointer(self, name=str, pointer_type: PointerTypeEnum = None, create=True) -> IOPointer:
         """ Creates an io pointer around the specified path. 
         Retrieves existing io pointer if exists in DB, 
-        otherwise creates a new one."""
+        otherwise creates a new one if create flag is set."""
         res = self.session.query(IOPointer).filter(IOPointer.name == name).all()
 
         # Must create new IOPointer
-        if len(res) == 0:
+        if len(res) == 0 and create == True:
             logging.info(f'Creating new IOPointer with name "{name}".')
             if pointer_type == None:
                 pointer_type = _map_extension_to_enum(name)
@@ -174,7 +179,7 @@ class Store(object):
         the web trace. Returns dictionary and counter."""
         res = {}
         res['object'] = component_run_object
-        res['id'] = component_run_object.id
+        res['id'] = f'componentrun_{component_run_object.id}'
         res['label'] = component_run_object.component_name
         res['hasCaret'] = True
         res['isExpanded'] = True
@@ -182,9 +187,10 @@ class Store(object):
 
         for out in component_run_object.outputs:
             out_dict = {
-                'id': out.name,
+                'id': f'iopointer_{out.name}',
                 'label': out.name,
-                'hasCaret': False
+                'hasCaret': False,
+                'parent': res['id']
             }
 
             # Settle on icon
