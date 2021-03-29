@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Alignment, InputGroup, Button } from "@blueprintjs/core";
+import { Navbar, Alignment, InputGroup, Button, ButtonGroup } from "@blueprintjs/core";
 
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -30,7 +30,6 @@ export default class Header extends Component {
                 <Navbar.Group align={Alignment.LEFT}>
                     <Navbar.Heading>mltrace</Navbar.Heading>
                     <Navbar.Divider />
-                    {/* <Button className="bp3-minimal" icon="home" text="Home" /> */}
                     <InputGroup
                         className="bp3-minimal"
                         leftIcon="chevron-right"
@@ -41,13 +40,16 @@ export default class Header extends Component {
                 </Navbar.Group>
 
                 <Navbar.Group align={Alignment.RIGHT}>
-                    <Button
-                        className="bp3-minimal"
-                        icon={this.props.useDarkTheme ? "flash" : "moon"}
-                        // text={this.props.useDarkTheme ? "Light theme" : "Dark theme"}
-                        text=""
-                        onClick={this.onToggleTheme}
-                    />
+                    <ButtonGroup minimal={true}>
+                        <Button className="bp3-minimal" icon="git-repo" text="GitHub" onClick={() => window.open("https://www.github.com/shreyashankar/mltrace", "_blank")} />
+                        <Button
+                            className="bp3-minimal"
+                            icon={this.props.useDarkTheme ? "flash" : "moon"}
+                            // text={this.props.useDarkTheme ? "Light theme" : "Dark theme"}
+                            text=""
+                            onClick={this.onToggleTheme}
+                        />
+                    </ButtonGroup>
                 </Navbar.Group>
             </Navbar >
         );
