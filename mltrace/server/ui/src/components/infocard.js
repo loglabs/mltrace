@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Card, Intent } from "@blueprintjs/core";
 import { CustomToaster } from "./toaster.js";
 import CRInfoCard from './infocards/crinfocard.js';
-import IOInfoCard from './infocards/ioinfocard.js';
+// import IOInfoCard from './infocards/ioinfocard.js';
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
