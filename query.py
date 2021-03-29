@@ -1,4 +1,4 @@
-from mltrace import backtrace, get_history, get_components_with_owner, get_components_with_tag
+from mltrace import backtrace, get_history, get_components_with_owner, get_components_with_tag, get_component_information
 
 import json
 import logging
@@ -10,6 +10,7 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 logging.info(get_history('etl'))
 logging.info(get_components_with_owner('shreya'))
 logging.info(get_components_with_tag('fuck'))
+logging.info(get_component_information('training'))
 
 while(True):
     inp = input(

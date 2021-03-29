@@ -68,7 +68,7 @@ export default class TreeView extends Component {
                 icon: "error",
                 intent: Intent.DANGER,
             });
-            this.setState({ output_id: this.props.output_id });
+            // this.setState({ output_id: this.props.output_id });
         });
     }
 
@@ -82,20 +82,6 @@ export default class TreeView extends Component {
             // paddingRight: '10em'
         }
 
-        // let treeStyle = childStyle;
-        // treeStyle.width
-
-        let cardComponent = null;
-        if (this.state.selected_id !== '') {
-            // cardComponent = (<InfoCard label={clone.label} src={clone.object}
-            // style={childStyle} />);
-            cardComponent = <InfoCard style={childStyle} selected_id={this.state.selected_id} />
-
-            // Set selected node
-            //let selectedID = this.state.selectedNode.id;
-            // isSelected
-        }
-
         return (
             <div style={{ display: 'flex', margin: '1em', width: '85%' }}>
                 <div style={childStyle}>
@@ -105,7 +91,7 @@ export default class TreeView extends Component {
                         onNodeClick={this.onNodeClick}
                     />
                 </div>
-                {cardComponent}
+                <InfoCard style={childStyle} selected_id={this.state.selected_id} />
             </div >
         )
     }

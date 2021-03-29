@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre } from "@blueprintjs/core";
+import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position } from "@blueprintjs/core";
 
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -33,13 +33,12 @@ export default class CRInfoCard extends Component {
     }
 
     render() {
-        let info = JSON.parse(this.props.src);
+        let info = this.props.src;
         let commit = info.git_hash ? info.git_hash : "no commit found";
         let end = new Date(info.end_timestamp);
         let start = new Date(info.start_timestamp);
 
-        let tags = ['demo', 'fake'];
-        let tagElements = tags.map((name, index) => { return (<Tag minimal={true} intent={Intent.PRIMARY} style={{ marginRight: '5px' }} key={index}>{name}</Tag>) });
+        let tagElements = info.tags.map((name, index) => { return (<Tag minimal={true} intent={Intent.PRIMARY} style={{ marginRight: '5px' }} key={index}>{name}</Tag>) });
 
         let codeSnapshot = info.code_snapshot ? info.code_snapshot : 'no snapshot found';
 
@@ -48,9 +47,11 @@ export default class CRInfoCard extends Component {
                 {
                     id: 'inp' + index,
                     label: (
-                        <div style={{ fontFamily: 'monospace' }}>
-                            {inp.name}
-                        </div>
+                        <Tooltip content={inp.pointer_type}>
+                            {(<div style={{ fontFamily: 'monospace' }}>
+                                {inp.name}
+                            </div>)}
+                        </Tooltip>
                     ),
                     hasCaret: false
                 }
@@ -61,9 +62,11 @@ export default class CRInfoCard extends Component {
                 {
                     id: 'out' + index,
                     label: (
-                        <div style={{ fontFamily: 'monospace' }}>
-                            {out.name}
-                        </div>
+                        <Tooltip content={out.pointer_type}>
+                            {(<div style={{ fontFamily: 'monospace' }}>
+                                {out.name}
+                            </div>)}
+                        </Tooltip>
                     ),
                     hasCaret: false
                 }
@@ -71,7 +74,7 @@ export default class CRInfoCard extends Component {
         );
         let inputElement = {
             id: 'inputElement',
-            label: 'Inputs',
+            label: <b>Inputs</b>,
             hasCaret: true,
             disabled: false,
             isExpanded: this.state.showInputs,
@@ -79,20 +82,28 @@ export default class CRInfoCard extends Component {
         };
         let outputElement = {
             id: 'outputElement',
-            label: 'Outputs',
+            label: <b>Outputs</b>,
             hasCaret: true,
             disabled: false,
             isExpanded: this.state.showOutputs,
             childNodes: outputElements
         };
 
+        let description = info.description ? info.description : "no description found";
+
         return (
             < div >
-                <h2>{info.component_name}</h2>
+                <Tooltip
+                    content={"Description: " + description}
+                    className={Classes.TOOLTIP_INDICATOR}
+                    position={Position.RIGHT}
+                >
+                    {(<h2>{info.component_name}</h2>)}
+                </Tooltip>
                 <HTMLTable bordered={false} interactive={false} className='bp3-minimal'>
                     <thead>
                         <tr>
-                            <th style={{ paddingLeft: '0px' }}>Owner: shreyashankar</th>
+                            <th style={{ paddingLeft: '0px' }}>Owner: {info.owner}</th>
                             <th>{tagElements}</th>
                         </tr>
                     </thead>

@@ -1,6 +1,7 @@
 from mltrace.db import Store, PointerTypeEnum
 from mltrace.entities import Component, ComponentRun, IOPointer
 
+import copy
 import functools
 import git
 import inspect
@@ -42,7 +43,7 @@ def backtrace(output_pointer: str):
         outputs = [IOPointer.from_dictionary(
             iop.__dict__) for iop in cr.outputs]
         dependencies = [dep.component_name for dep in cr.dependencies]
-        d = cr.__dict__
+        d = copy.deepcopy(cr.__dict__)
         d.update({'inputs': inputs, 'outputs': outputs,
                  'dependencies': dependencies})
         component_runs.append((depth, ComponentRun.from_dictionary(d)))
@@ -60,11 +61,12 @@ def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRu
     # Convert to client-facing ComponentRuns
     component_runs = []
     for cr in history:
-        inputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.inputs]
+        inputs = [IOPointer.from_dictionary(
+            iop.__dict__).to_dictionary() for iop in cr.inputs]
         outputs = [IOPointer.from_dictionary(
-            iop.__dict__) for iop in cr.outputs]
+            iop.__dict__).to_dictionary() for iop in cr.outputs]
         dependencies = [dep.component_name for dep in cr.dependencies]
-        d = cr.__dict__
+        d = copy.deepcopy(cr.__dict__)
         d.update({'inputs': inputs, 'outputs': outputs,
                  'dependencies': dependencies})
         component_runs.append(ComponentRun.from_dictionary(d))
@@ -82,7 +84,7 @@ def get_components_with_owner(owner: str) -> typing.List[Component]:
     components = []
     for c in res:
         tags = [tag.name for tag in c.tags]
-        d = c.__dict__
+        d = copy.deepcopy(c.__dict__)
         d.update({'tags': tags})
         components.append(Component.from_dictionary(d))
 
@@ -92,11 +94,28 @@ def get_components_with_owner(owner: str) -> typing.List[Component]:
 def get_component_information(component_name: str) -> Component:
     """Returns a Component with the name, info, owner, and tags."""
     store = Store(DB_URI)
-    c = store._get_component(component_name)
+    c = store.get_component(component_name)
     tags = [tag.name for tag in c.tags]
-    d = c.__dict__
+    d = copy.deepcopy(c.__dict__)
     d.update({'tags': tags})
     return Component.from_dictionary(d)
+
+
+def get_component_run_information(component_run_id: str) -> ComponentRun:
+    """Returns a ComponentRun object."""
+    store = Store(DB_URI)
+    cr = store.get_component_run(component_run_id)
+    inputs = [IOPointer.from_dictionary(
+        iop.__dict__).to_dictionary() for iop in cr.inputs]
+    outputs = [IOPointer.from_dictionary(
+        iop.__dict__).to_dictionary() for iop in cr.outputs]
+    dependencies = [dep.component_name for dep in cr.dependencies]
+    d = copy.deepcopy(cr.__dict__)
+    if cr.code_snapshot:
+        d.update({'code_snapshot': str(cr.code_snapshot.decode('utf-8'))})
+    d.update({'inputs': inputs, 'outputs': outputs,
+              'dependencies': dependencies})
+    return ComponentRun.from_dictionary(d)
 
 
 def get_components_with_tag(tag: str) -> typing.List[Component]:
@@ -108,7 +127,7 @@ def get_components_with_tag(tag: str) -> typing.List[Component]:
     components = []
     for c in res:
         tags = [tag.name for tag in c.tags]
-        d = c.__dict__
+        d = copy.deepcopy(c.__dict__)
         d.update({'tags': tags})
         components.append(Component.from_dictionary(d))
 
@@ -152,7 +171,6 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
         cr = store.get_history(dependency, 1)[0]
         component_run_sql.set_upstream(cr)
 
-    print(component_run_sql)
     store.commit_component_run(component_run_sql)
 
 
