@@ -13,9 +13,9 @@ clean_db()
 
 # Create components
 create_component('etl', 'generating some features', 'shreya')
-tag_component('etl', ['fuck'])
+tag_component('etl', ['test', 'demo'])
 create_component('training', 'training a model', 'shreya')
-tag_component('training', ['fuck'])
+tag_component('training', ['test'])
 create_component('inference', 'running a model', 'shreya')
 create_component('serve', 'serving a model', 'shreya')
 
@@ -27,11 +27,11 @@ for i in range(NUM_OUTER):
     def etl():
         print(f'clean the data')
 
-    @register('training', inputs=[f'train_set_{i}.pq', f'test_set_{i}.pq'], outputs=[f'model_{i}.hd5'])
+    @register('training', inputs=[f'train_set_{i}.pq', f'test_set_{i}.pq'], outputs=[f'model_{i}.hdf5'])
     def training():
         print(f'train a model')
 
-    @register('inference', inputs=[f'features_{i}.pq', f'model_{i}.hd5'], outputs=[f'preds_{i}.pq'])
+    @register('inference', inputs=[f'features_{i}.pq', f'model_{i}.hdf5'], outputs=[f'preds_{i}.pq'])
     def inference():
         print(f'do model inference')
 

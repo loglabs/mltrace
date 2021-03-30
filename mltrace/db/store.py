@@ -206,14 +206,15 @@ class Store(object):
         return res
 
     def web_trace(self, output_id: str):
-        """Prints dictionary of ComponentRuns to display in the UI."""
-        component_run_object = self.session.query(ComponentRun).outerjoin(
-            IOPointer, ComponentRun.outputs).filter(IOPointer.name == output_id).first()
+        """Prints list of ComponentRuns to display in the UI."""
+        component_run_objects = self.session.query(ComponentRun).outerjoin(
+            IOPointer, ComponentRun.outputs).order_by(
+            ComponentRun.start_timestamp.desc()).filter(IOPointer.name == output_id).all()
 
-        if component_run_object is None:
+        if len(component_run_objects) == 0:
             raise RuntimeError(f'ID {output_id} does not exist.')
 
-        return self._web_trace_helper(component_run_object)
+        return [self._web_trace_helper(cr) for cr in component_run_objects]
 
     def trace(self, output_id: str):
         """Prints trace for an output id.

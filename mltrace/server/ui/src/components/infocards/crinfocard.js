@@ -103,7 +103,7 @@ export default class CRInfoCard extends Component {
                 <HTMLTable bordered={false} interactive={false} className='bp3-minimal'>
                     <thead>
                         <tr>
-                            <th style={{ paddingLeft: '0px' }}>Owner: {info.owner}</th>
+                            <th style={{ paddingLeft: '0px' }}>Run ID: {this.props.id}</th>
                             <th>{tagElements}</th>
                         </tr>
                     </thead>
@@ -113,7 +113,7 @@ export default class CRInfoCard extends Component {
                             <td><b>Git commit: </b>{commit}</td>
                         </tr>
                         <tr>
-                            <td style={{ paddingLeft: '0px' }}> <b>Finished: </b>{info.end_timestamp} </td>
+                            <td style={{ paddingLeft: '0px' }}> <b>Owner:</b> {info.owner} </td>
                             <td><b>Duration: </b> {((end - start) / 1000) + 's'}</td>
                         </tr>
                     </tbody>
