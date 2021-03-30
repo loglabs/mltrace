@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Tree } from "@blueprintjs/core";
-import { CustomToaster } from "./toaster.js";
+import { CustomToaster } from "../components/toaster.js";
 import { Intent } from "@blueprintjs/core";
-import InfoCard from "./infocard.js";
+import InfoCard from "../components/infocard.js";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
@@ -24,7 +24,7 @@ function styleLabels(node) {
     }
 }
 
-export default class TreeView extends Component {
+export default class Trace extends Component {
 
     constructor(props) {
         super(props);
