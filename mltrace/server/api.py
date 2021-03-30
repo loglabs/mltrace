@@ -2,7 +2,7 @@ from flask import Flask, request, Response
 from http import HTTPStatus
 from mltrace.db import Store, PointerTypeEnum, Component as SQLComponent, ComponentRun as SQLComponentRun
 from mltrace.entities import Component, ComponentRun, IOPointer
-from mltrace import get_component_information, get_component_run_information
+from mltrace import get_component_information, get_component_run_information, get_components_with_tag
 
 import copy
 import json
@@ -53,6 +53,32 @@ def get_io_pointer():
         return json.dumps(IOPointer.from_dictionary(res.__dict__).to_dictionary())
     except RuntimeError:
         return error(f'IOPointer {io_pointer_id} not found', HTTPStatus.NOT_FOUND)
+
+
+@app.route('/tag', methods=['GET'])
+def tag():
+    if 'id' not in request.args:
+        return error(f'id not specified.', HTTPStatus.NOT_FOUND)
+
+    tag_name = request.args['id']
+    try:
+        components = get_components_with_tag(tag_name)
+        return str(components)
+    except RuntimeError:
+        return error(f'Tag {tag_name} not found', HTTPStatus.NOT_FOUND)
+
+
+@app.route('/component', methods=['GET'])
+def get_component():
+    if 'id' not in request.args:
+        return error(f'id not specified.', HTTPStatus.NOT_FOUND)
+
+    component_name = request.args['id']
+    try:
+        component = get_component_information(component_name)
+        return str(component)
+    except RuntimeError:
+        return error(f'Component {component_name} not found', HTTPStatus.NOT_FOUND)
 
 
 @app.route('/trace', methods=['GET'])

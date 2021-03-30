@@ -27,8 +27,11 @@ export default class InfoCard extends Component {
     }
 
     componentDidUpdate() {
-        if (this.props.selected_id === '') return;
         if (this.state.selected_id === this.props.selected_id) return;
+
+        if (this.props.selected_id === '') {
+            this.setState({ selected_id: this.props.selected_id });
+        }
 
         const splitId = this.props.selected_id.split(/_(.+)/);
         const type = splitId[0];
@@ -54,18 +57,18 @@ export default class InfoCard extends Component {
                 icon: "error",
                 intent: Intent.DANGER,
             });
-            // this.setState({ selected_id: this.props.selected_id, type: type });
+            // this.setState({ selected_id: '', type: '' });
         });
 
     }
 
     render() {
         // this.updateState();
-        if (this.props.selected_id === '') return null;
+        if (this.state.selected_id === '') return null;
 
         let cardContent = null;
         if (this.state.type === 'componentrun') {
-            cardContent = <CRInfoCard src={this.state.node} id={this.state.selected_id === '' ? '' : this.state.selected_id.split(/_(.+)/)[1]} />
+            cardContent = <CRInfoCard tagHandler={this.props.tagHandler} src={this.state.node} id={this.state.selected_id === '' ? '' : this.state.selected_id.split(/_(.+)/)[1]} />
         } else if (this.state.type === 'iopointer') {
             cardContent = this.state.selected_id;
         }

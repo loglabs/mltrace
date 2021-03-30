@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import Header from "./components/header.js"
-import TreeView from "./components/tree.js"
+import Trace from "./pages/trace.js"
+import TagView from "./pages/tagview.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 
@@ -10,10 +11,10 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedRow: 0,
       themeName: getTheme(),
       useDarkTheme: getTheme() === DARK_THEME,
-      output_id: ""
+      id: "",
+      command: ""
     };
 
     this.handleDarkSwitchChange = this.handleDarkSwitchChange.bind(this);
@@ -44,7 +45,19 @@ class App extends Component {
         return;
       }
 
-      this.setState({ output_id: args[0] });
+      this.setState({ command: 'trace', id: args[0] });
+    }
+    else if (command === "tag") {
+      if (args.length !== 1) {
+        CustomToaster.show({
+          message: "Please enter a valid tag name to show components for.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
+      this.setState({ command: 'tag', id: args[0] });
     }
     else {
       CustomToaster.show({
@@ -64,6 +77,7 @@ class App extends Component {
       backgroundColor: this.state.useDarkTheme === true ? '#293742' : '',
       height: '100vh',
     };
+
     return (
       <div className={darkstr} style={style}>
         <Header
@@ -71,52 +85,9 @@ class App extends Component {
           onToggleTheme={this.handleDarkSwitchChange}
           onCommand={this.handleCommand}
         />
-        <TreeView output_id={this.state.output_id} />
-        {/* <h1>{"Output: " + output_id}</h1>
-          <h2>{"Showing metadata for the \"" + rows[this.state.selectedRow][0] + "\" component:"}</h2> */}
-        {/* <ReactJson src={output_json[this.state.selectedRow]} /> */}
-        {/* <Chart
-            chartType="Gantt"
-            data={[columns, ...rows]}
-            width="100%"
-            height="50%"
-            chartEvents={[
-              {
-                eventName: 'select',
-                callback: ({ chartWrapper }) => {
-                  const chart = chartWrapper.getChart();
-                  const selection = chart.getSelection()[0].row;
-                  this.setState({ selectedRow: selection });
-                },
-              },
-            ]}
-            options={{
-              tooltip: { isHtml: true },
-              'gantt': {
-                'criticalPathEnabled': false,
-                // 'sortTasks': false,
-                'percentEnabled': false,
-                'backgroundColor': {
-                  fill: 'transparent',
-                },
-                'innerGridHorizLine': {
-                  stroke: '#ddd',
-                  strokeWidth: 1,
-                },
-                // 'innerGridTrack': {
-                //   fill: 'white'
-                // },
-                // 'innerGridDarkTrack': {
-                //   fill: 'white'
-                // },
-                arrow: {
-                  width: 3,
-                  radius: 0
-                },
-              }
-            }}
-            legendToggle
-          /> */}
+        <div id='spacing-div' style={{ paddingTop: '5em' }}></div>
+        {<Trace tagHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+        {<TagView tagHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
       </div>
     );
   }

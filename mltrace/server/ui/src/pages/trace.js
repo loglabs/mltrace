@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Tree } from "@blueprintjs/core";
-import { CustomToaster } from "./toaster.js";
+import { CustomToaster } from "../components/toaster.js";
 import { Intent } from "@blueprintjs/core";
-import InfoCard from "./infocard.js";
+import InfoCard from "../components/infocard.js";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
@@ -24,7 +24,7 @@ function styleLabels(node) {
     }
 }
 
-export default class TreeView extends Component {
+export default class Trace extends Component {
 
     constructor(props) {
         super(props);
@@ -44,11 +44,12 @@ export default class TreeView extends Component {
     }
 
     componentDidUpdate() {
-        if (this.props.output_id === "") {
+        if (this.state.output_id === this.props.output_id) {
             return null;
         }
 
-        if (this.state.output_id === this.props.output_id) {
+        if (this.props.output_id === "") {
+            this.setState({ output_id: this.props.output_id, nodes: [], selected_id: '' });
             return null;
         }
 
@@ -67,7 +68,7 @@ export default class TreeView extends Component {
                 icon: "error",
                 intent: Intent.DANGER,
             });
-            // this.setState({ output_id: this.props.output_id });
+            // this.setState({ output_id: '' });
         });
     }
 
@@ -78,16 +79,25 @@ export default class TreeView extends Component {
             // paddingRight: '10em'
         }
 
+        let treeContent = (
+            <div style={childStyle}>
+                <Tree
+                    contents={this.state.nodes}
+                    className="bp3-minimal"
+                    onNodeClick={this.onNodeClick}
+                />
+            </div>
+        );
+        let style = { display: 'flex', margin: '1em', width: '85%' };
+        if (this.state.output_id === '') {
+            treeContent = null;
+            style = null;
+        }
+
         return (
-            <div style={{ display: 'flex', margin: '1em', width: '85%' }}>
-                <div style={childStyle}>
-                    <Tree
-                        contents={this.state.nodes}
-                        className="bp3-minimal"
-                        onNodeClick={this.onNodeClick}
-                    />
-                </div>
-                <InfoCard style={childStyle} selected_id={this.state.selected_id} />
+            <div style={style}>
+                {treeContent}
+                <InfoCard style={childStyle} selected_id={this.state.selected_id} tagHandler={this.props.tagHandler} />
             </div >
         )
     }
