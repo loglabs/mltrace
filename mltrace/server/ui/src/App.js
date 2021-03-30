@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Header from "./components/header.js"
 import Trace from "./pages/trace.js"
+import TagView from "./pages/tagview.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 
@@ -76,10 +77,7 @@ class App extends Component {
       backgroundColor: this.state.useDarkTheme === true ? '#293742' : '',
       height: '100vh',
     };
-    let page = <Trace output_id="" />;
-    if (this.state.command === 'trace') {
-      page = <Trace output_id={this.state.id} />
-    }
+
     return (
       <div className={darkstr} style={style}>
         <Header
@@ -87,7 +85,9 @@ class App extends Component {
           onToggleTheme={this.handleDarkSwitchChange}
           onCommand={this.handleCommand}
         />
-        {page}
+        <div id='spacing-div' style={{ paddingTop: '5em' }}></div>
+        {<Trace tagHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+        {<TagView tagHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
       </div>
     );
   }

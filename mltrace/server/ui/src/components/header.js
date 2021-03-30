@@ -26,7 +26,7 @@ export default class Header extends Component {
 
     render() {
         return (
-            <Navbar>
+            <Navbar className='bp3-minimal' fixedToTop={true}>
                 <Navbar.Group align={Alignment.LEFT}>
                     <Navbar.Heading>mltrace</Navbar.Heading>
                     <Navbar.Divider />

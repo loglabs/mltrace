@@ -12,7 +12,7 @@ class Store(object):
 
     def __init__(self, uri: str, delete_first=False):
         """
-        Creates the postgres database for the store. Raises exception if uri    
+        Creates the postgres database for the store. Raises exception if uri
         isn't prefixed with postgresql://.
 
         Args:
@@ -98,8 +98,8 @@ class Store(object):
         return res[0]
 
     def get_io_pointer(self, name=str, pointer_type: PointerTypeEnum = None, create=True) -> IOPointer:
-        """ Creates an io pointer around the specified path. 
-        Retrieves existing io pointer if exists in DB, 
+        """ Creates an io pointer around the specified path.
+        Retrieves existing io pointer if exists in DB,
         otherwise creates a new one if create flag is set."""
         res = self.session.query(IOPointer).filter(IOPointer.name == name).all()
 
@@ -146,7 +146,7 @@ class Store(object):
 
     def set_dependencies_from_inputs(self, component_run: ComponentRun):
         """ Gets IOPointers associated with component_run's inputs, checks
-        against any ComponentRun's outputs, and if there are any matches, 
+        against any ComponentRun's outputs, and if there are any matches,
         sets the ComponentRun's dependency on the most recent match."""
         input_ids = [inp.name for inp in component_run.inputs]
         matches = self.session.query(ComponentRun, func.max(ComponentRun.start_timestamp).over(partition_by=ComponentRun.component_name))\
@@ -247,10 +247,18 @@ class Store(object):
         order."""
         components = self.session.query(Component).filter(
             Component.owner == owner).options(joinedload('tags')).all()
+
+        if len(components) == 0:
+            raise RuntimeError(f'Owner {owner} has no components.')
+
         return components
 
     def get_components_with_tag(self, tag: str) -> typing.List[Component]:
         """Returns a list of all the components associated with that tag."""
         components = self.session.query(Component).join(
             Tag, Component.tags).filter(Tag.name == tag).all()
+
+        if len(components) == 0:
+            raise RuntimeError(f'Tag {tag} has no components associated.')
+
         return components

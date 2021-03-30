@@ -38,7 +38,18 @@ export default class CRInfoCard extends Component {
         let end = new Date(info.end_timestamp);
         let start = new Date(info.start_timestamp);
 
-        let tagElements = info.tags.map((name, index) => { return (<Tag minimal={true} intent={Intent.PRIMARY} style={{ marginRight: '5px' }} key={index}>{name}</Tag>) });
+        let tagElements = info.tags.map((name, index) => {
+            return (
+                <Tag
+                    minimal={true}
+                    onClick={() => { this.props.tagHandler("tag " + name) }}
+                    intent={Intent.PRIMARY}
+                    style={{ marginRight: '0.5em' }}
+                    key={index}
+                    interactive={true}>
+                    {name}
+                </Tag>)
+        });
 
         let codeSnapshot = info.code_snapshot ? info.code_snapshot : 'no snapshot found';
 
