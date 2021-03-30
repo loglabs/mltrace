@@ -19,7 +19,7 @@ def get_timestamp() -> int:
 class ComponentRun(Base):
     """Component Run abstraction."""
 
-    def __init__(self, component_name: str, start_timestamp: datetime = None, end_timestamp: datetime = None, inputs: typing.List[IOPointer] = [], outputs: typing.List[IOPointer] = [], git_hash: str = None, code_snapshot: str = None, dependencies: typing.List[str] = []):
+    def __init__(self, component_name: str, start_timestamp: datetime = None, end_timestamp: datetime = None, inputs: typing.List[IOPointer] = [], outputs: typing.List[IOPointer] = [], git_hash: str = None, code_snapshot: str = None, id: str = None, dependencies: typing.List[str] = []):
         """ Set class attributes. Note that timestamps are represented in
 seconds since epoch."""
         self._component_name = component_name
@@ -28,7 +28,9 @@ seconds since epoch."""
         self._inputs = inputs
         self._outputs = outputs
         self._git_hash = git_hash
-        self._code_snapshot = code_snapshot
+        self._code_snapshot = code_snapshot.decode(
+            'utf-8') if isinstance(code_snapshot, (bytes, bytearray)) else code_snapshot
+        self._id = id
         self._dependencies = dependencies
 
     @property
@@ -86,6 +88,10 @@ seconds since epoch."""
     @property
     def dependencies(self) -> typing.List[str]:
         return self._dependencies
+
+    @property
+    def id(self) -> str:
+        return self._id
 
     def set_start_timestamp(self, ts=None):
         if ts is None:

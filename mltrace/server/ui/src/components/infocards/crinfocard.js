@@ -137,7 +137,7 @@ export default class CRInfoCard extends Component {
                 />
                 <div style={{ padding: '15px 0px' }}>
                     <Button className="bp3-minimal" outlined={true} onClick={this.handleClick}>{this.state.showCode ? "Hide" : "Show"} code snapshot </Button>
-                    <Collapse isOpen={this.state.showCode} keepChildrenMounted={TextTrackCue} className='bp3-minimal'>
+                    <Collapse isOpen={this.state.showCode} keepChildrenMounted={true} className='bp3-minimal'>
                         <Pre>
                             {codeSnapshot}
                         </Pre>
