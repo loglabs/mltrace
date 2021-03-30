@@ -31,7 +31,6 @@ export default class TreeView extends Component {
         this.state = {
             output_id: '',
             nodes: [],
-            selectedNode: {},
             selected_id: ''
         }
 
@@ -41,7 +40,7 @@ export default class TreeView extends Component {
     onNodeClick(node) {
         // const type = node.hasCaret === true ? 'component' : 'io';
         let id = (node.parent !== undefined) ? node.parent : node.id;
-        this.setState({ selectedNode: node, selected_id: id });
+        this.setState({ selected_id: id });
     }
 
     componentDidUpdate() {
@@ -60,7 +59,7 @@ export default class TreeView extends Component {
         }).then(
             ({ data }) => {
                 styleLabels(data);
-                this.setState({ nodes: [data], output_id: this.props.output_id, selectedNode: data, selected_id: data.id });
+                this.setState({ nodes: data, output_id: this.props.output_id, selected_id: data[0].id });
             }
         ).catch(e => {
             CustomToaster.show({
@@ -73,9 +72,6 @@ export default class TreeView extends Component {
     }
 
     render() {
-        var clone = Object.assign({}, this.state.selectedNode);
-        delete clone.childNodes;
-
         let childStyle = {
             flex: '1',
             margin: '1em',
