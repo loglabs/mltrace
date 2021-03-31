@@ -74,7 +74,7 @@ export default class Trace extends Component {
 
     render() {
         let childStyle = {
-            flex: '1',
+            flex: '0 1 auto',
             margin: '1em',
             // paddingRight: '10em'
         }

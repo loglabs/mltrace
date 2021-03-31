@@ -3,6 +3,7 @@ import './App.css';
 import Header from "./components/header.js"
 import Trace from "./pages/trace.js"
 import TagView from "./pages/tagview.js"
+import History from "./pages/history.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 
@@ -14,7 +15,8 @@ class App extends Component {
       themeName: getTheme(),
       useDarkTheme: getTheme() === DARK_THEME,
       id: "",
-      command: ""
+      command: "",
+      kwargs: {}
     };
 
     this.handleDarkSwitchChange = this.handleDarkSwitchChange.bind(this);
@@ -45,7 +47,7 @@ class App extends Component {
         return;
       }
 
-      this.setState({ command: 'trace', id: args[0] });
+      this.setState({ command: 'trace', id: args[0], kwargs: {} });
     }
     else if (command === "tag") {
       if (args.length !== 1) {
@@ -57,7 +59,22 @@ class App extends Component {
         return;
       }
 
-      this.setState({ command: 'tag', id: args[0] });
+      this.setState({ command: 'tag', id: args[0], kwargs: {} });
+    } else if (command === "history") {
+      if (args.length > 2) {
+        CustomToaster.show({
+          message: "Please enter a valid component name to show information for.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+      let newState = { command: 'history', id: args[0], kwargs: {} };
+      if (args.length === 2) {
+        newState.kwargs = { 'limit': args[1] };
+      }
+
+      this.setState(newState);
     }
     else {
       CustomToaster.show({
@@ -75,7 +92,7 @@ class App extends Component {
     }
     let style = {
       backgroundColor: this.state.useDarkTheme === true ? '#293742' : '',
-      height: '100vh',
+      minHeight: '100vh',
     };
 
     return (
@@ -88,6 +105,7 @@ class App extends Component {
         <div id='spacing-div' style={{ paddingTop: '5em' }}></div>
         {<Trace tagHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
         {<TagView tagHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+        {<History tagHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
       </div>
     );
   }

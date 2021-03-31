@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tag, Intent, Card } from "@blueprintjs/core";
+import { Intent, Card } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import CInfoCard from '../components/infocards/cinfocard.js';
 
@@ -8,35 +8,36 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const TAG_API_URL = '/tag'
+const COMPONENT_API_URL = '/component'
 
-export default class TagView extends Component {
+export default class History extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            tagName: '',
-            components: []
+            componentName: '',
+            component: {},
+            limit: undefined
         }
     }
 
     componentDidUpdate() {
-        if (this.state.tagName === this.props.tagName) {
+        if (this.state.componentName === this.props.componentName && (this.props.kwargs.limit === undefined || this.props.kwargs.limit === null || this.props.kwargs.limit === this.state.limit)) {
             return null;
         }
 
-        if (this.props.tagName === "") {
-            this.setState({ tagName: this.props.tagName, components: [] });
+        if (this.props.componentName === "") {
+            this.setState({ componentName: this.props.componentName, component: {}, limit: undefined });
             return null;
         }
 
-        axios.get(TAG_API_URL, {
+        axios.get(COMPONENT_API_URL, {
             params: {
-                id: this.props.tagName
+                id: this.props.componentName,
             }
         }).then(
             ({ data }) => {
-                this.setState({ components: data, tagName: this.props.tagName });
+                this.setState({ componentName: this.props.componentName, component: data, limit: this.props.kwargs.limit });
             }
         ).catch(e => {
             CustomToaster.show({
@@ -50,7 +51,7 @@ export default class TagView extends Component {
     }
 
     render() {
-        if (this.state.tagName === '') return null;
+        if (this.state.componentName === '') return null;
 
         let childStyle = {
             flex: '0',
@@ -58,19 +59,16 @@ export default class TagView extends Component {
             // paddingRight: '10em'
         }
 
-        let renderedComponents = this.state.components.map((c) => (
-            <Card key={'component' + c.name} style={childStyle}>
-                <CInfoCard src={c} tagHandler={this.props.tagHandler} />
+
+        let renderedComponent = (
+            <Card style={childStyle}>
+                <CInfoCard src={this.state.component} tagHandler={this.props.tagHandler} showHistoryOnLoad={true} limit={this.state.limit} />
             </Card>
-        ));
+        );
 
         return (
             <div className='bp3-minimal' style={{ maxWidth: '80%', paddingBottom: '1em' }}>
-                {/* <div style={{ display: 'flex', margin: '1em' }}>
-                    <h3> Showing components with tag: <Tag intent={Intent.PRIMARY} minimal={true} large={true}>{this.state.tagName}</Tag>
-                    </h3>
-                </div > */}
-                {renderedComponents}
+                {renderedComponent}
             </div>
         );
     }
