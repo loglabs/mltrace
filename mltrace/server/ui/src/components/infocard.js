@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Intent } from "@blueprintjs/core";
+import { Card, Intent, Classes } from "@blueprintjs/core";
 import { CustomToaster } from "./toaster.js";
 import CRInfoCard from './infocards/crinfocard.js';
 // import IOInfoCard from './infocards/ioinfocard.js';
@@ -23,10 +23,10 @@ export default class InfoCard extends Component {
             type: null
         }
 
-        // this.updateState = this.updateState.bind(this);
+        this.updateState = this.updateState.bind(this);
     }
 
-    componentDidUpdate() {
+    updateState() {
         if (this.state.selected_id === this.props.selected_id) return;
 
         if (this.props.selected_id === '') {
@@ -62,8 +62,15 @@ export default class InfoCard extends Component {
 
     }
 
+    componentDidMount() {
+        this.updateState();
+    }
+
+    componentDidUpdate() {
+        this.updateState();
+    }
+
     render() {
-        // this.updateState();
         if (this.state.selected_id === '') return null;
 
         let cardContent = null;
@@ -74,7 +81,7 @@ export default class InfoCard extends Component {
         }
 
         return (
-            < Card interactive={false} style={this.props.style} className='bp3-minimal' >
+            < Card style={this.props.style} className={Classes.MINIMAL} >
                 {cardContent}
             </Card>
         );
