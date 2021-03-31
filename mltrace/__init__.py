@@ -9,8 +9,8 @@ __all__ = [
     "get_components_with_owner",
     'tag_component',
     'get_components_with_tag',
-    'get_component_information',
     'log_component_run',
     'create_random_ids',
+    'get_component_information',
     'get_component_run_information'
 ]

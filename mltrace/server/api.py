@@ -2,7 +2,7 @@ from flask import Flask, request, Response
 from http import HTTPStatus
 from mltrace.db import Store, PointerTypeEnum, Component as SQLComponent, ComponentRun as SQLComponentRun
 from mltrace.entities import Component, ComponentRun, IOPointer
-from mltrace import get_component_information, get_component_run_information, get_components_with_tag
+from mltrace import get_component_information, get_component_run_information, get_components_with_tag, get_history
 
 import copy
 import json
@@ -28,7 +28,7 @@ def serialize_component_run(c: Component, cr: ComponentRun) -> str:
 
 
 @app.route('/component_run', methods=['GET'])
-def get_component_run():
+def component_run():
     if 'id' not in request.args:
         return error(f'id not specified.', HTTPStatus.NOT_FOUND)
 
@@ -42,7 +42,7 @@ def get_component_run():
 
 
 @app.route('/io_pointer', methods=['GET'])
-def get_io_pointer():
+def io_pointer():
     if 'id' not in request.args:
         return error(f'id not specified.', HTTPStatus.NOT_FOUND)
 
@@ -68,8 +68,24 @@ def tag():
         return error(f'Tag {tag_name} not found', HTTPStatus.NOT_FOUND)
 
 
+@app.route('/history', methods=['GET'])
+def history():
+    if 'component_name' not in request.args:
+        return error(f'component_name not specified.', HTTPStatus.NOT_FOUND)
+
+    component_name = request.args['component_name']
+    limit = request.args['limit'] if 'limit' in request.args else None
+
+    try:
+        history = get_history(
+            component_name, limit) if limit else get_history(component_name)
+        return str(history)
+    except RuntimeError:
+        return error(f'Component {component_name} has no runs', HTTPStatus.NOT_FOUND)
+
+
 @app.route('/component', methods=['GET'])
-def get_component():
+def component():
     if 'id' not in request.args:
         return error(f'id not specified.', HTTPStatus.NOT_FOUND)
 
