@@ -83,7 +83,7 @@ export default class Recent extends Component {
         }
 
         let componentRunCards = this.state.componentRuns.map((crId) => (
-            <InfoCard key={'crcard_' + crId} selected_id={'componentrun_' + crId} tagHandler={this.props.tagHandler} style={childStyle} />
+            <InfoCard key={'crcard_' + crId} selected_id={'componentrun_' + crId} commandHandler={this.props.commandHandler} style={childStyle} />
 
         ));
 

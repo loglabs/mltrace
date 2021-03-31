@@ -80,7 +80,7 @@ export default class CInfoCard extends Component {
             return (
                 <Tag
                     minimal={true}
-                    onClick={() => (this.props.tagHandler("tag " + name))}
+                    onClick={() => (this.props.commandHandler("tag " + name))}
                     intent={Intent.PRIMARY}
                     style={{ marginRight: '0.5em', marginTop: '1.5em' }}
                     key={index}

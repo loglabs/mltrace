@@ -65,7 +65,7 @@ export default class History extends Component {
 
         let renderedComponent = (
             <Card style={childStyle}>
-                <CInfoCard src={this.state.component} tagHandler={this.props.tagHandler} showHistoryOnLoad={true} limit={this.state.limit} />
+                <CInfoCard src={this.state.component} commandHandler={this.props.commandHandler} showHistoryOnLoad={true} limit={this.state.limit} />
             </Card>
         );
 
