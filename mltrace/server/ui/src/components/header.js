@@ -30,6 +30,7 @@ export default class Header extends Component {
                 <Navbar.Group align={Alignment.LEFT}>
                     <Navbar.Heading>mltrace</Navbar.Heading>
                     <Navbar.Divider />
+                    <Button className="bp3-minimal" icon="home" text="Home" style={{ marginRight: '0.5em' }} onClick={() => this.props.onCommand("recent")} />
                     <InputGroup
                         className="bp3-minimal"
                         leftIcon="chevron-right"

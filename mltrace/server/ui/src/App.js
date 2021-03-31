@@ -4,6 +4,7 @@ import Header from "./components/header.js"
 import Trace from "./pages/trace.js"
 import TagView from "./pages/tagview.js"
 import History from "./pages/history.js"
+import Recent from "./pages/recent.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 
@@ -15,7 +16,7 @@ class App extends Component {
       themeName: getTheme(),
       useDarkTheme: getTheme() === DARK_THEME,
       id: "",
-      command: "",
+      command: "recent",
       kwargs: {}
     };
 
@@ -61,9 +62,9 @@ class App extends Component {
 
       this.setState({ command: 'tag', id: args[0], kwargs: {} });
     } else if (command === "history") {
-      if (args.length > 2) {
+      if (args.length === 0 || args.length > 2) {
         CustomToaster.show({
-          message: "Please enter a valid component name to show information for.",
+          message: "Please enter a valid component name to show run history for.",
           icon: "error",
           intent: Intent.DANGER,
         });
@@ -72,6 +73,22 @@ class App extends Component {
       let newState = { command: 'history', id: args[0], kwargs: {} };
       if (args.length === 2) {
         newState.kwargs = { 'limit': args[1] };
+      }
+
+      this.setState(newState);
+    } else if (command === "recent") {
+      if (args.length > 1) {
+        CustomToaster.show({
+          message: "Please enter a valid limit or no extra arguments.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
+      let newState = { command: 'recent', kwargs: {}, id: '' }
+      if (args.length === 1) {
+        newState.kwargs = { 'limit': args[0] };
       }
 
       this.setState(newState);
@@ -102,7 +119,8 @@ class App extends Component {
           onToggleTheme={this.handleDarkSwitchChange}
           onCommand={this.handleCommand}
         />
-        <div id='spacing-div' style={{ paddingTop: '5em' }}></div>
+        <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
+        {<Recent render={this.state.command === "recent"} tagHandler={this.handleCommand} kwargs={this.state.kwargs} />}
         {<Trace tagHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
         {<TagView tagHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
         {<History tagHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}

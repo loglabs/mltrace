@@ -8,7 +8,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const COMPONENT_API_URL = '/component'
+const COMPONENT_API_URL = '/component';
 
 export default class History extends Component {
 
@@ -22,12 +22,15 @@ export default class History extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.componentName === this.props.componentName && (this.props.kwargs.limit === undefined || this.props.kwargs.limit === null || this.props.kwargs.limit === this.state.limit)) {
+        if (
+            this.state.componentName === this.props.componentName &&
+            (this.props.kwargs.limit === undefined || this.props.kwargs.limit === null || this.props.kwargs.limit === this.state.limit)
+        ) {
             return null;
         }
 
         if (this.props.componentName === "") {
-            this.setState({ componentName: this.props.componentName, component: {}, limit: undefined });
+            this.setState({ componentName: this.props.componentName, component: {}, limit: this.props.kwargs.limit });
             return null;
         }
 
@@ -68,6 +71,10 @@ export default class History extends Component {
 
         return (
             <div className='bp3-minimal' style={{ maxWidth: '80%', paddingBottom: '1em' }}>
+                <div style={{ display: 'flex', margin: '1em' }}>
+                    <h3> Showing history for component:
+                    </h3>
+                </div >
                 {renderedComponent}
             </div>
         );

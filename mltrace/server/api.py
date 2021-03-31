@@ -97,6 +97,14 @@ def component():
         return error(f'Component {component_name} not found', HTTPStatus.NOT_FOUND)
 
 
+@app.route('/recent', methods=['GET'])
+def recent():
+    store = Store(DB_URI)
+    component_run_ids = store.get_recent_runs(
+        request.args['limit']) if 'limit' in request.args else store.get_recent_runs()
+    return json.dumps(component_run_ids)
+
+
 @app.route('/trace', methods=['GET'])
 def trace():
     if 'output_id' not in request.args:

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tag, Intent, Card } from "@blueprintjs/core";
+import { Intent, Card, Tag } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import CInfoCard from '../components/infocards/cinfocard.js';
 
@@ -66,10 +66,10 @@ export default class TagView extends Component {
 
         return (
             <div className='bp3-minimal' style={{ maxWidth: '80%', paddingBottom: '1em' }}>
-                {/* <div style={{ display: 'flex', margin: '1em' }}>
+                <div style={{ display: 'flex', margin: '1em' }}>
                     <h3> Showing components with tag: <Tag intent={Intent.PRIMARY} minimal={true} large={true}>{this.state.tagName}</Tag>
                     </h3>
-                </div > */}
+                </div >
                 {renderedComponents}
             </div>
         );
