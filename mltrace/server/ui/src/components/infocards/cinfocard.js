@@ -15,8 +15,9 @@ export default class CInfoCard extends Component {
 
         this.state = {
             isOpen: false,
-            renderedHistory: false,
-            history: []
+            history: [],
+            componentName: '',
+            limit: undefined
         }
 
         this._isMounted = false;
@@ -25,6 +26,23 @@ export default class CInfoCard extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+
+        // set history if calling from history page
+        if (this.props.showHistoryOnLoad === true) {
+            axios.get(HISTORY_API_URL, {
+                params: {
+                    component_name: this.props.src.name,
+                    limit: this.props.limit
+                }
+            }).then(
+                ({ data }) => {
+                    this._isMounted && this.setState({ history: data, componentName: this.props.src.name, isOpen: true });
+                }
+            ).catch(e => {
+                console.log(e);
+                // this.setState({ output_id: this.props.output_id });
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -36,15 +54,18 @@ export default class CInfoCard extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.renderedHistory === true) return;
+        if (this.state.componentName === this.props.src.name && this.props.limit === this.state.limit) {
+            return null;
+        }
 
         axios.get(HISTORY_API_URL, {
             params: {
-                component_name: this.props.src.name
+                component_name: this.props.src.name,
+                limit: this.props.limit
             }
         }).then(
             ({ data }) => {
-                this._isMounted && this.setState({ history: data, renderedHistory: true });
+                this._isMounted && this.setState({ history: data, componentName: this.props.src.name, limit: this.props.limit });
             }
         ).catch(e => {
             console.log(e);
@@ -67,6 +88,7 @@ export default class CInfoCard extends Component {
                     {name}
                 </Tag>)
         });
+
         let runElements = this.state.history.map((cr, index) => {
             let end = new Date(cr.end_timestamp);
             let start = new Date(cr.start_timestamp);
@@ -96,7 +118,7 @@ export default class CInfoCard extends Component {
                     <Button onClick={this.handleClick} className='bp3-minimal' outlined={true}>
                         {this.state.isOpen ? "Hide" : "Show"} recent runs
                     </Button>
-                    <Collapse isOpen={this.state.isOpen} className='bp3-minimal'>
+                    <Collapse isOpen={this.state.isOpen} className='bp3-minimal' keepChildrenMounted={true}>
                         <HTMLTable bordered={true} interactive={true} style={{ marginTop: '1em' }}>
                             <thead>
                                 <tr>
