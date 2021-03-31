@@ -60,7 +60,7 @@ export default class TagView extends Component {
 
         let renderedComponents = this.state.components.map((c) => (
             <Card key={'component' + c.name} style={childStyle}>
-                <CInfoCard src={c} tagHandler={this.props.tagHandler} />
+                <CInfoCard src={c} commandHandler={this.props.commandHandler} />
             </Card>
         ));
 

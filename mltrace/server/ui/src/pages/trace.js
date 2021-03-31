@@ -99,7 +99,7 @@ export default class Trace extends Component {
         return (
             <div style={style}>
                 {treeContent}
-                <InfoCard style={childStyle} selected_id={this.state.selected_id} tagHandler={this.props.tagHandler} />
+                <InfoCard style={childStyle} selected_id={this.state.selected_id} commandHandler={this.props.commandHandler} />
             </div >
         )
     }

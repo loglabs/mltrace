@@ -120,10 +120,10 @@ class App extends Component {
           onCommand={this.handleCommand}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
-        {<Recent render={this.state.command === "recent"} tagHandler={this.handleCommand} kwargs={this.state.kwargs} />}
-        {<Trace tagHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-        {<TagView tagHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
-        {<History tagHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+        {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+        {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+        {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+        {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
       </div>
     );
   }

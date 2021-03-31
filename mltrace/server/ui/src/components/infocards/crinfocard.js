@@ -42,7 +42,7 @@ export default class CRInfoCard extends Component {
             return (
                 <Tag
                     minimal={true}
-                    onClick={() => { this.props.tagHandler("tag " + name) }}
+                    onClick={() => { this.props.commandHandler("tag " + name) }}
                     intent={Intent.PRIMARY}
                     style={{ marginRight: '0.5em' }}
                     key={index}
@@ -59,12 +59,13 @@ export default class CRInfoCard extends Component {
                     id: 'inp' + index,
                     label: (
                         <Tooltip content={inp.pointer_type}>
-                            {(<div style={{ fontFamily: 'monospace' }}>
+                            {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
                                 {inp.name}
                             </div>)}
                         </Tooltip>
                     ),
                     hasCaret: false
+
                 }
             )
         );
@@ -74,7 +75,7 @@ export default class CRInfoCard extends Component {
                     id: 'out' + index,
                     label: (
                         <Tooltip content={out.pointer_type}>
-                            {(<div style={{ fontFamily: 'monospace' }}>
+                            {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
                                 {out.name}
                             </div>)}
                         </Tooltip>
