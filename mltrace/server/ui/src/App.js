@@ -16,6 +16,7 @@ class App extends Component {
     this.state = {
       themeName: getTheme(),
       useDarkTheme: getTheme() === DARK_THEME,
+      input: "recent",
       id: "",
       command: "recent",
       kwargs: {}
@@ -49,7 +50,7 @@ class App extends Component {
         return;
       }
 
-      this.setState({ command: 'trace', id: args[0], kwargs: {} });
+      this.setState({ command: 'trace', id: args[0], kwargs: {}, input: input });
     }
     else if (command === "tag") {
       if (args.length !== 1) {
@@ -61,7 +62,7 @@ class App extends Component {
         return;
       }
 
-      this.setState({ command: 'tag', id: args[0], kwargs: {} });
+      this.setState({ command: 'tag', id: args[0], kwargs: {}, input: input });
     } else if (command === "history") {
       if (args.length === 0 || args.length > 2) {
         CustomToaster.show({
@@ -71,7 +72,7 @@ class App extends Component {
         });
         return;
       }
-      let newState = { command: 'history', id: args[0], kwargs: {} };
+      let newState = { command: 'history', id: args[0], kwargs: {}, input: input };
       if (args.length === 2) {
         newState.kwargs = { 'limit': args[1] };
       }
@@ -87,7 +88,7 @@ class App extends Component {
         return;
       }
 
-      let newState = { command: 'recent', kwargs: {}, id: '' }
+      let newState = { command: 'recent', kwargs: {}, id: '', input: input }
       if (args.length === 1) {
         newState.kwargs = { 'limit': args[0] };
       }
@@ -103,7 +104,7 @@ class App extends Component {
         return;
       }
 
-      this.setState({ command: command, id: 'componentrun_' + args[0], kwargs: {} });
+      this.setState({ command: command, id: 'componentrun_' + args[0], kwargs: {}, input: input });
     }
     else {
       CustomToaster.show({
@@ -130,6 +131,7 @@ class App extends Component {
           useDarkTheme={this.state.useDarkTheme}
           onToggleTheme={this.handleDarkSwitchChange}
           onCommand={this.handleCommand}
+          defaultValue={this.state.input}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
         {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
