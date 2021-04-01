@@ -24,6 +24,7 @@ export default class InfoCard extends Component {
         }
 
         this.updateState = this.updateState.bind(this);
+        this._isMounted = false;
     }
 
     updateState() {
@@ -49,7 +50,7 @@ export default class InfoCard extends Component {
             }
         }).then(
             ({ data }) => {
-                this.setState({ node: data, selected_id: this.props.selected_id, type: type });
+                this._isMounted && this.setState({ node: data, selected_id: this.props.selected_id, type: type });
             }
         ).catch(e => {
             CustomToaster.show({
@@ -62,7 +63,12 @@ export default class InfoCard extends Component {
 
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     componentDidMount() {
+        this._isMounted = true;
         this.updateState();
     }
 

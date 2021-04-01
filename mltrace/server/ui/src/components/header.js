@@ -10,7 +10,13 @@ export default class Header extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            value: this.props.defaultValue,
+            submitted: true
+        }
+
         this.onToggleTheme = this.onToggleTheme.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
         this.onChange = this.onChange.bind(this);
     }
 
@@ -18,9 +24,21 @@ export default class Header extends Component {
         this.props.onToggleTheme(!this.props.useDarkTheme);
     };
 
-    onChange(e) {
+    onKeyUp(e) {
         if (e.key === "Enter") {
             this.props.onCommand(e.target.value);
+            this.setState({ submitted: true });
+        }
+    }
+
+    onChange(e) {
+        this.setState({ value: e.target.value, submitted: false });
+    }
+
+    componentDidUpdate() {
+        if (this.state.submitted === true && this.props.defaultValue !== this.state.value) {
+            this.setState({ value: this.props.defaultValue });
+            return;
         }
     }
 
@@ -35,8 +53,10 @@ export default class Header extends Component {
                         className="bp3-minimal"
                         leftIcon="chevron-right"
                         placeholder="trace..."
-                        onKeyUp={this.onChange}
+                        onKeyUp={this.onKeyUp}
+                        onChange={this.onChange}
                         style={{ width: '400px', fontFamily: 'monospace' }}
+                        value={this.state.value}
                     />
                 </Navbar.Group>
 
