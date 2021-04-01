@@ -96,7 +96,7 @@ export default class CInfoCard extends Component {
             outputs = String(outputs.join(', '));
 
             return (
-                <tr key={'componentrun_' + index}>
+                <tr key={'componentrun_' + index} onClick={() => this.props.commandHandler("inspect " + cr.id)}>
                     <td>{cr.id}</td>
                     <td>{cr.start_timestamp}</td>
                     <td>{(end - start) / 1000}sec</td>
