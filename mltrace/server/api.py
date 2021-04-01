@@ -34,6 +34,9 @@ def component_run():
 
     component_run_id = request.args['id']
     try:
+        # Check to make sure the id is actually numeric
+        if not component_run_id.isdigit():
+            raise RuntimeError()
         component_run = get_component_run_information(component_run_id)
         component = get_component_information(component_run.component_name)
         return serialize_component_run(component, component_run)

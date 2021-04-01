@@ -110,7 +110,7 @@ export default class CRInfoCard extends Component {
                     className={Classes.TOOLTIP_INDICATOR}
                     position={Position.RIGHT}
                 >
-                    {(<h2>{info.component_name}</h2>)}
+                    {(<h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2>)}
                 </Tooltip>
                 <HTMLTable bordered={false} interactive={false} className='bp3-minimal'>
                     <thead>

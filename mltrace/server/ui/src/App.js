@@ -5,6 +5,7 @@ import Trace from "./pages/trace.js"
 import TagView from "./pages/tagview.js"
 import History from "./pages/history.js"
 import Recent from "./pages/recent.js"
+import Inspect from "./pages/inspect.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 
@@ -92,6 +93,17 @@ class App extends Component {
       }
 
       this.setState(newState);
+    } else if (command === "inspect") {
+      if (args.length !== 1) {
+        CustomToaster.show({
+          message: "Please enter a valid component run ID to show details for.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
+      this.setState({ command: command, id: 'componentrun_' + args[0], kwargs: {} });
     }
     else {
       CustomToaster.show({
@@ -124,6 +136,7 @@ class App extends Component {
         {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
         {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
         {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+        {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
       </div>
     );
   }

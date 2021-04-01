@@ -59,7 +59,7 @@ export default class Trace extends Component {
             }
         }).then(
             ({ data }) => {
-                styleLabels(data);
+                data.map((node) => styleLabels(node));
                 this.setState({ nodes: data, output_id: this.props.output_id, selected_id: data[0].id });
             }
         ).catch(e => {
@@ -90,6 +90,7 @@ export default class Trace extends Component {
                 />
             </div>
         );
+
         let style = { display: 'flex', margin: '1em', width: '85%' };
         // if (this.state.output_id === '') {
         //     treeContent = null;
