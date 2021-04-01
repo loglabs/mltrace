@@ -1,4 +1,4 @@
-.PHONY: help test run query scratch logrun server
+.PHONY: help test run query scratch logrun server linecount
 # include .env
 
 # Makefile variables
@@ -45,3 +45,6 @@ query: venv
 
 server: venv
 	${PYTHON} -m flask run
+
+linecount:
+	find . -name "*.js" ! -path "*node_modules*" ! -path "./venv*" ! -path "./.git*" ! -path "./.vscode*" ! -path "*__pycache__*" ! -path "*.DS_Store" | xargs wc -l
