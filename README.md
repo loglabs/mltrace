@@ -23,23 +23,25 @@ To get started, you will need to do 3 things:
 
 We use Postgres-backed SQLAlchemy for now. Unfortunately the db uri is hardcoded
 in multiple files, which I will change at some point. Assuming you have Docker
-desktop, you can run the first Docker command off the bat to create the Postgres
+desktop, you can run  `docker-compose up -d` to set up the db.
+
+If you don't want to use `docker-compose`, you can run the first Docker command off the bat to create the Postgres
 instance:
 
 ```
 # create a PostgreSQL instance
-docker run --name sqlalchemy-orm-psql \
-    -e POSTGRES_PASSWORD=pass \
-    -e POSTGRES_USER=usr \
+docker run --name postgres \
+    -e POSTGRES_PASSWORD=admin \
+    -e POSTGRES_USER=admin \
     -e POSTGRES_DB=sqlalchemy \
     -p 5432:5432 \
     -d postgres
 
 # stop instance
-docker stop sqlalchemy-orm-psql
+docker stop postgres
 
 # destroy instance
-docker rm sqlalchemy-orm-psql
+docker rm postgres
 ```
 
 ### Run pipelines
