@@ -8,7 +8,7 @@ import copy
 import json
 
 app = Flask(__name__)
-DB_URI = 'postgresql://usr:pass@localhost:5432/sqlalchemy'
+DB_URI = 'postgresql://admin:admin@localhost:5432/sqlalchemy'
 
 
 def error(err_msg, status_code):
