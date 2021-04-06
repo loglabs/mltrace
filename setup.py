@@ -11,12 +11,9 @@ setup(
     install_requires=[
         'flask',
         'gitpython',
-        'numpy',
-        'pandas',
         'psycopg2-binary',
         'pytest',
         'python-dotenv',
-        'sklearn',
         'sqlalchemy'
     ]
 )
