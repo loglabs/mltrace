@@ -1,12 +1,52 @@
 version: '3'
 services:
 
-  db:
+  database:
     image: postgres
-    restart: always
+    volumes:      
+       - postgres_data:/var/lib/postgresql/data
     environment:
+      # POSTGRES_HOST: localhost
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: sqlalchemy
+      # POSTGRES_HOST_AUTH_METHOD: trust
+      # POSTGRES_HOST: 127.0.0.1
     ports:
-      - 5432:5432
+      - "5432:5432"
+    # expose:
+    #   - "5432"
+    restart: always
+    networks:
+      services-network:
+        aliases:
+          - database
+
+  api:
+    build:
+      context: .
+      dockerfile: ./mltrace/server/Dockerfile
+    # command: python -m flask run -h 0.0.0.0
+    environment:
+      PYTHONPATH: /src
+    volumes:
+      - .:/src
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./.flaskenv
+    restart: always
+    depends_on:
+      - database
+    networks:
+      services-network:
+        aliases:
+          - api
+  
+volumes:  
+  postgres_data:
+
+networks:
+  services-network:
+    name: services-network
+    driver: bridge

@@ -1,2 +1,2 @@
-FLASK_APP=mltrace/server/api.py
+FLASK_APP=mltrace/server/__init__.py
 FLASK_ENV=development

@@ -9,7 +9,7 @@ import logging
 import typing
 import uuid
 
-DB_URI = 'postgresql://admin:admin@localhost:5432/sqlalchemy'
+DB_URI = 'postgresql://admin:admin@database:5432/sqlalchemy'
 
 
 def clean_db():
