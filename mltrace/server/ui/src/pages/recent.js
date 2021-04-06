@@ -15,7 +15,7 @@ export default class Recent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            componentRuns: [],
+            componentRuns: null,
         }
     }
 
@@ -42,16 +42,16 @@ export default class Recent extends Component {
     }
 
     componentDidUpdate() {
-        if (this.props.render === false && this.state.componentRuns.length === 0) {
+        if (this.props.render === false && this.state.componentRuns === null) {
             return;
         }
 
         if (this.props.render === false) {
-            this.setState({ componentRuns: [] });
+            this.setState({ componentRuns: null });
             return;
         }
 
-        if (this.state.componentRuns.length > 0) {
+        if (this.state.componentRuns !== null) {
             return;
         }
 
@@ -74,7 +74,7 @@ export default class Recent extends Component {
 
     render() {
 
-        if (this.state.componentRuns.length === 0) return null;
+        if (this.state.componentRuns === null || this.state.componentRuns.length === 0) return null;
 
         let childStyle = {
             flex: '0',
