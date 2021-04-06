@@ -13,37 +13,26 @@ run the prototype on your machine.
 
 ## Quickstart
 
-To get started, you will need to do 3 things:
+You should have Docker installed on your machine. To get started, you will need to do 3 things:
 
-1. Set up the database
+1. Set up the database and Flask server
 2. Run some pipelines with logging
-3. Launch the server and UI
+3. Launch and UI
 
-### Database setup
+### Database and server setup
 
-We use Postgres-backed SQLAlchemy for now. Unfortunately the db uri is hardcoded
-in multiple files, which I will change at some point. Assuming you have Docker
-desktop, you can run  `docker-compose up -d` to set up the db and
-`docker-compose rm --stop` to take it down.
+We use Postgres-backed SQLAlchemy. Unfortunately the db uri is hardcoded
+in multiple files, which I will change at some point. 
 
-If you don't want to use `docker-compose`, you can run the first Docker command off the bat to create the Postgres
-instance:
+Assuming you have Docker installed, you can run the following commands from the
+root directory:
 
 ```
-# create a PostgreSQL instance
-docker run --name postgres \
-    -e POSTGRES_PASSWORD=admin \
-    -e POSTGRES_USER=admin \
-    -e POSTGRES_DB=sqlalchemy \
-    -p 5432:5432 \
-    -d postgres
-
-# stop instance
-docker stop postgres
-
-# destroy instance
-docker rm postgres
+docker-compose build
+docker-compose up
 ```
+
+And then to tear down the containers, you can run `docker-compose down`.
 
 ### Run pipelines
 
@@ -53,10 +42,9 @@ suggest `populate_db.py`) and run it by executing `make run`. To execute
 `populate_db_logging.py` you will need to run `make logrun`. Make will handle
 the dependencies.
 
-### Start webserver and launch UI
+### Launch UI
 
-To start the Flask server, you can execute `make server`, which launches the
-Flask app. To launch the UI, navigate to `./mltrace/server/ui` and execute `yarn
+To launch the UI, navigate to `./mltrace/server/ui` and execute `yarn
 install` then `yarn start`. The UI is based on `create-react-app`. Hopefully
 navigating the UI is intuitive.
 
