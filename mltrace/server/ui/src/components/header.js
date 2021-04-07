@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Navbar, Alignment, InputGroup, Button, ButtonGroup } from "@blueprintjs/core";
+import { AnchorButton, Navbar, Alignment, InputGroup, Button, ButtonGroup } from "@blueprintjs/core";
+import HelpDialog from "./helpdialog.js";
 
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -62,7 +63,9 @@ export default class Header extends Component {
 
                 <Navbar.Group align={Alignment.RIGHT}>
                     <ButtonGroup minimal={true}>
-                        <Button className="bp3-minimal" icon="git-repo" text="GitHub" onClick={() => window.open("https://www.github.com/shreyashankar/mltrace", "_blank")} />
+                        <AnchorButton className="bp3-minimal" icon="git-repo" text="GitHub" href="https://www.github.com/shreyashankar/mltrace" target="_blank" />
+                        <HelpDialog showHelp={this.props.showHelp}
+                            onHandleHelp={this.props.onHandleHelp} />
                         <Button
                             className="bp3-minimal"
                             icon={this.props.useDarkTheme ? "flash" : "moon"}
