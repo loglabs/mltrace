@@ -19,11 +19,13 @@ class App extends Component {
       input: "recent",
       id: "",
       command: "recent",
-      kwargs: {}
+      kwargs: {},
+      showHelp: false
     };
 
     this.handleDarkSwitchChange = this.handleDarkSwitchChange.bind(this);
     this.handleCommand = this.handleCommand.bind(this);
+    this.handleHelp = this.handleHelp.bind(this);
   }
 
   handleDarkSwitchChange(useDark) {
@@ -31,6 +33,10 @@ class App extends Component {
     setTheme(nextThemeName);
     this.setState({ themeName: nextThemeName, useDarkTheme: useDark });
   };
+
+  handleHelp() {
+    this.setState({ showHelp: false });
+  }
 
   handleCommand(input) {
     var args = input.split(" ").filter(str => str !== "");
@@ -105,6 +111,8 @@ class App extends Component {
       }
 
       this.setState({ command: command, id: 'componentrun_' + args[0], kwargs: {}, input: input });
+    } else if (command === "help") {
+      this.setState({ showHelp: true });
     }
     else {
       CustomToaster.show({
@@ -132,6 +140,8 @@ class App extends Component {
           onToggleTheme={this.handleDarkSwitchChange}
           onCommand={this.handleCommand}
           defaultValue={this.state.input}
+          showHelp={this.state.showHelp}
+          onHandleHelp={this.handleHelp}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
         {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
