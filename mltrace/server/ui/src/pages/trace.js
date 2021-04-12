@@ -92,10 +92,6 @@ export default class Trace extends Component {
         );
 
         let style = { display: 'flex', margin: '1em', width: '85%' };
-        // if (this.state.output_id === '') {
-        //     treeContent = null;
-        //     style = null;
-        // }
 
         return (
             <div style={style}>
