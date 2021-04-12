@@ -8,6 +8,7 @@ import Recent from "./pages/recent.js"
 import Inspect from "./pages/inspect.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 class App extends Component {
 
@@ -144,11 +145,17 @@ class App extends Component {
           onHandleHelp={this.handleHelp}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
-        {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
-        {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-        {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
-        {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
-        {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+        <BrowserRouter>
+          <Switch>
+            <Route path="/">
+              {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+              {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+              {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+              {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+            </Route>
+          </Switch>
+        </BrowserRouter>
       </div>
     );
   }
