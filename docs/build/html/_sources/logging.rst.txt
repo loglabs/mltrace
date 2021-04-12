@@ -1,0 +1,4 @@
+.. _logging:
+
+Logging
+========
