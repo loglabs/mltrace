@@ -1,12 +1,15 @@
 # TODO(shreyashankar): handle output ids gracefully
 from mltrace.db import Store
-from mltrace import clean_db, create_component, register, tag_component
+from mltrace import get_db_uri, set_db_uri, clean_db, create_component, register, tag_component
 
 import logging
 
 logging.basicConfig(format='%(asctime)s - %(message)s',
                     datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 
+
+# Set db uri
+set_db_uri(get_db_uri().replace('database', 'localhost'))
 
 # Clean db
 clean_db()
