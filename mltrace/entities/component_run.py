@@ -147,8 +147,8 @@ seconds since epoch."""
         params = self.to_dictionary()
         if params['start_timestamp'] is not None:
             params['start_timestamp'] = params['start_timestamp'].strftime(
-                '%Y-%m-%d%l:%M:%S%z')
+                '%Y-%m-%d %l:%M:%S%z')
         if params['end_timestamp'] is not None:
             params['end_timestamp'] = params['end_timestamp'].strftime(
-                '%Y-%m-%d%l:%M:%S%z')
+                '%Y-%m-%d %l:%M:%S%z')
         return json.dumps(params)
