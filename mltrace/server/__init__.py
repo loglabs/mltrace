@@ -1,13 +1,14 @@
 from flask import Flask, request, Response
 from http import HTTPStatus
 from mltrace.entities import Component, ComponentRun, IOPointer
-from mltrace import get_component_information, get_component_run_information, get_components_with_tag, get_history, web_trace, get_recent_run_ids, get_io_pointer
+from mltrace import get_component_information, get_component_run_information, get_components_with_tag, get_history, web_trace, get_recent_run_ids, get_io_pointer, set_db_uri
 
 import copy
 import json
 import logging
 
 app = Flask(__name__)
+set_db_uri('postgresql://admin:admin@database:5432/sqlalchemy')
 
 
 def error(err_msg, status_code):
