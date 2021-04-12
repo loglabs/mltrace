@@ -263,7 +263,7 @@ class Store(object):
 
         return components
 
-    def get_recent_runs(self, limit: int = 50) -> typing.List[str]:
+    def get_recent_run_ids(self, limit: int = 50) -> typing.List[str]:
         """Returns a list of recent component run IDs."""
         runs = list(map(lambda x: int(x[0]), self.session.query(ComponentRun.id).order_by(
             ComponentRun.start_timestamp.desc()).limit(limit).all()))

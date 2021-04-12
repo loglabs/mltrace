@@ -9,23 +9,33 @@ import logging
 import typing
 import uuid
 
-CLIENT_DB_URI = 'postgresql://admin:admin@database:5432/sqlalchemy'
+_db_uri = 'postgresql://admin:admin@database:5432/sqlalchemy'
+
+
+def set_db_uri(uri: str):
+    global _db_uri
+    _db_uri = uri
+
+
+def get_db_uri() -> str:
+    global _db_uri
+    return _db_uri
 
 
 def clean_db():
     """Deletes database and reinitializes tables."""
-    store = Store(CLIENT_DB_URI, delete_first=True)
+    store = Store(_db_uri, delete_first=True)
 
 
 def create_component(name: str, description: str, owner: str, tags: typing.List[str] = []):
     """Creates a component entity in the database."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     store.create_component(name, description, owner, tags)
 
 
 def tag_component(component_name: str, tags: typing.List[str]):
     """Adds tags to existing component."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     store.add_tags_to_component(component_name, tags)
 
 
@@ -33,7 +43,7 @@ def backtrace(output_pointer: str):
     """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
         many hops away the node is from the node that produced the output_id."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     trace = store.trace(output_pointer)
 
     # Convert to entities.ComponentRun
@@ -54,7 +64,7 @@ def backtrace(output_pointer: str):
 def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRun]:
     """ Returns a list of ComponentRuns that are part of the component's
     history."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
 
     history = store.get_history(component_name, limit)
 
@@ -77,7 +87,7 @@ def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRu
 def get_components_with_owner(owner: str) -> typing.List[Component]:
     """ Returns a list of all the components associated with the specified
         order."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     res = store.get_components_with_owner(owner)
 
     # Convert to client-facing Components
@@ -93,7 +103,7 @@ def get_components_with_owner(owner: str) -> typing.List[Component]:
 
 def get_component_information(component_name: str) -> Component:
     """Returns a Component with the name, info, owner, and tags."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     c = store.get_component(component_name)
     tags = [tag.name for tag in c.tags]
     d = copy.deepcopy(c.__dict__)
@@ -103,7 +113,7 @@ def get_component_information(component_name: str) -> Component:
 
 def get_component_run_information(component_run_id: str) -> ComponentRun:
     """Returns a ComponentRun object."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     cr = store.get_component_run(component_run_id)
     inputs = [IOPointer.from_dictionary(
         iop.__dict__).to_dictionary() for iop in cr.inputs]
@@ -120,7 +130,7 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
 
 def get_components_with_tag(tag: str) -> typing.List[Component]:
     """Returns a list of components with the specified tag."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
     res = store.get_components_with_tag(tag)
 
     # Convert to client-facing Components
@@ -142,7 +152,7 @@ def create_random_ids(num_outputs=1) -> typing.List[str]:
 
 def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=True):
     """Takes client-facing ComponentRun object and logs it to the DB."""
-    store = Store(CLIENT_DB_URI)
+    store = Store(_db_uri)
 
     # Make dictionary object
     component_run_dict = component_run.to_dictionary()
@@ -182,7 +192,7 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             # Construct component run object
-            store = Store(CLIENT_DB_URI)
+            store = Store(_db_uri)
             component_run = store.initialize_empty_component_run(component_name)
             component_run.set_start_timestamp()
 
@@ -223,3 +233,18 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
             return value
         return wrapper
     return actual_decorator
+
+
+def web_trace(output_id: str):
+    store = Store(_db_uri)
+    return store.web_trace(output_id)
+
+
+def get_recent_run_ids(limit: int = 50):
+    store = Store(_db_uri)
+    return store.get_recent_run_ids(limit)
+
+
+def get_io_pointer(io_pointer_id: str, create=True):
+    store = Store(_db_uri)
+    return store.get_io_pointer(io_pointer_id, create)

@@ -1,8 +1,7 @@
 from flask import Flask, request, Response
 from http import HTTPStatus
-from mltrace.db import Store, PointerTypeEnum, Component as SQLComponent, ComponentRun as SQLComponentRun
 from mltrace.entities import Component, ComponentRun, IOPointer
-from mltrace import get_component_information, get_component_run_information, get_components_with_tag, get_history
+from mltrace import get_component_information, get_component_run_information, get_components_with_tag, get_history, web_trace, get_recent_run_ids, get_io_pointer
 
 import copy
 import json
@@ -51,9 +50,8 @@ def io_pointer():
         return error(f'id not specified.', HTTPStatus.NOT_FOUND)
 
     io_pointer_id = request.args['id']
-    store = Store(DB_URI)
     try:
-        res = store.get_io_pointer(io_pointer_id, create=False)
+        res = get_io_pointer(io_pointer_id, create=False)
         return json.dumps(IOPointer.from_dictionary(res.__dict__).to_dictionary())
     except RuntimeError:
         return error(f'IOPointer {io_pointer_id} not found', HTTPStatus.NOT_FOUND)
@@ -103,9 +101,8 @@ def component():
 
 @app.route('/recent', methods=['GET'])
 def recent():
-    store = Store(DB_URI)
-    component_run_ids = store.get_recent_runs(
-        request.args['limit']) if 'limit' in request.args else store.get_recent_runs()
+    component_run_ids = get_recent_run_ids(
+        request.args['limit']) if 'limit' in request.args else get_recent_run_ids()
     return json.dumps(component_run_ids)
 
 
@@ -114,9 +111,8 @@ def trace():
     if 'output_id' not in request.args:
         return error(f'output_id not specified.', HTTPStatus.NOT_FOUND)
     output_id = request.args['output_id']
-    store = Store(DB_URI)
     try:
-        res = store.web_trace(output_id)
+        res = web_trace(output_id)
         return json.dumps(res)
     except RuntimeError:
         return error(f'Output {output_id} not found', HTTPStatus.NOT_FOUND)
