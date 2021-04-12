@@ -8,7 +8,6 @@ import json
 import logging
 
 app = Flask(__name__)
-DB_URI = 'postgresql://admin:admin@database:5432/sqlalchemy'
 
 
 def error(err_msg, status_code):
