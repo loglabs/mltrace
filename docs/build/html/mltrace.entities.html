@@ -1,0 +1,479 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mltrace.server package" href="mltrace.server.html" /><link rel="prev" title="mltrace.db package" href="mltrace.db.html" />
+
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>mltrace.entities package - mltrace 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">mltrace 0.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">mltrace 0.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="querying.html">Querying</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="mltrace.html">All functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mltrace.db.html">mltrace.db package</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">mltrace.entities package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mltrace.server.html">mltrace.server package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <div class="section" id="mltrace-entities-package">
+<h1>mltrace.entities package<a class="headerlink" href="#mltrace-entities-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mltrace.entities.base">
+<span id="mltrace-entities-base-module"></span><h2>mltrace.entities.base module<a class="headerlink" href="#module-mltrace.entities.base" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mltrace.entities.base.Base">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.base.</span></code><code class="sig-name descname"><span class="pre">Base</span></code><a class="reference internal" href="_modules/mltrace/entities/base.html#Base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.base.Base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>The Base class provides methods to save and store attributes as well as
+print them out.</p>
+<dl class="py method">
+<dt id="mltrace.entities.base.Base.from_dictionary">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_dictionary</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/base.html#Base.from_dictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.base.Base.from_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.base.Base.to_dictionary">
+<code class="sig-name descname"><span class="pre">to_dictionary</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/base.html#Base.to_dictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.base.Base.to_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="module-mltrace.entities.component">
+<span id="mltrace-entities-component-module"></span><h2>mltrace.entities.component module<a class="headerlink" href="#module-mltrace.entities.component" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mltrace.entities.component.Component">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.component.</span></code><code class="sig-name descname"><span class="pre">Component</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component.Component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mltrace.entities.base.Base" title="mltrace.entities.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltrace.entities.base.Base</span></code></a></p>
+<p>Component abstraction.</p>
+<dl class="py method">
+<dt id="mltrace.entities.component.Component.description">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">description</span></code><a class="headerlink" href="#mltrace.entities.component.Component.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component.Component.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#mltrace.entities.component.Component.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component.Component.owner">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">owner</span></code><a class="headerlink" href="#mltrace.entities.component.Component.owner" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component.Component.tags">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">tags</span></code><a class="headerlink" href="#mltrace.entities.component.Component.tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="module-mltrace.entities.component_run">
+<span id="mltrace-entities-component-run-module"></span><h2>mltrace.entities.component_run module<a class="headerlink" href="#module-mltrace.entities.component_run" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mltrace.entities.component_run.ComponentRun">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.component_run.</span></code><code class="sig-name descname"><span class="pre">ComponentRun</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timestamp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_timestamp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_hash</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_snapshot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mltrace.entities.base.Base" title="mltrace.entities.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltrace.entities.base.Base</span></code></a></p>
+<p>Component Run abstraction.</p>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.add_input">
+<code class="sig-name descname"><span class="pre">add_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointer_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mltrace.db.html#mltrace.db.models.PointerTypeEnum" title="mltrace.db.models.PointerTypeEnum"><span class="pre">mltrace.db.models.PointerTypeEnum</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.add_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a single input (instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.add_inputs">
+<code class="sig-name descname"><span class="pre">add_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.add_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of inputs (each element should be an instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.add_output">
+<code class="sig-name descname"><span class="pre">add_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointer_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mltrace.db.html#mltrace.db.models.PointerTypeEnum" title="mltrace.db.models.PointerTypeEnum"><span class="pre">mltrace.db.models.PointerTypeEnum</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.add_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Add a single output (instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.add_outputs">
+<code class="sig-name descname"><span class="pre">add_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.add_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of outputs (each element should be an instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.code_snapshot">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">code_snapshot</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.code_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.component_name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">component_name</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.component_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.dependencies">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">dependencies</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.dependencies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.end_timestamp">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">end_timestamp</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.end_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.git_hash">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">git_hash</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.git_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.id">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.inputs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">inputs</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.outputs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">outputs</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.outputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.set_end_timestamp">
+<code class="sig-name descname"><span class="pre">set_end_timestamp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.set_end_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.set_end_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.set_start_timestamp">
+<code class="sig-name descname"><span class="pre">set_start_timestamp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.set_start_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.set_start_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.set_upstream">
+<code class="sig-name descname"><span class="pre">set_upstream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.set_upstream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.set_upstream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set dependencies for this ComponentRun. API similar to Airflow
+set_upstream. It will grab the most recent run for the dependency
+name.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.component_run.ComponentRun.start_timestamp">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">start_timestamp</span></code><a class="headerlink" href="#mltrace.entities.component_run.ComponentRun.start_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt id="mltrace.entities.component_run.get_timestamp">
+<code class="sig-prename descclassname"><span class="pre">mltrace.entities.component_run.</span></code><code class="sig-name descname"><span class="pre">get_timestamp</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> → <span class="pre">int</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#get_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.component_run.get_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns current timestamp as seconds since epoch.</p>
+</dd></dl>
+</div>
+<div class="section" id="module-mltrace.entities.io_pointer">
+<span id="mltrace-entities-io-pointer-module"></span><h2>mltrace.entities.io_pointer module<a class="headerlink" href="#module-mltrace.entities.io_pointer" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mltrace.entities.io_pointer.IOPointer">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.io_pointer.</span></code><code class="sig-name descname"><span class="pre">IOPointer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">pointer_type:</span> <span class="pre">mltrace.db.models.PointerTypeEnum</span> <span class="pre">=</span> <span class="pre">&lt;PointerTypeEnum.UNKNOWN:</span> <span class="pre">'UNKNOWN'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/io_pointer.html#IOPointer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.io_pointer.IOPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mltrace.entities.base.Base" title="mltrace.entities.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltrace.entities.base.Base</span></code></a></p>
+<dl class="py method">
+<dt id="mltrace.entities.io_pointer.IOPointer.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#mltrace.entities.io_pointer.IOPointer.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.io_pointer.IOPointer.pointer_type">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">pointer_type</span></code><a class="headerlink" href="#mltrace.entities.io_pointer.IOPointer.pointer_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</div>
+<div class="section" id="module-mltrace.entities">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mltrace.entities" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mltrace.entities.Component">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.</span></code><code class="sig-name descname"><span class="pre">Component</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.Component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mltrace.entities.base.Base" title="mltrace.entities.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltrace.entities.base.Base</span></code></a></p>
+<p>Component abstraction.</p>
+<dl class="py method">
+<dt id="mltrace.entities.Component.description">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">description</span></code><a class="headerlink" href="#mltrace.entities.Component.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.Component.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#mltrace.entities.Component.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.Component.owner">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">owner</span></code><a class="headerlink" href="#mltrace.entities.Component.owner" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.Component.tags">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">tags</span></code><a class="headerlink" href="#mltrace.entities.Component.tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="mltrace.entities.ComponentRun">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.</span></code><code class="sig-name descname"><span class="pre">ComponentRun</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_timestamp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_timestamp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_hash</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_snapshot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mltrace.entities.base.Base" title="mltrace.entities.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltrace.entities.base.Base</span></code></a></p>
+<p>Component Run abstraction.</p>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.add_input">
+<code class="sig-name descname"><span class="pre">add_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointer_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mltrace.db.html#mltrace.db.models.PointerTypeEnum" title="mltrace.db.models.PointerTypeEnum"><span class="pre">mltrace.db.models.PointerTypeEnum</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.add_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a single input (instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.add_inputs">
+<code class="sig-name descname"><span class="pre">add_inputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.add_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of inputs (each element should be an instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.add_output">
+<code class="sig-name descname"><span class="pre">add_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointer_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mltrace.db.html#mltrace.db.models.PointerTypeEnum" title="mltrace.db.models.PointerTypeEnum"><span class="pre">mltrace.db.models.PointerTypeEnum</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.add_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Add a single output (instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.add_outputs">
+<code class="sig-name descname"><span class="pre">add_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mltrace.entities.io_pointer.IOPointer" title="mltrace.entities.io_pointer.IOPointer"><span class="pre">mltrace.entities.io_pointer.IOPointer</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.add_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.add_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of outputs (each element should be an instance of IOPointer).</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.code_snapshot">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">code_snapshot</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.code_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.component_name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">component_name</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.component_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.dependencies">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">dependencies</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.dependencies" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.end_timestamp">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">end_timestamp</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.end_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.git_hash">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">git_hash</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.git_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.id">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.inputs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">inputs</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.outputs">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">outputs</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.outputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.set_end_timestamp">
+<code class="sig-name descname"><span class="pre">set_end_timestamp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.set_end_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.set_end_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.set_start_timestamp">
+<code class="sig-name descname"><span class="pre">set_start_timestamp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.set_start_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.set_start_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.set_upstream">
+<code class="sig-name descname"><span class="pre">set_upstream</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/component_run.html#ComponentRun.set_upstream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.ComponentRun.set_upstream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set dependencies for this ComponentRun. API similar to Airflow
+set_upstream. It will grab the most recent run for the dependency
+name.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.ComponentRun.start_timestamp">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">start_timestamp</span></code><a class="headerlink" href="#mltrace.entities.ComponentRun.start_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="mltrace.entities.IOPointer">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">mltrace.entities.</span></code><code class="sig-name descname"><span class="pre">IOPointer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">pointer_type:</span> <span class="pre">mltrace.db.models.PointerTypeEnum</span> <span class="pre">=</span> <span class="pre">&lt;PointerTypeEnum.UNKNOWN:</span> <span class="pre">'UNKNOWN'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mltrace/entities/io_pointer.html#IOPointer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltrace.entities.IOPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mltrace.entities.base.Base" title="mltrace.entities.base.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltrace.entities.base.Base</span></code></a></p>
+<dl class="py method">
+<dt id="mltrace.entities.IOPointer.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#mltrace.entities.IOPointer.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="mltrace.entities.IOPointer.pointer_type">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">pointer_type</span></code><a class="headerlink" href="#mltrace.entities.IOPointer.pointer_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</div>
+</div>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="mltrace.server.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">mltrace.server package</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="mltrace.db.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">mltrace.db package</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021, Shreya Shankar
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            |
+            <a class="muted-link" href="_sources/mltrace.entities.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mltrace.entities package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-mltrace.entities.base">mltrace.entities.base module</a></li>
+<li><a class="reference internal" href="#module-mltrace.entities.component">mltrace.entities.component module</a></li>
+<li><a class="reference internal" href="#module-mltrace.entities.component_run">mltrace.entities.component_run module</a></li>
+<li><a class="reference internal" href="#module-mltrace.entities.io_pointer">mltrace.entities.io_pointer module</a></li>
+<li><a class="reference internal" href="#module-mltrace.entities">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>
