@@ -63,6 +63,7 @@ export default class Header extends Component {
 
                 <Navbar.Group align={Alignment.RIGHT}>
                     <ButtonGroup minimal={true}>
+                        <AnchorButton className="bp3-minimal" icon="document" text="Docs" href="https://mltrace.readthedocs.io" target="_blank" />
                         <AnchorButton className="bp3-minimal" icon="git-repo" text="GitHub" href="https://www.github.com/shreyashankar/mltrace" target="_blank" />
                         <HelpDialog showHelp={this.props.showHelp}
                             onHandleHelp={this.props.onHandleHelp} />
