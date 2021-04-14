@@ -34,8 +34,8 @@ export default class HelpDialog extends Component {
     render() {
         return (
             <div>
-                <Button onClick={this.handleOpen} icon="info-sign" text="" />
-                <Dialog className={Classes.MINIMAL} icon="info-sign" isOpen={this.state.isOpen} onClose={this.handleClose} title="Help">
+                <Button onClick={this.handleOpen} icon="help" text="" />
+                <Dialog className={Classes.MINIMAL} icon="help" isOpen={this.state.isOpen} onClose={this.handleClose} title="Help">
                     <div className={Classes.DIALOG_BODY}>
                         <p> <strong>mltrace, version 0.1 command list </strong> </p>
                         <p> These commands are currently supported by the UI. Type <tt>help</tt> in the command bar to see this list. Press the <tt>esc</tt> key or click outside this dialog to close the dialog.</p>
