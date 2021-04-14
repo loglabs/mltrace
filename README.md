@@ -1,5 +1,7 @@
 # mltrace
 
+[![Documentation Status](https://readthedocs.org/projects/mltrace/badge/?version=latest)](https://mltrace.readthedocs.io/en/latest/?badge=latest)
+
 This tool tracks data flow through various components in ML pipelines and
 contains a UI and API to show a trace of steps in an ML pipeline that produces
 an output. It consists of an ORM-backed database, helper functions for users to
