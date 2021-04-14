@@ -28,6 +28,7 @@ setup(
         'python-dotenv',
         'sqlalchemy'
     ],
+    include_package_data=True,
     project_urls={
         "Bug Tracker": "https://github.com/loglabs/mltrace/issues",
         "Source Code": "https://github.com/loglabs/mltrace",

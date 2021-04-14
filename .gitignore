@@ -1,3 +1,6 @@
 *.DS_Store
 venv*
 *__pycache__*
+build*
+dist*
+*.egg-info
