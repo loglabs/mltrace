@@ -1,4 +1,0 @@
-.. _querying:
-
-Querying
-========
