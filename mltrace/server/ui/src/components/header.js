@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { AnchorButton, Navbar, Alignment, InputGroup, Button, ButtonGroup } from "@blueprintjs/core";
+import { AnchorButton, Navbar, Alignment, InputGroup, Button, Intent, Text, Tooltip, Position } from "@blueprintjs/core";
 import HelpDialog from "./helpdialog.js";
+import { CustomToaster } from "./toaster.js";
 
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -19,6 +20,7 @@ export default class Header extends Component {
         this.onToggleTheme = this.onToggleTheme.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.onShare = this.onShare.bind(this);
     }
 
     onToggleTheme() {
@@ -36,6 +38,21 @@ export default class Header extends Component {
         this.setState({ value: e.target.value, submitted: false });
     }
 
+    onShare() {
+        this.inputValue.select();
+        document.execCommand("copy");
+
+        CustomToaster.show({
+            message: <div>
+                <Text>
+                    <tt>`{this.inputValue.value}`</tt> copied to clipboard.
+                </Text>
+            </div>,
+            icon: "tick",
+            intent: Intent.SUCCESS,
+        });
+    }
+
     componentDidUpdate() {
         if (this.state.submitted === true && this.props.defaultValue !== this.state.value) {
             this.setState({ value: this.props.defaultValue });
@@ -44,6 +61,11 @@ export default class Header extends Component {
     }
 
     render() {
+        let rightInputButton = (
+            <Tooltip content={"Copy Command"} disabled={this.state.value === ""} position={Position.LEFT}>
+                <Button minimal={true} icon="duplicate" onClick={this.onShare} disabled={this.state.value === ""} intent={Intent.PRIMARY} />
+            </Tooltip>
+        );
         return (
             <Navbar className='bp3-minimal' fixedToTop={true}>
                 <Navbar.Group align={Alignment.LEFT}>
@@ -53,29 +75,30 @@ export default class Header extends Component {
                     <InputGroup
                         className="bp3-minimal"
                         leftIcon="chevron-right"
-                        placeholder="trace..."
+                        placeholder="recent"
                         onKeyUp={this.onKeyUp}
                         onChange={this.onChange}
-                        style={{ width: '400px', fontFamily: 'monospace' }}
+                        style={{ width: '40em', fontFamily: 'monospace' }}
                         value={this.state.value}
+                        inputRef={el => this.inputValue = el}
+                        rightElement={rightInputButton}
                     />
                 </Navbar.Group>
 
                 <Navbar.Group align={Alignment.RIGHT}>
-                    <ButtonGroup minimal={true}>
-                        <AnchorButton className="bp3-minimal" icon="document" text="Docs" href="https://mltrace.readthedocs.io" target="_blank" />
-                        <AnchorButton className="bp3-minimal" icon="git-repo" text="GitHub" href="https://www.github.com/shreyashankar/mltrace" target="_blank" />
-                        <HelpDialog showHelp={this.props.showHelp}
-                            onHandleHelp={this.props.onHandleHelp} />
-                        <Button
-                            className="bp3-minimal"
-                            icon={this.props.useDarkTheme ? "flash" : "moon"}
-                            // text={this.props.useDarkTheme ? "Use light theme"
-                            // : "Use dark theme"}
-                            text=""
-                            onClick={this.onToggleTheme}
-                        />
-                    </ButtonGroup>
+                    <AnchorButton className="bp3-minimal" icon="document" text="Docs" href="https://mltrace.readthedocs.io" target="_blank" />
+                    <AnchorButton className="bp3-minimal" icon="git-repo" text="GitHub" href="https://www.github.com/shreyashankar/mltrace" target="_blank" />
+                    <Navbar.Divider />
+                    <HelpDialog showHelp={this.props.showHelp}
+                        onHandleHelp={this.props.onHandleHelp} />
+                    <Button
+                        className="bp3-minimal"
+                        icon={this.props.useDarkTheme ? "flash" : "moon"}
+                        // text={this.props.useDarkTheme ? "Use light theme"
+                        // : "Use dark theme"}
+                        text=""
+                        onClick={this.onToggleTheme}
+                    />
                 </Navbar.Group>
             </Navbar >
         );
