@@ -128,7 +128,7 @@ seconds since epoch."""
         """Add a list of outputs (each element should be an instance of IOPointer)."""
         for out in outputs:
             if isinstance(out, str):
-                self.add_output(inp)
+                self.add_output(out)
             else:
                 self._add_io(out, False)
 
