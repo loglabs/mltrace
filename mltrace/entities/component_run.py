@@ -110,8 +110,13 @@ seconds since epoch."""
         self._add_io(IOPointer(name, pointer_type), True)
 
     def add_inputs(self, inputs: typing.List[IOPointer]):
-        """Add a list of inputs (each element should be an instance of IOPointer)."""
-        self._add_io(inputs, True)
+        """Add a list of inputs (each element should be an instance of 
+        IOPointer)."""
+        for inp in inputs:
+            if isinstance(inp, str):
+                self.add_input(inp)
+            else:
+                self._add_io(inp, True)
 
     def add_output(self, name: str, pointer_type: PointerTypeEnum = None):
         """"Add a single output (instance of IOPointer)."""
@@ -121,7 +126,11 @@ seconds since epoch."""
 
     def add_outputs(self, outputs: typing.List[IOPointer]):
         """Add a list of outputs (each element should be an instance of IOPointer)."""
-        self._add_io(outputs, False)
+        for out in outputs:
+            if isinstance(out, str):
+                self.add_output(inp)
+            else:
+                self._add_io(out, False)
 
     def _add_io(self, elems: typing.Union[typing.List[IOPointer], IOPointer], input: bool):
         """Helper function to add inputs or outputs."""

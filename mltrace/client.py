@@ -134,6 +134,16 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
     return actual_decorator
 
 
+def get_git_hash() -> str:
+    """Gets hash of the parent git repo."""
+    try:
+        repo = git.Repo(search_parent_directories=True)
+        return str(repo.head.object.hexsha)
+    except:
+        logging.info('No git repo found.')
+
+    return None
+
 # ------------------------- Basic retrieval functions ------------------------ #
 
 
@@ -154,7 +164,7 @@ def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRu
         dependencies = [dep.component_name for dep in cr.dependencies]
         d = copy.deepcopy(cr.__dict__)
         d.update({'inputs': inputs, 'outputs': outputs,
-                 'dependencies': dependencies})
+                  'dependencies': dependencies})
         component_runs.append(ComponentRun.from_dictionary(d))
 
     return component_runs
@@ -251,7 +261,7 @@ def backtrace(output_pointer: str):
         dependencies = [dep.component_name for dep in cr.dependencies]
         d = copy.deepcopy(cr.__dict__)
         d.update({'inputs': inputs, 'outputs': outputs,
-                 'dependencies': dependencies})
+                  'dependencies': dependencies})
         component_runs.append((depth, ComponentRun.from_dictionary(d)))
 
     return component_runs
