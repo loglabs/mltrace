@@ -34,7 +34,7 @@ export default class HelpDialog extends Component {
     render() {
         return (
             <div>
-                <Button onClick={this.handleOpen} icon="help" text="" />
+                <Button className={Classes.MINIMAL} onClick={this.handleOpen} icon="help" text="" />
                 <Dialog className={Classes.MINIMAL} icon="help" isOpen={this.state.isOpen} onClose={this.handleClose} title="Help">
                     <div className={Classes.DIALOG_BODY}>
                         <p> <strong>mltrace, version 0.1 command list </strong> </p>
