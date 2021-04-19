@@ -106,7 +106,7 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
             def tracer(frame, event, arg):
                 input_pointers = []
                 output_pointers = []
-                if frame.f_code.co_filename == filename and frame.f_code.co_name == function_name and event == 'return':
+                if event == 'return' and frame.f_code.co_filename == filename and frame.f_code.co_name == function_name:
                     local_vars = frame.f_locals.copy()
                     # Add input_vars and output_vars as pointers
                     for var in input_vars:
