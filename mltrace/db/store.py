@@ -57,12 +57,23 @@ class Store(object):
 
     def get_component(self, name: str) -> Component:
         """Retrieves component if exists."""
-        return self.session.query(Component).outerjoin(Tag, Component.tags).filter(Component.name == name).first()
+        component = self.session.query(Component).outerjoin(
+            Tag, Component.tags).filter(Component.name == name).first()
+
+        if component:
+            return component
+
+        raise RuntimeError(f'Component with name {name} not found.')
 
     def get_component_run(self, id: str) -> ComponentRun:
         """Retrieves component run if exists."""
-        return self.session.query(ComponentRun).filter(
+        component_run = self.session.query(ComponentRun).filter(
             ComponentRun.id == id).first()
+
+        if component_run:
+            return component_run
+
+        raise RuntimeError(f'Component run with id {id} not found.')
 
     def add_tags_to_component(self, component_name: str, tags: typing.List[str]):
         """Retreives existing component and adds tags."""
