@@ -6,6 +6,7 @@ import functools
 import git
 import inspect
 import logging
+import sys
 import typing
 import uuid
 
@@ -90,24 +91,54 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
     def actual_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            # Get function information
+            previous_frame = inspect.currentframe().f_back
+            filename, line_number, _, _, _ = inspect.getframeinfo(
+                previous_frame)
+            function_name = func.__name__
+
             # Construct component run object
             store = Store(_db_uri)
             component_run = store.initialize_empty_component_run(component_name)
             component_run.set_start_timestamp()
 
-            # Add input_vars and output_vars as pointers
-            input_pointers = [store.get_io_pointer(
-                str(kwargs[var])) for var in input_vars]
-            output_pointers = [store.get_io_pointer(str(kwargs[var]), PointerTypeEnum.ENDPOINT) for var in output_vars] if endpoint else [
-                store.get_io_pointer(str(kwargs[var])) for var in output_vars]
+            # Define tracer
+            def tracer(frame, event, arg):
+                input_pointers = []
+                output_pointers = []
+                if frame.f_code.co_filename == filename and frame.f_code.co_name == function_name and event == 'return':
+                    local_vars = frame.f_locals.copy()
+                    # Add input_vars and output_vars as pointers
+                    for var in input_vars:
+                        val = local_vars[var]
+                        if isinstance(val, list):
+                            input_pointers += [store.get_io_pointer(str(elem))
+                                               for elem in val]
+                        else:
+                            input_pointers.append(
+                                store.get_io_pointer(str(val)))
+                    for var in output_vars:
+                        val = local_vars[var]
+                        if isinstance(val, list):
+                            output_pointers += [store.get_io_pointer(str(elem), PointerTypeEnum.ENDPOINT) for elem in val] if endpoint else [
+                                store.get_io_pointer(str(elem)) for elem in val]
+                        else:
+                            output_pointers += [store.get_io_pointer(str(val), PointerTypeEnum.ENDPOINT)] if endpoint else [
+                                store.get_io_pointer(str(val))]
+                component_run.add_inputs(input_pointers)
+                component_run.add_outputs(output_pointers)
 
-            # Run function
-            value = func(*args, **kwargs)
+            # Run function under the tracer
+            sys.setprofile(tracer)
+            try:
+                value = func(*args, **kwargs)
+            finally:
+                sys.setprofile(None)
 
             # Log relevant info
             component_run.set_end_timestamp()
-            input_pointers += [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers += [store.get_io_pointer(
+            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
+            output_pointers = [store.get_io_pointer(
                 out, PointerTypeEnum.ENDPOINT) for out in outputs] if endpoint else [store.get_io_pointer(out) for out in outputs]
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
