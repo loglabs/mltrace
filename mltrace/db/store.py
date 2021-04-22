@@ -60,10 +60,7 @@ class Store(object):
         component = self.session.query(Component).outerjoin(
             Tag, Component.tags).filter(Component.name == name).first()
 
-        if component:
-            return component
-
-        raise RuntimeError(f'Component with name {name} not found.')
+        return component
 
     def get_component_run(self, id: str) -> ComponentRun:
         """Retrieves component run if exists."""
