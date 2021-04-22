@@ -234,6 +234,8 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     """Returns a ComponentRun object."""
     store = Store(_db_uri)
     cr = store.get_component_run(component_run_id)
+    if not cr:
+        raise RuntimeError(f'Component run with id {id} not found.')
     inputs = [IOPointer.from_dictionary(
         iop.__dict__).to_dictionary() for iop in cr.inputs]
     outputs = [IOPointer.from_dictionary(

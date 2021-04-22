@@ -67,10 +67,7 @@ class Store(object):
         component_run = self.session.query(ComponentRun).filter(
             ComponentRun.id == id).first()
 
-        if component_run:
-            return component_run
-
-        raise RuntimeError(f'Component run with id {id} not found.')
+        return component_run
 
     def add_tags_to_component(self, component_name: str, tags: typing.List[str]):
         """Retreives existing component and adds tags."""
