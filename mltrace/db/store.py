@@ -102,7 +102,27 @@ class Store(object):
         # Return existing Tag
         return res[0]
 
-    def get_io_pointer(self, name=str, pointer_type: PointerTypeEnum = None, create=True) -> IOPointer:
+    def get_io_pointers(self, names: typing.List[str], pointer_type: PointerTypeEnum = None) -> typing.List[IOPointer]:
+        """Creates io pointers around the specified path names. Retrieves existing
+        io pointer if exists in DB, otherwise creates a new one with inferred pointer
+        type."""
+        res = self.session.query(IOPointer).filter(IOPointer.name.in_(names)).all()
+        res_names = set([r.name for r in res])
+        need_to_add = set(names) - res_names
+        print(len(need_to_add))
+
+        if len(need_to_add) != 0:
+            # Create new IOPointers
+            if pointer_type == None:
+                pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
+            iops = [IOPointer(name=name, pointer_type=pointer_type) for name in need_to_add]
+            self.session.add_all(iops)
+            self.session.commit()
+            return res + iops
+        
+        return res
+    
+    def get_io_pointer(self, name: str, pointer_type: PointerTypeEnum = None, create=True) -> IOPointer:
         """ Creates an io pointer around the specified path.
         Retrieves existing io pointer if exists in DB,
         otherwise creates a new one if create flag is set."""

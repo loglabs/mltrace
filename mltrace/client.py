@@ -81,7 +81,7 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
 def create_random_ids(num_outputs=1) -> typing.List[str]:
     """Returns a list of num_outputs ids that a client can use to tag outputs."""
 
-    return [uuid.uuid4() for _ in range(num_outputs)]
+    return [str(uuid.uuid4()) for _ in range(num_outputs)]
 
 # Log input strings
 # function to apply to outputs to log those
@@ -104,29 +104,40 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
 
             # Define tracer
             def tracer(frame, event, arg):
-                input_pointers = []
-                output_pointers = []
-                if event == 'return' and frame.f_code.co_filename == filename and frame.f_code.co_name == function_name:
-                    local_vars = frame.f_locals.copy()
+                if event == 'return' and frame.f_code.co_name == function_name:
+                    print(frame.f_code.co_filename)
+                    input_pointers = []
+                    output_pointers = []
+                    local_vars = frame.f_locals
                     # Add input_vars and output_vars as pointers
                     for var in input_vars:
+                        if var not in local_vars:
+                            logging.warning(f'Variable {var} not in current stack frame.')
+                            continue
                         val = local_vars[var]
+                        if val == None:
+                            logging.warning(f'Variable {var} has value {val}.')
+                            continue
                         if isinstance(val, list):
-                            input_pointers += [store.get_io_pointer(str(elem))
-                                               for elem in val]
+                            input_pointers += store.get_io_pointers(val)
                         else:
                             input_pointers.append(
                                 store.get_io_pointer(str(val)))
                     for var in output_vars:
+                        if var not in local_vars:
+                            logging.warning(f'Variable {var} not in current stack frame.')
+                            continue
                         val = local_vars[var]
+                        if val == None:
+                            logging.warning(f'Variable {var} has value {val}.')
+                            continue
                         if isinstance(val, list):
-                            output_pointers += [store.get_io_pointer(str(elem), PointerTypeEnum.ENDPOINT) for elem in val] if endpoint else [
-                                store.get_io_pointer(str(elem)) for elem in val]
+                            output_pointers += store.get_io_pointers(val, PointerTypeEnum.ENDPOINT) if endpoint else store.get_io_pointers(val)
                         else:
                             output_pointers += [store.get_io_pointer(str(val), PointerTypeEnum.ENDPOINT)] if endpoint else [
                                 store.get_io_pointer(str(val))]
-                component_run.add_inputs(input_pointers)
-                component_run.add_outputs(output_pointers)
+                    component_run.add_inputs(input_pointers)
+                    component_run.add_outputs(output_pointers)
 
             # Run function under the tracer
             sys.setprofile(tracer)
@@ -136,6 +147,7 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
                 sys.setprofile(None)
 
             # Log relevant info
+            print('logging relevant info')
             component_run.set_end_timestamp()
             input_pointers = [store.get_io_pointer(inp) for inp in inputs]
             output_pointers = [store.get_io_pointer(
@@ -158,6 +170,7 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
                     bytes(func_source_code, 'ascii'))
 
             # Commit component run object to the DB
+            print('committing component run')
             store.commit_component_run(component_run)
 
             return value

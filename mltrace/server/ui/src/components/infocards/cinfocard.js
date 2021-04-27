@@ -93,17 +93,15 @@ export default class CInfoCard extends Component {
             let end = new Date(cr.end_timestamp);
             let start = new Date(cr.start_timestamp);
             var outputs = cr.outputs.map((elem) => (String(elem.name)));
-            outputs = String(outputs.join(', '));
+            outputs = String(outputs.join(','));
 
             return (
                 <tr key={'componentrun_' + index} onClick={() => this.props.commandHandler("inspect " + cr.id)}>
                     <td>{cr.id}</td>
                     <td>{cr.start_timestamp}</td>
                     <td>{(end - start) / 1000}sec</td>
-                    <td style={{ fontFamily: 'monospace' }}>
-                        <Text ellipsize={true}>
-                            {outputs}
-                        </Text>
+                    <td style={{ fontFamily: 'monospace', maxWidth: '100%', wordWrap: 'break-word' }}>
+                        {outputs}
                     </td>
                 </tr>
             )
@@ -114,12 +112,12 @@ export default class CInfoCard extends Component {
                 <h2>{info.name}</h2>
                 <h4>Owner: {info.owner}</h4>
                 <Text className={Classes.MINIMAL}>Description: {description}</Text>
-                <div className='bp3-minimal' style={{ marginTop: '1em' }}>
+                <div className='bp3-minimal' style={{ marginTop: '1em', maxWidth: '100%' }}>
                     <Button onClick={this.handleClick} className='bp3-minimal' outlined={true}>
                         {this.state.isOpen ? "Hide" : "Show"} recent runs
                     </Button>
-                    <Collapse isOpen={this.state.isOpen} className='bp3-minimal' keepChildrenMounted={true}>
-                        <HTMLTable bordered={true} interactive={true} style={{ marginTop: '1em' }}>
+                    <Collapse isOpen={this.state.isOpen} className='bp3-minimal' keepChildrenMounted={true} style={{maxWidth: '100%', display: 'inline-block'}}>
+                        <HTMLTable bordered={true} interactive={true} style={{ marginTop: '1em', maxWidth: '100%', display: 'inline-block', tableLayout: 'fixed' }}>
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -128,7 +126,7 @@ export default class CInfoCard extends Component {
                                     <th>Outputs</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style={{maxWidth: '100%'}}>
                                 {runElements}
                             </tbody>
                         </HTMLTable>
