@@ -221,6 +221,8 @@ class Store(object):
                 out_dict['icon'] = 'database'
             elif out.pointer_type == PointerTypeEnum.MODEL:
                 out_dict['icon'] = 'function'
+            elif out.pointer_type == PointerTypeEnum.ENDPOINT:
+                out_dict['icon'] = 'flow-end'
 
             res['childNodes'].append(out_dict)
 
