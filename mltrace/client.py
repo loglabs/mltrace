@@ -92,59 +92,66 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             # Get function information
-            previous_frame = inspect.currentframe().f_back
-            filename, line_number, _, _, _ = inspect.getframeinfo(
-                previous_frame)
+            filename = inspect.getfile(func)
             function_name = func.__name__
 
             # Construct component run object
             store = Store(_db_uri)
             component_run = store.initialize_empty_component_run(component_name)
-            component_run.set_start_timestamp()
+            component_run.set_start_timestamp() 
+            
+            # Define trace helper
+            def trace_helper(frame, event, arg):
+                if event != 'return':
+                    return
+                
+                logging.info(f'Inspecting {frame.f_code.co_filename}')
+                input_pointers = []
+                output_pointers = []
+                local_vars = frame.f_locals
+                # Add input_vars and output_vars as pointers
+                for var in input_vars:
+                    if var not in local_vars:
+                        logging.warning(f'Variable {var} not in current stack frame.')
+                        continue
+                    val = local_vars[var]
+                    if val == None:
+                        logging.warning(f'Variable {var} has value {val}.')
+                        continue
+                    if isinstance(val, list):
+                        input_pointers += store.get_io_pointers(val)
+                    else:
+                        input_pointers.append(
+                            store.get_io_pointer(str(val)))
+                for var in output_vars:
+                    if var not in local_vars:
+                        logging.warning(f'Variable {var} not in current stack frame.')
+                        continue
+                    val = local_vars[var]
+                    if val == None:
+                        logging.warning(f'Variable {var} has value {val}.')
+                        continue
+                    if isinstance(val, list):
+                        output_pointers += store.get_io_pointers(val, PointerTypeEnum.ENDPOINT) if endpoint else store.get_io_pointers(val)
+                    else:
+                        output_pointers += [store.get_io_pointer(str(val), PointerTypeEnum.ENDPOINT)] if endpoint else [
+                            store.get_io_pointer(str(val))]
+                component_run.add_inputs(input_pointers)
+                component_run.add_outputs(output_pointers)
 
             # Define tracer
             def tracer(frame, event, arg):
-                if event == 'return' and frame.f_code.co_name == function_name:
-                    print(frame.f_code.co_filename)
-                    input_pointers = []
-                    output_pointers = []
-                    local_vars = frame.f_locals
-                    # Add input_vars and output_vars as pointers
-                    for var in input_vars:
-                        if var not in local_vars:
-                            logging.warning(f'Variable {var} not in current stack frame.')
-                            continue
-                        val = local_vars[var]
-                        if val == None:
-                            logging.warning(f'Variable {var} has value {val}.')
-                            continue
-                        if isinstance(val, list):
-                            input_pointers += store.get_io_pointers(val)
-                        else:
-                            input_pointers.append(
-                                store.get_io_pointer(str(val)))
-                    for var in output_vars:
-                        if var not in local_vars:
-                            logging.warning(f'Variable {var} not in current stack frame.')
-                            continue
-                        val = local_vars[var]
-                        if val == None:
-                            logging.warning(f'Variable {var} has value {val}.')
-                            continue
-                        if isinstance(val, list):
-                            output_pointers += store.get_io_pointers(val, PointerTypeEnum.ENDPOINT) if endpoint else store.get_io_pointers(val)
-                        else:
-                            output_pointers += [store.get_io_pointer(str(val), PointerTypeEnum.ENDPOINT)] if endpoint else [
-                                store.get_io_pointer(str(val))]
-                    component_run.add_inputs(input_pointers)
-                    component_run.add_outputs(output_pointers)
+                if event == 'call':
+                    if frame.f_code.co_name == function_name and frame.f_code.co_filename == filename:
+                        return trace_helper
+                    return
 
             # Run function under the tracer
-            sys.setprofile(tracer)
+            sys.settrace(tracer)
             try:
                 value = func(*args, **kwargs)
             finally:
-                sys.setprofile(None)
+                sys.settrace(None)
 
             # Log relevant info
             print('logging relevant info')

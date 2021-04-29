@@ -109,7 +109,6 @@ class Store(object):
         res = self.session.query(IOPointer).filter(IOPointer.name.in_(names)).all()
         res_names = set([r.name for r in res])
         need_to_add = set(names) - res_names
-        print(len(need_to_add))
 
         if len(need_to_add) != 0:
             # Create new IOPointers
