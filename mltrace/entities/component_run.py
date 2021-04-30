@@ -13,7 +13,7 @@ import typing
 
 def get_timestamp() -> int:
     """Returns current timestamp as seconds since epoch."""
-    return int(datetime.now().strftime('%s'))
+    return int(datetime.utcnow().strftime('%s'))
 
 
 class ComponentRun(Base):
@@ -95,12 +95,12 @@ seconds since epoch."""
 
     def set_start_timestamp(self, ts=None):
         if ts is None:
-            ts = datetime.now()
+            ts = datetime.utcnow()
         self._start_timestamp = ts
 
     def set_end_timestamp(self, ts=None):
         if ts is None:
-            ts = datetime.now()
+            ts = datetime.utcnow()
         self._end_timestamp = ts
 
     def add_input(self, name: str, pointer_type: PointerTypeEnum = None):

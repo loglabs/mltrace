@@ -154,7 +154,6 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
                 sys.settrace(None)
 
             # Log relevant info
-            print('logging relevant info')
             component_run.set_end_timestamp()
             input_pointers = [store.get_io_pointer(inp) for inp in inputs]
             output_pointers = [store.get_io_pointer(
@@ -177,7 +176,6 @@ def register(component_name: str, inputs: typing.List[str] = [], outputs: typing
                     bytes(func_source_code, 'ascii'))
 
             # Commit component run object to the DB
-            print('committing component run')
             store.commit_component_run(component_run)
 
             return value
