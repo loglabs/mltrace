@@ -22,9 +22,9 @@ def _create_engine_wrapper(uri: str, max_retries=5) -> sqlalchemy.engine.base.En
             engine = create_engine(uri)
             return engine
         except Exception as e:
-            print(f'DB could not be created with exception {e}. Trying again.')
+            print(f"DB could not be created with exception {e}. Trying again.")
         retries += 1
-    raise RuntimeError('Max retries hit.')
+    raise RuntimeError("Max retries hit.")
 
 
 def _initialize_db_tables(engine: sqlalchemy.engine.base.Engine):
@@ -73,12 +73,10 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
 
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevnat enum for the filename."""
-    data_extensions = ['csv', 'pq', 'parquet',
-                       'txt', 'md', 'rtf', 'tsv', 'xml', 'pdf']
-    model_extensions = ['h5', 'hdf5', 'joblib',
-                        'pkl', 'pickle', 'ckpt', 'mlmodel']
+    data_extensions = ["csv", "pq", "parquet", "txt", "md", "rtf", "tsv", "xml", "pdf"]
+    model_extensions = ["h5", "hdf5", "joblib", "pkl", "pickle", "ckpt", "mlmodel"]
 
-    words = filename.split('.')
+    words = filename.split(".")
 
     if len(words) < 1:
         return PointerTypeEnum.UNKNOWN
