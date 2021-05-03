@@ -111,7 +111,6 @@ class ComponentRun(Base):
         if ts is None:
             ts = datetime.utcnow()
 
-        print(type(ts))
         if not isinstance(ts, datetime):
             raise TypeError("Timestamp must be of type datetime.")
 
