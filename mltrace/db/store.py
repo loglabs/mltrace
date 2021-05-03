@@ -179,6 +179,9 @@ class Store(object):
         if not status_dict["success"]:
             raise RuntimeError(status_dict["msg"])
 
+        if status_dict["msg"]:
+            logging.warning(status_dict["msg"])
+
         # Commit to DB
         self.session.add(component_run)
         logging.info(

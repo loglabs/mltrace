@@ -140,11 +140,23 @@ class ComponentRun(Base):
 
     def set_start_timestamp(self, ts: datetime = None):
         """Call this function to set the start timestamp to a specific timestamp or now."""
-        self.start_timestamp = ts if ts else datetime.utcnow()
+        if ts is None:
+            ts = datetime.utcnow()
+
+        if not isinstance(ts, datetime):
+            raise TypeError("Timestamp must be of type datetime.")
+
+        self._start_timestamp = ts
 
     def set_end_timestamp(self, ts: datetime = None):
         """Call this function to set the end timestamp to a specific timestamp or now."""
-        self.end_timestamp = ts if ts else datetime.utcnow()
+        if ts is None:
+            ts = datetime.utcnow()
+
+        if not isinstance(ts, datetime):
+            raise TypeError("Timestamp must be of type datetime.")
+
+        self._end_timestamp = ts
 
     def set_code_snapshot(self, code_snapshot: bytes):
         """Code snapshot setter."""
@@ -207,4 +219,15 @@ class ComponentRun(Base):
             status_dict[
                 "msg"
             ] += f"{self.component_name} ComponentRun has no end timestamp. "
+
+        # Show warnings if there are no dependencies or I/O.
+        if len(self.inputs) == 0:
+            status_dict["msg"] += f"{self.component_name} ComponentRun has no inputs. "
+        if len(self.outputs) == 0:
+            status_dict["msg"] += f"{self.component_name} ComponentRun has no outputs. "
+        if len(self.dependencies) == 0:
+            status_dict[
+                "msg"
+            ] += f"{self.component_name} ComponentRun has no dependencies. "
+
         return status_dict
