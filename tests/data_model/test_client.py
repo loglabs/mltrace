@@ -94,7 +94,7 @@ class TestComponentRun(unittest.TestCase):
         cr.add_inputs(self.mock_inputs)
         cr.add_inputs(self.mock_inputs)
 
-        self.assertEqual(cr.inputs, self.mock_inputs)
+        self.assertEqual(cr.inputs, list(set(self.mock_inputs)))
 
 
 if __name__ == "__main__":
