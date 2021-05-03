@@ -1,5 +1,6 @@
 # mltrace
 
+[![Build Status](https://travis-ci.com/loglabs/mltrace.svg?branch=master)](https://travis-ci.com/loglabs/mltrace)
 [![Documentation Status](https://readthedocs.org/projects/mltrace/badge/?version=latest)](https://mltrace.readthedocs.io/en/latest/?badge=latest)
 
 This tool tracks data flow through various components in ML pipelines and
