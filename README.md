@@ -1,7 +1,8 @@
 # mltrace
 
-[![Build Status](https://travis-ci.com/loglabs/mltrace.svg?branch=master)](https://travis-ci.com/loglabs/mltrace)
+[![mltrace](https://github.com/loglabs/mltrace/actions/workflows/python-package.yml/badge.svg)](https://github.com/loglabs/mltrace/actions/workflows/python-package.yml)
 [![Documentation Status](https://readthedocs.org/projects/mltrace/badge/?version=latest)](https://mltrace.readthedocs.io/en/latest/?badge=latest)
+![PyPI](https://img.shields.io/pypi/v/mltrace)
 
 This tool tracks data flow through various components in ML pipelines and
 contains a UI and API to show a trace of steps in an ML pipeline that produces
