@@ -60,20 +60,14 @@ class Store(object):
         component = self.session.query(Component).outerjoin(
             Tag, Component.tags).filter(Component.name == name).first()
 
-        if component:
-            return component
-
-        raise RuntimeError(f'Component with name {name} not found.')
+        return component
 
     def get_component_run(self, id: str) -> ComponentRun:
         """Retrieves component run if exists."""
         component_run = self.session.query(ComponentRun).filter(
             ComponentRun.id == id).first()
 
-        if component_run:
-            return component_run
-
-        raise RuntimeError(f'Component run with id {id} not found.')
+        return component_run
 
     def add_tags_to_component(self, component_name: str, tags: typing.List[str]):
         """Retreives existing component and adds tags."""
@@ -108,7 +102,26 @@ class Store(object):
         # Return existing Tag
         return res[0]
 
-    def get_io_pointer(self, name=str, pointer_type: PointerTypeEnum = None, create=True) -> IOPointer:
+    def get_io_pointers(self, names: typing.List[str], pointer_type: PointerTypeEnum = None) -> typing.List[IOPointer]:
+        """Creates io pointers around the specified path names. Retrieves existing
+        io pointer if exists in DB, otherwise creates a new one with inferred pointer
+        type."""
+        res = self.session.query(IOPointer).filter(IOPointer.name.in_(names)).all()
+        res_names = set([r.name for r in res])
+        need_to_add = set(names) - res_names
+
+        if len(need_to_add) != 0:
+            # Create new IOPointers
+            if pointer_type == None:
+                pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
+            iops = [IOPointer(name=name, pointer_type=pointer_type) for name in need_to_add]
+            self.session.add_all(iops)
+            self.session.commit()
+            return res + iops
+        
+        return res
+    
+    def get_io_pointer(self, name: str, pointer_type: PointerTypeEnum = None, create=True) -> IOPointer:
         """ Creates an io pointer around the specified path.
         Retrieves existing io pointer if exists in DB,
         otherwise creates a new one if create flag is set."""
@@ -207,6 +220,8 @@ class Store(object):
                 out_dict['icon'] = 'database'
             elif out.pointer_type == PointerTypeEnum.MODEL:
                 out_dict['icon'] = 'function'
+            elif out.pointer_type == PointerTypeEnum.ENDPOINT:
+                out_dict['icon'] = 'flow-end'
 
             res['childNodes'].append(out_dict)
 

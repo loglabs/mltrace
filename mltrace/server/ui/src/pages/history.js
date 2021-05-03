@@ -70,7 +70,7 @@ export default class History extends Component {
         );
 
         return (
-            <div className='bp3-minimal' style={{ maxWidth: '80%', paddingBottom: '1em' }}>
+            <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
                 <div style={{ display: 'flex', margin: '1em' }}>
                     <h3> Showing history for component:
                     </h3>

@@ -111,11 +111,11 @@ class ComponentRun(Base):
 
     def set_start_timestamp(self, ts: datetime = None):
         """Call this function to set the start timestamp to a specific timestamp or now."""
-        self.start_timestamp = ts if ts else datetime.now()
+        self.start_timestamp = ts if ts else datetime.utcnow()
 
     def set_end_timestamp(self, ts: datetime = None):
         """Call this function to set the end timestamp to a specific timestamp or now."""
-        self.end_timestamp = ts if ts else datetime.now()
+        self.end_timestamp = ts if ts else datetime.utcnow()
 
     def set_code_snapshot(self, code_snapshot: bytes):
         """Code snapshot setter."""

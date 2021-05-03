@@ -15,7 +15,7 @@ function styleLabels(node) {
     // Set label to monospace style
     if (node.hasCaret === false) {
         node.label = (
-            <div style={{ fontFamily: 'monospace' }}>{node.label}</div>
+            <div style={{ fontFamily: 'monospace', wordWrap: 'break-word' }}>{node.label}</div>
         )
     }
 
@@ -77,7 +77,8 @@ export default class Trace extends Component {
 
         let childStyle = {
             flex: '0 1 auto',
-            margin: '1em',
+            marginTop: '1em',
+            marginBottom: '1em',
             // paddingRight: '10em'
         }
 
@@ -91,7 +92,7 @@ export default class Trace extends Component {
             </div>
         );
 
-        let style = { display: 'flex', margin: '1em', width: '85%' };
+        let style = { display: 'flex', margin: '1em'};
 
         return (
             <div style={style}>

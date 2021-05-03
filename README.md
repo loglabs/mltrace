@@ -8,7 +8,7 @@ an output. It consists of an ORM-backed database, helper functions for users to
 perform logging in their pipelines, and a UI for users to view metadata and
 trace outputs.
 
-The prototype is very lofi, but this `readme` contains instructions on how to
+The prototype is very lofi, but this `README` contains instructions on how to
 run the prototype on your machine.
 
 ![screenshot](./res/home.png)
