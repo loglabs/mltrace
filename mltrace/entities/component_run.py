@@ -93,21 +93,35 @@ seconds since epoch."""
     def id(self) -> str:
         return self._id
 
-    def set_start_timestamp(self, ts=None):
+    def set_start_timestamp(self, ts: datetime = None):
         if ts is None:
             ts = datetime.utcnow()
+
+        print(type(ts))
+        if not isinstance(ts, datetime):
+            raise TypeError('Timestamp must be of type datetime.')
+        
         self._start_timestamp = ts
 
-    def set_end_timestamp(self, ts=None):
+    def set_end_timestamp(self, ts: datetime = None):
         if ts is None:
             ts = datetime.utcnow()
+        
+        if not isinstance(ts, datetime):
+            raise TypeError('Timestamp must be of type datetime.')
+            
         self._end_timestamp = ts
 
-    def add_input(self, name: str, pointer_type: PointerTypeEnum = None):
+    def add_input(self, inp: typing.Union[str, IOPointer], pointer_type: PointerTypeEnum = None):
         """Add a single input (instance of IOPointer)."""
+        print(type(inp))
+        if isinstance(inp, IOPointer):
+            self._add_io(inp, True)
+            return
+        
         if pointer_type is None:
-            pointer_type = _map_extension_to_enum(name)
-        self._add_io(IOPointer(name, pointer_type), True)
+            pointer_type = _map_extension_to_enum(inp)
+        self._add_io(IOPointer(inp, pointer_type), True)
 
     def add_inputs(self, inputs: typing.List[IOPointer]):
         """Add a list of inputs (each element should be an instance of 
@@ -118,11 +132,15 @@ seconds since epoch."""
             else:
                 self._add_io(inp, True)
 
-    def add_output(self, name: str, pointer_type: PointerTypeEnum = None):
+    def add_output(self, out: typing.Union[str, IOPointer], pointer_type: PointerTypeEnum = None):
         """"Add a single output (instance of IOPointer)."""
+        if isinstance(out, IOPointer):
+            self._add_io(out, False)
+            return
+
         if pointer_type is None:
-            pointer_type = _map_extension_to_enum(name)
-        self._add_io(IOPointer(name, pointer_type), False)
+            pointer_type = _map_extension_to_enum(out)
+        self._add_io(IOPointer(out, pointer_type), False)
 
     def add_outputs(self, outputs: typing.List[IOPointer]):
         """Add a list of outputs (each element should be an instance of IOPointer)."""
@@ -137,9 +155,9 @@ seconds since epoch."""
         # Elems can be a list or a single IOPointer. Set to a list.
         elems = [elems] if not isinstance(elems, list) else elems
         if input:
-            self.inputs = self.inputs + elems
+            self.inputs = list(set(self.inputs + elems))
         else:
-            self.outputs = self.outputs + elems
+            self.outputs = list(set(self.outputs + elems))
 
     def set_upstream(self, dependencies: typing.Union[str, typing.List[str]]):
         """ Set dependencies for this ComponentRun. API similar to Airflow

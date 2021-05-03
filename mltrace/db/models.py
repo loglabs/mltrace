@@ -146,9 +146,9 @@ class ComponentRun(Base):
         # Elems can be a list or a single IOPointer. Set to a list.
         elems = [elems] if not isinstance(elems, list) else elems
         if input:
-            self.inputs += elems
+            self.inputs = list(set(self.inputs + elems))
         else:
-            self.outputs += elems
+            self.outputs = list(set(self.outputs + elems))
 
     def set_upstream(self, dependencies: typing.Union[typing.List[ComponentRun], ComponentRun]):
         """Set dependencies for this ComponentRun. API similar to Airflow set_upstream."""
