@@ -277,7 +277,7 @@ def get_component_information(component_name: str) -> Component:
     store = Store(_db_uri)
     c = store.get_component(component_name)
     if not c:
-        raise RuntimeError(f"Component with name {name} not found.")
+        raise RuntimeError(f"Component with name {component_name} not found.")
     tags = [tag.name for tag in c.tags]
     d = copy.deepcopy(c.__dict__)
     d.update({"tags": tags})
