@@ -137,7 +137,7 @@ class ComponentRun(Base):
             pointer_type = _map_extension_to_enum(inp)
         self._add_io(IOPointer(inp, pointer_type), True)
 
-    def add_inputs(self, inputs: typing.List[IOPointer]):
+    def add_inputs(self, inputs: typing.List[typing.Union[str, IOPointer]]):
         """Add a list of inputs (each element should be an instance of
         IOPointer)."""
         for inp in inputs:
@@ -158,7 +158,7 @@ class ComponentRun(Base):
             pointer_type = _map_extension_to_enum(out)
         self._add_io(IOPointer(out, pointer_type), False)
 
-    def add_outputs(self, outputs: typing.List[IOPointer]):
+    def add_outputs(self, outputs: typing.List[typing.Union[str, IOPointer]]):
         """Add a list of outputs (each element should be an instance of IOPointer)."""
         for out in outputs:
             if isinstance(out, str):

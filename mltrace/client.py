@@ -59,8 +59,12 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
     )
 
     # Add relevant attributes
-    component_run_sql.set_start_timestamp(component_run_dict["start_timestamp"])
-    component_run_sql.set_end_timestamp(component_run_dict["end_timestamp"])
+    if component_run_dict["start_timestamp"]:
+        component_run_sql.set_start_timestamp(component_run_dict["start_timestamp"])
+
+    if component_run_dict["end_timestamp"]:
+        component_run_sql.set_end_timestamp(component_run_dict["end_timestamp"])
+
     component_run_sql.set_git_hash(component_run_dict["git_hash"])
     component_run_sql.set_code_snapshot(component_run_dict["code_snapshot"])
 
@@ -132,11 +136,11 @@ def register(
                 # Add input_vars and output_vars as pointers
                 for var in input_vars:
                     if var not in local_vars:
-                        logging.warning(f"Variable {var} not in current stack frame.")
+                        logging.debug(f"Variable {var} not in current stack frame.")
                         continue
                     val = local_vars[var]
                     if val == None:
-                        logging.warning(f"Variable {var} has value {val}.")
+                        logging.debug(f"Variable {var} has value {val}.")
                         continue
                     if isinstance(val, list):
                         input_pointers += store.get_io_pointers(val)
@@ -144,11 +148,11 @@ def register(
                         input_pointers.append(store.get_io_pointer(str(val)))
                 for var in output_vars:
                     if var not in local_vars:
-                        logging.warning(f"Variable {var} not in current stack frame.")
+                        logging.debug(f"Variable {var} not in current stack frame.")
                         continue
                     val = local_vars[var]
                     if val == None:
-                        logging.warning(f"Variable {var} has value {val}.")
+                        logging.debug(f"Variable {var} has value {val}.")
                         continue
                     if isinstance(val, list):
                         output_pointers += (

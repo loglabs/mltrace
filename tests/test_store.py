@@ -8,7 +8,7 @@ from mltrace.db import Component, ComponentRun, IOPointer, Store
 
 class TestStore(unittest.TestCase):
     def setUp(self):
-        self.store = Store("test", test=True)
+        self.store = Store("test")
 
     def testComponent(self):
         self.store.create_component("test_component", "test_description", "shreya")
