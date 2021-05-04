@@ -1,5 +1,6 @@
 import copy
 import unittest
+import warnings
 
 from datetime import datetime
 from mltrace.db import Component, ComponentRun, IOPointer, Store
@@ -129,7 +130,47 @@ class TestStore(unittest.TestCase):
         self.assertTrue(component_runs[3] in component_runs[0].dependencies)
 
     def testTrace(self):
-        pass
+        # Create dag of computation
+        # Create component and IOPointers
+        self.store.create_component("test_component", "test_description", "shreya")
+        iop = [self.store.get_io_pointer(f"iop_{i}") for i in range(1, 5)]
+
+        # Create component runs
+        cr1 = self.store.initialize_empty_component_run("test_component")
+        cr1.set_start_timestamp()
+        cr1.set_end_timestamp()
+        cr1.add_output(iop[0])
+        self.store.set_dependencies_from_inputs(cr1)
+        self.store.commit_component_run(cr1)
+
+        cr2 = self.store.initialize_empty_component_run("test_component")
+        cr2.set_start_timestamp()
+        cr2.set_end_timestamp()
+        cr2.add_output(iop[0])
+        self.store.set_dependencies_from_inputs(cr2)
+        self.store.commit_component_run(cr2)
+
+        cr3 = self.store.initialize_empty_component_run("test_component")
+        cr3.set_start_timestamp()
+        cr3.set_end_timestamp()
+        cr3.add_input(iop[0])
+        cr3.add_outputs([iop[1], iop[2]])
+        self.store.set_dependencies_from_inputs(cr3)
+        self.store.commit_component_run(cr3)
+
+        cr4 = self.store.initialize_empty_component_run("test_component")
+        cr4.set_start_timestamp()
+        cr4.set_end_timestamp()
+        cr4.add_input(iop[2])
+        cr4.add_output(iop[3])
+        self.store.set_dependencies_from_inputs(cr4)
+        self.store.commit_component_run(cr4)
+
+        # Call trace functionality
+        trace = self.store.trace(iop[3].name)
+        level_id = [(l, cr.id) for l, cr in trace]
+
+        self.assertEqual(level_id, [(0, 4), (1, 3), (2, 2)])
 
     def testWebTrace(self):
         pass

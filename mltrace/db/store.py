@@ -212,6 +212,9 @@ class Store(object):
         sets the ComponentRun's dependency on the most recent match."""
         input_ids = [inp.name for inp in component_run.inputs]
 
+        if len(input_ids) == 0:
+            return
+
         match_ids = (
             self.session.query(
                 func.max(component_run_output_association.c.component_run_id),
@@ -302,6 +305,9 @@ class Store(object):
         """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
         many hops away the node is from the node that produced the output_id."""
+        if not isinstance(output_id, str):
+            raise RuntimeError("Please specify an output id of string type.")
+
         component_run_object = (
             self.session.query(ComponentRun)
             .outerjoin(IOPointer, ComponentRun.outputs)
@@ -312,10 +318,8 @@ class Store(object):
         if component_run_object is None:
             raise RuntimeError(f"ID {output_id} does not exist.")
 
-        print(f"Printing trace for output {output_id}...")
-
         node_list = []
-        self._traverse(component_run_object, 1, node_list)
+        self._traverse(component_run_object, 0, node_list)
         return node_list
 
     def trace_batch(self, output_ids: typing.List[str]):
