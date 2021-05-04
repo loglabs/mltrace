@@ -1,6 +1,7 @@
 import copy
 import unittest
 
+from datetime import datetime
 from mltrace.db import Component, ComponentRun, IOPointer, Store
 
 
@@ -89,7 +90,43 @@ class TestStore(unittest.TestCase):
         self.assertEqual(set(iops), set(iops2))
 
     def testSetDependenciesFromInputs(self):
-        pass
+        # Create IO pointers
+        inp = self.store.get_io_pointer("inp")
+        out = self.store.get_io_pointer("out")
+        another_out = self.store.get_io_pointer("another_out")
+
+        # Create two component runs that have the same output
+        self.store.create_component("test_component", "test_description", "shreya")
+        for idx in range(2):
+            cr = self.store.initialize_empty_component_run("test_component")
+            cr.set_start_timestamp()
+            cr.set_end_timestamp()
+            cr.add_input(inp)
+            cr.add_output(out)
+            self.store.commit_component_run(cr)
+
+        # Create another two component runs that have the same output
+        self.store.create_component("test_component", "test_description", "shreya")
+        for idx in range(2):
+            cr = self.store.initialize_empty_component_run("test_component")
+            cr.set_start_timestamp()
+            cr.set_end_timestamp()
+            cr.add_input(inp)
+            cr.add_output(another_out)
+            self.store.commit_component_run(cr)
+
+        # Create new component run that depends on "out" pointer
+        cr = self.store.initialize_empty_component_run("test_component")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_inputs([out, another_out])
+        self.store.set_dependencies_from_inputs(cr)
+        self.store.commit_component_run(cr)
+
+        # Retrieve latest component run and check dependencies
+        component_runs = self.store.get_history("test_component", limit=None)
+        self.assertTrue(component_runs[1] in component_runs[0].dependencies)
+        self.assertTrue(component_runs[3] in component_runs[0].dependencies)
 
     def testTrace(self):
         pass
