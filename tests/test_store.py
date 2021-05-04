@@ -129,7 +129,7 @@ class TestStore(unittest.TestCase):
         self.assertTrue(component_runs[1] in component_runs[0].dependencies)
         self.assertTrue(component_runs[3] in component_runs[0].dependencies)
 
-    def testTrace(self):
+    def _set_up_computation(self):
         # Create dag of computation
         # Create component and IOPointers
         self.store.create_component("test_component", "test_description", "shreya")
@@ -166,14 +166,78 @@ class TestStore(unittest.TestCase):
         self.store.set_dependencies_from_inputs(cr4)
         self.store.commit_component_run(cr4)
 
+    def testTrace(self):
+        self._set_up_computation()
+
         # Call trace functionality
-        trace = self.store.trace(iop[3].name)
+        trace = self.store.trace("iop_4")
         level_id = [(l, cr.id) for l, cr in trace]
 
         self.assertEqual(level_id, [(0, 4), (1, 3), (2, 2)])
 
+    def testEmptyTrace(self):
+        with self.assertRaises(RuntimeError):
+            self.store.trace("some_weird_pointer")
+        with self.assertRaises(RuntimeError):
+            self.store.web_trace("some_weird_pointer")
+
     def testWebTrace(self):
-        pass
+        self._set_up_computation()
+
+        # Call web trace functionality. The ordering is nondeterministic.
+        expected_res = [
+            {
+                "id": "componentrun_4",
+                "label": "test_component",
+                "hasCaret": True,
+                "isExpanded": True,
+                "childNodes": [
+                    {
+                        "id": "iopointer_iop_4",
+                        "label": "iop_4",
+                        "hasCaret": False,
+                        "parent": "componentrun_4",
+                    },
+                    {
+                        "id": "componentrun_3",
+                        "label": "test_component",
+                        "hasCaret": True,
+                        "isExpanded": True,
+                        "childNodes": [
+                            {
+                                "id": "iopointer_iop_2",
+                                "label": "iop_2",
+                                "hasCaret": False,
+                                "parent": "componentrun_3",
+                            },
+                            {
+                                "id": "iopointer_iop_3",
+                                "label": "iop_3",
+                                "hasCaret": False,
+                                "parent": "componentrun_3",
+                            },
+                            {
+                                "id": "componentrun_2",
+                                "label": "test_component",
+                                "hasCaret": True,
+                                "isExpanded": True,
+                                "childNodes": [
+                                    {
+                                        "id": "iopointer_iop_1",
+                                        "label": "iop_1",
+                                        "hasCaret": False,
+                                        "parent": "componentrun_2",
+                                    }
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            }
+        ]
+        web_trace = self.store.web_trace("iop_4")
+
+        self.assertEqual(web_trace, expected_res)
 
 
 if __name__ == "__main__":

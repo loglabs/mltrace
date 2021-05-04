@@ -262,7 +262,7 @@ class Store(object):
         res["isExpanded"] = True
         res["childNodes"] = []
 
-        for out in component_run_object.outputs:
+        for out in sorted(component_run_object.outputs, key=lambda x: x.name):
             out_dict = {
                 "id": f"iopointer_{out.name}",
                 "label": out.name,
@@ -280,7 +280,7 @@ class Store(object):
 
             res["childNodes"].append(out_dict)
 
-        for dep in component_run_object.dependencies:
+        for dep in sorted(component_run_object.dependencies, key=lambda x: x.id):
             child_res = self._web_trace_helper(dep)
             res["childNodes"].append(child_res)
 
