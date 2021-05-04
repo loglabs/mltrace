@@ -15,16 +15,22 @@ import typing
 class Store(object):
     """Helper methods to interact with the db."""
 
-    def __init__(self, uri: str, delete_first=False):
+    def __init__(self, uri: str, delete_first: bool = False, test: bool = False):
         """
         Creates the postgres database for the store. Raises exception if uri
         isn't prefixed with postgresql://.
 
         Args:
             uri (str): URI string to connect to the SQLAlchemy database.
+            delete_first (bool): Whether all the tables in the db should be deleted.
+            test (bool): Whether you want an in-memory db (used for unit tests).
         """
-        if not uri.startswith("postgresql://"):
+        if not uri.startswith("postgresql://") and not test:
             raise RuntimeError("Database URI must be prefixed with `postgresql://`")
+
+        if test:
+            uri = "sqlite:///:memory:"
+
         self.engine = _create_engine_wrapper(uri)
 
         # TODO(shreyashankar) remove this line
@@ -43,7 +49,7 @@ class Store(object):
         self.session.close()
 
     def create_component(
-        self, name: str, description: str, owner: str, tags: typing.List[str]
+        self, name: str, description: str, owner: str, tags: typing.List[str] = []
     ):
         """Creates a component entity in the database if it does not already exist."""
         res = self.get_component(name)
@@ -89,7 +95,7 @@ class Store(object):
         if not component:
             raise RuntimeError(f'Component with name "{component_name}" not found.')
 
-        tag_objects = [self.get_tag(t) for t in tags]
+        tag_objects = list(set([self.get_tag(t) for t in tags]))
         component.add_tags(tag_objects)
         self.session.commit()
 

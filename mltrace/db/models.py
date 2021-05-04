@@ -50,7 +50,7 @@ class Component(Base):
         self.tags = []
 
     def add_tags(self, tags: typing.List[Tag]):
-        self.tags += tags
+        self.tags = list(set(self.tags + tags))
 
 
 class Tag(Base):
@@ -146,7 +146,7 @@ class ComponentRun(Base):
         if not isinstance(ts, datetime):
             raise TypeError("Timestamp must be of type datetime.")
 
-        self._start_timestamp = ts
+        self.start_timestamp = ts
 
     def set_end_timestamp(self, ts: datetime = None):
         """Call this function to set the end timestamp to a specific timestamp or now."""
@@ -156,7 +156,7 @@ class ComponentRun(Base):
         if not isinstance(ts, datetime):
             raise TypeError("Timestamp must be of type datetime.")
 
-        self._end_timestamp = ts
+        self.end_timestamp = ts
 
     def set_code_snapshot(self, code_snapshot: bytes):
         """Code snapshot setter."""
