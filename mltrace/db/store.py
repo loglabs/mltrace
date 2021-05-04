@@ -123,9 +123,7 @@ class Store(object):
     def get_io_pointers(
         self, names: typing.List[str], pointer_type: PointerTypeEnum = None
     ) -> typing.List[IOPointer]:
-        """Creates io pointers around the specified path names. Retrieves existing
-        io pointer if exists in DB, otherwise creates a new one with inferred pointer
-        type."""
+        """Creates io pointers around the specified path names. Retrieves existing io pointer if exists in DB, otherwise creates a new one with inferred pointer type."""
         res = self.session.query(IOPointer).filter(IOPointer.name.in_(names)).all()
         res_names = set([r.name for r in res])
         need_to_add = set(names) - res_names
@@ -152,7 +150,12 @@ class Store(object):
         res = self.session.query(IOPointer).filter(IOPointer.name == name).all()
 
         # Must create new IOPointer
-        if len(res) == 0 and create == True:
+        if len(res) == 0:
+            if create == False:
+                raise RuntimeError(
+                    f"IOPointer with name {name} noes not exist. Set create flag to True if you would like to create it."
+                )
+
             logging.info(f'Creating new IOPointer with name "{name}".')
             if pointer_type == None:
                 pointer_type = _map_extension_to_enum(name)
