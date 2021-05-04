@@ -70,7 +70,23 @@ class TestStore(unittest.TestCase):
         self.assertEqual(tags, ["tag1"])
 
     def testIOPointer(self):
-        pass
+        # Test there is no IOPointer
+        with self.assertRaises(RuntimeError):
+            self.store.get_io_pointer("iop", create=False)
+
+        # Create IOPointer
+        iop = self.store.get_io_pointer("iop")
+        iop2 = self.store.get_io_pointer("iop")
+
+        self.assertEqual(iop, iop2)
+
+    def testIOPointers(self):
+        # Create new IOPointers from scratch
+        iop_names = [f"iop_{i}" for i in range(100)]
+        iops = self.store.get_io_pointers(iop_names)
+        iops2 = self.store.get_io_pointers(iop_names)
+
+        self.assertEqual(set(iops), set(iops2))
 
     def testSetDependenciesFromInputs(self):
         pass
