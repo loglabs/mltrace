@@ -129,7 +129,6 @@ class ComponentRun(Base):
         self, inp: typing.Union[str, IOPointer], pointer_type: PointerTypeEnum = None
     ):
         """Add a single input (instance of IOPointer)."""
-        print(type(inp))
         if isinstance(inp, IOPointer):
             self._add_io(inp, True)
             return
