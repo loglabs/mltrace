@@ -4,7 +4,15 @@ from mltrace.db.utils import (
     _drop_everything,
     _map_extension_to_enum,
 )
-from mltrace.db import Component, ComponentRun, IOPointer, PointerTypeEnum, Tag
+from mltrace.db import (
+    Component,
+    ComponentRun,
+    IOPointer,
+    PointerTypeEnum,
+    Tag,
+    component_run_output_association,
+)
+from mltrace.db.models import component_run_output_association
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker, joinedload
 
@@ -203,18 +211,22 @@ class Store(object):
         against any ComponentRun's outputs, and if there are any matches,
         sets the ComponentRun's dependency on the most recent match."""
         input_ids = [inp.name for inp in component_run.inputs]
-        matches = (
+
+        match_ids = (
             self.session.query(
-                ComponentRun,
-                func.max(ComponentRun.start_timestamp).over(
-                    partition_by=ComponentRun.component_name
-                ),
+                func.max(component_run_output_association.c.component_run_id),
             )
-            .outerjoin(IOPointer, ComponentRun.outputs)
-            .filter(IOPointer.name.in_(input_ids))
+            .group_by(component_run_output_association.c.output_path_name)
+            .filter(component_run_output_association.c.output_path_name.in_(input_ids))
             .all()
         )
-        matches = [m[0] for m in matches]
+        match_ids = [m[0] for m in match_ids]
+
+        matches = (
+            self.session.query(ComponentRun)
+            .filter(ComponentRun.id.in_(match_ids))
+            .all()
+        )
 
         # If there are no matches, return
         if len(matches) == 0:
