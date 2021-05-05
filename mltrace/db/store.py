@@ -310,6 +310,7 @@ class Store(object):
         component_run_object = (
             self.session.query(ComponentRun)
             .outerjoin(IOPointer, ComponentRun.outputs)
+            .order_by(ComponentRun.start_timestamp.desc())
             .filter(IOPointer.name == output_id)
             .first()
         )

@@ -1,8 +1,6 @@
 import copy
 import unittest
-import warnings
 
-from datetime import datetime
 from mltrace.db import Component, ComponentRun, IOPointer, Store
 
 
