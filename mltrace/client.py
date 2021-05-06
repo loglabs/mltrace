@@ -25,6 +25,13 @@ def get_db_uri() -> str:
     return _db_uri
 
 
+def set_address(address: str) ->
+    global _db_uri
+    first = _db_uri.split('@')[0]
+    last = _db_uri.split('@')[1].split(':')[1]
+    _db_uri = first + '@' + address + ':' + last
+
+
 def clean_db():
     """Deletes database and reinitializes tables."""
     store = Store(_db_uri, delete_first=True)
