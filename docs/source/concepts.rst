@@ -12,5 +12,5 @@ Keeping track of data flow in and out of these components can be tedious, especi
 Data model
 ^^^^^^^^^^
 
-The two prominent client-facing abstractions are the :class: `mltrace.entities.Component` and :class: `mltrace.entities.ComponentRun` abstractions.
+The two prominent client-facing abstractions are the :automodule: `mltrace.entities.component` and :automodule: `mltrace.entities.component\_run` abstractions.
 
