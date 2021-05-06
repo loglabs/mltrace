@@ -20,4 +20,4 @@ EXPOSE 8000
 COPY . .
 
 # run command
-CMD [ "python", "./mltrace/server/manage.py", "run", "--host", "0.0.0.0" ]
+CMD [ "python", "./mltrace/server/manage.py", "run", "--host", "0.0.0.0", "--port", "8000" ]
