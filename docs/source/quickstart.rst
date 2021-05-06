@@ -17,7 +17,7 @@ To use ``mltrace``, you first need to set up a server to log to. You will need t
 Server
 ^^^^^^
 
-On the machine you would like to run the server (can be your local machine), clone the latest version of mltrace_ and start the server by running:
+On the machine you would like to run the server (can be your local machine), clone the latest version of mltrace_. In the root directory, start the server by running:
 
 .. code-block :: python
 
