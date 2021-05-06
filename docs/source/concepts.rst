@@ -12,5 +12,5 @@ Keeping track of data flow in and out of these components can be tedious, especi
 Data model
 ^^^^^^^^^^
 
-The two prominent client-facing abstractions are the :py:class:`mltrace.entities.Component` and :py:class:`mltrace.entities.ComponentRun` abstractions.
+The two prominent client-facing abstractions are the :py:class:`~mltrace.entities.Component` and :py:class:`~mltrace.entities.ComponentRun` abstractions.
 
