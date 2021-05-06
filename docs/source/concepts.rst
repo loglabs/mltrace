@@ -14,3 +14,32 @@ Data model
 
 The two prominent client-facing abstractions are the :py:class:`~mltrace.entities.Component` and :py:class:`~mltrace.entities.ComponentRun` abstractions.
 
+:py:class:`mltrace.entities.Component`
+"""""""""
+
+The ``Component`` abstraction represents a stage in a pipeline and its static metadata, such as:
+
+* name
+* description
+* owner
+* tags (optional list of string values to reference the component by)
+
+Tags are generally useful when you have multiple components in a higher-level stage. For example, ETL computation could consist of different components such as "cleaning" or "feature generation." You could create the "cleaning" and "feature generation" components with the tag ``etl`` and then easily query component runs with the ``etl`` tag in the UI.
+
+:py:class:`mltrace.entities.ComponentRun`
+"""""""""
+
+The ``ComponentRun`` abstraction represents an instance of a ``Component`` being run. Think of a ``ComponentRun`` instance as an object storing *dynamic* metadata for a ``Component``, such as:
+
+* start timestamp
+* end timestamp
+* inputs
+* outputs
+* git hash
+* source code
+* dependencies (you do not need to manually declare)
+
+If you dig into the codebase, you will find another abstraction, the :py:class:`~mltrace.entities.IOPointer`. Inputs and outputs to ``ComponentRun``s are stored as ``IOPointer``s. You do not need to explicitly create an ``IOPointer`` -- the abstraction exists so that ``mltrace`` can easily find and store dependencies between ``ComponentRun``s.
+
+You will not need to explicitly define all of these variables, nor do you have to create instances of a ``ComponentRun`` yourself. See the next section for logging functions and an example.
+
