@@ -3,7 +3,7 @@
 Quickstart
 ==========
 
-To use `mltrace`, you first need to set up a server to log to. You will need the following utilities:
+To use ``mltrace``, you first need to set up a server to log to. You will need the following utilities:
 
 * `Docker<https://www.docker.com/products/docker-desktop>`_
 * `Postgres<https://www.postgresql.org/download/>`_
