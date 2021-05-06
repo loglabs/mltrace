@@ -3,7 +3,7 @@ from flask.cli import FlaskGroup
 from mltrace.server import app
 
 
-cli = FlaskGroup(app, static_folder=".ui/build")
+cli = FlaskGroup(app)
 
 
 if __name__ == "__main__":
