@@ -74,6 +74,8 @@ export default class Recent extends Component {
 
     render() {
 
+        console.log(this.state.componentRuns);
+
         if (this.state.componentRuns === null || this.state.componentRuns.length === 0) return null;
 
         let childStyle = {
