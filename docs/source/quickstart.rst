@@ -30,7 +30,7 @@ To set up the UI, navigate to ``mltrace/server/ui`` and run:
     yarn install
     yarn start
 
-Then you can navigate to ``<server_ip_address>:3000`` (or localhost:3000_) to use the UI.
+Then you can navigate to ``<server_ip_address>:3000`` (or localhost:3000_ if you are running locally) to use the UI.
 
 .. _mltrace: https://github.com/loglabs/mltrace
 .. _localhost:3000: http://localhost:3000
