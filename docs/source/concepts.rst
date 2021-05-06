@@ -7,3 +7,10 @@ Machine learning pipelines, or even complex data pipelines, are made up of sever
 
 .. image:: images/toy-ml-pipeline-diagram.svg
 
+Keeping track of data flow in and out of these components can be tedious, especially if multiple people are collaborating on the same end-to-end pipeline.This is because in ML pipelines, *different artifacts are produced (inputs and outputs) when the *same* component is run more than once.
+
+Data model
+^^^^^^^^^^
+
+The two prominent client-facing abstractions are the :class: ``mltrace.entities.component`` and ::clas:: ``mltrace.entities.component\_run`` abstractions.
+
