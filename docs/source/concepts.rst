@@ -39,7 +39,7 @@ The ``ComponentRun`` abstraction represents an instance of a ``Component`` being
 * source code
 * dependencies (you do not need to manually declare)
 
-If you dig into the codebase, you will find another abstraction, the :py:class:`~mltrace.entities.IOPointer`. Inputs and outputs to ``ComponentRun``s are stored as ``IOPointer``s. You do not need to explicitly create an ``IOPointer`` -- the abstraction exists so that ``mltrace`` can easily find and store dependencies between ``ComponentRun``s.
+If you dig into the codebase, you will find another abstraction, the :py:class:`~mltrace.entities.IOPointer`. Inputs and outputs to ``ComponentRun`` s are stored as ``IOPointer`` s. You do not need to explicitly create an ``IOPointer`` -- the abstraction exists so that ``mltrace`` can easily find and store dependencies between ``ComponentRun`` s.
 
 You will not need to explicitly define all of these variables, nor do you have to create instances of a ``ComponentRun`` yourself. See the next section for logging functions and an example.
 
