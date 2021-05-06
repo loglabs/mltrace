@@ -14,7 +14,7 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # expose port
-EXPOSE 5000
+EXPOSE 8000
 
 # copy project
 COPY . .

@@ -26,7 +26,7 @@ services:
     volumes:
       - .:/src
     ports:
-      - "5000:5000"
+      - "8000:8000"
     env_file:
       - ./.flaskenv
     restart: always
