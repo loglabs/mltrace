@@ -6,8 +6,9 @@ import pprint
 
 
 class IOPointer(Base):
-
-    def __init__(self, name: str, pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN):
+    def __init__(
+        self, name: str, pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN
+    ):
         self._name = name
         self._pointer_type = pointer_type
 
@@ -21,5 +22,5 @@ class IOPointer(Base):
 
     def __repr__(self):
         params = self.to_dictionary()
-        params['pointer_type'] = params['pointer_type'].value
+        params["pointer_type"] = params["pointer_type"].value
         return json.dumps(params)

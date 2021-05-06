@@ -8,8 +8,10 @@ import typing
 class Component(Base):
     """Component abstraction."""
 
-    def __init__(self, name: str, description: str, owner: str, tags: typing.List[str] = []):
-        """ Components should have a name, description, and owner. 
+    def __init__(
+        self, name: str, description: str, owner: str, tags: typing.List[str] = []
+    ):
+        """Components should have a name, description, and owner.
         Optionally they will have tags."""
         self._name = name
         self._description = description
