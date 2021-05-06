@@ -5,19 +5,19 @@ Quickstart
 
 To use ``mltrace``, you first need to set up a server to log to. You will need the following utilities:
 
-* `Docker
-<https://www.docker.com/products/docker-desktop>`_
-* `Postgres
-<https://www.postgresql.org/download/>`_
-* `Yarn
-<https://classic.yarnpkg.com/en/docs/install/>`_
+* Docker_
+* Postgres_
+* Yarn_
+
+.. _Docker: https://www.docker.com/products/docker-desktop
+.. _Postgres: https://www.postgresql.org/download/
+.. _Yarn: https://classic.yarnpkg.com/en/docs/install/
 
 
 Server
 ^^^^^^
 
-On the machine you would like to run the server (can be your local machine), clone the latest version of `mltrace`
-<https://github.com/loglabs/mltrace.git>`_ and start the server by running:
+On the machine you would like to run the server (can be your local machine), clone the latest version of mltrace_ and start the server by running:
 
 .. code-block :: python
 
@@ -30,7 +30,10 @@ To set up the UI, navigate to ``mltrace/server/ui`` and run:
     yarn install
     yarn start
 
-Then you can navigate to ``<server_ip_address>:3000`` to use the UI.
+Then you can navigate to ``<server_ip_address>:3000`` (or localhost:3000_) to use the UI.
+
+.. _mltrace: https://github.com/loglabs/mltrace
+.. _localhost:3000: http://localhost:3000
 
 Client
 ^^^^^^
