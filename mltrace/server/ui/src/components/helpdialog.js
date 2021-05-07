@@ -66,7 +66,7 @@ export default class HelpDialog extends Component {
                                 <tr>
                                     <td><tt>trace</tt></td>
                                     <td>Displays a trace of versioned steps that produced a given output.</td>
-                                    <td><tt>trace OUTPUT_ID</tt></td>
+                                    <td><tt>trace OUTPUT_NAME</tt></td>
                                 </tr>
                                 <tr>
                                     <td><tt>tag</tt></td>
