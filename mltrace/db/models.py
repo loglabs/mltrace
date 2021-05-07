@@ -47,7 +47,7 @@ class Component(Base):
         self.name = name
         self.description = description
         self.owner = owner
-        self.tags = []
+        self.tags = tags
 
     def add_tags(self, tags: typing.List[Tag]):
         self.tags = list(set(self.tags + tags))

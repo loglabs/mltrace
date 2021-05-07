@@ -69,7 +69,7 @@ class Store(object):
         logging.info(
             f'Creating new Component with name "{name}", description "{description}", owner "{owner}", and tags "{tags}".'
         )
-        tags = [Tag(t) for t in tags]
+        tags = list(set([self.get_tag(t) for t in tags]))
         component = Component(
             name=name, description=description, owner=owner, tags=tags
         )
@@ -196,7 +196,7 @@ class Store(object):
             raise RuntimeError(status_dict["msg"])
 
         if status_dict["msg"]:
-            logging.warning(status_dict["msg"])
+            logging.info(status_dict["msg"])
 
         # Commit to DB
         self.session.add(component_run)

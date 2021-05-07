@@ -49,7 +49,19 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-The files in the `examples` folder contain sample scripts you can run. You can also look at them for examples on how to integrate `mltrace` into your ML pipelines, or check out the [official documentation](https://mltrace.readthedocs.io/en/latest/).
+The files in the `examples` folder contain sample scripts you can run. For instance, if you run `examples/industry_ml.py`, you might get an output like:
+
+```
+> python examples/industry_ml.py
+Final output id: zguzvnwsux
+```
+
+And if you trace this output in the UI (`trace zguzvnwsux`), you will get:
+
+![screenshot](./res/industry_ml.png)
+
+
+You can also look at `examples` for ways to integrate `mltrace` into your ML pipelines, or check out the [official documentation](https://mltrace.readthedocs.io/en/latest/).
 
 ### Launch UI
 
