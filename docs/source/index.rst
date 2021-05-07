@@ -24,6 +24,15 @@ Design principles
 .. _solids: https://docs.dagster.io/concepts/solids-pipelines/solids
 .. _tracking: https://www.mlflow.org/docs/latest/tracking.html
 
+Roadmap
+^^^^^^^
+
+We are actively working on the following:
+
+- Displaying whether components are "stale" (i.e. you need to rerun a component such as training)
+- REST API to log from any type of file, not just a Python file
+- Prometheus integrations to monitor component output distributions
+
 
 Guides
 ^^^^^^

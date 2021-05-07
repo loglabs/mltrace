@@ -5,14 +5,16 @@
 ![PyPI](https://img.shields.io/pypi/v/mltrace)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This tool tracks data flow through various components in ML pipelines and
+`mltrace` tracks data flow through various components in ML pipelines and
 contains a UI and API to show a trace of steps in an ML pipeline that produces
-an output. It consists of an ORM-backed database, helper functions for users to
-perform logging in their pipelines, and a UI for users to view metadata and
-trace outputs.
+an output. It offers the following:
 
-The prototype is very lofi, but this `README` contains instructions on how to
-run the prototype on your machine.
+- coarse-grained lineage and tracing
+- Python API to log versions of data and pipeline components
+- database to store information about component runs
+- UI to show the trace of steps in a pipeline taken to produce an output
+
+`mltrace` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines. The prototype is very lofi, but this `README` contains instructions on how to run the prototype on your machine **if you are interested in developing.** For general usage instructions, please see the [official documentation](https://mltrace.readthedocs.io/en/latest/).
 
 ![screenshot](./res/home.png)
 
@@ -22,36 +24,40 @@ You should have Docker installed on your machine. To get started, you will need 
 
 1. Set up the database and Flask server
 2. Run some pipelines with logging
-3. Launch and UI
+3. Launch the UI
+
+If you are interested in learning about specific `mltrace` concepts, please read [this page](https://mltrace.readthedocs.io/en/latest/concepts.html) in the official docs.
 
 ### Database and server setup
 
-We use Postgres-backed SQLAlchemy. Unfortunately the db uri is hardcoded
-in multiple files, which I will change at some point. 
-
-Assuming you have Docker installed, you can run the following commands from the
+We use Postgres-backed SQLAlchemy. Assuming you have Docker installed, you can run the following commands from the
 root directory:
 
 ```
 docker-compose build
-docker-compose up
+docker-compose up [-d]
 ```
 
 And then to tear down the containers, you can run `docker-compose down`.
 
 ### Run pipelines
 
-The files  `populate_db.py` and `populate_db_logging.py` include some fake
-pipeline components with the relevant logging mechanisms. Pick one to run (I
-suggest `populate_db.py`) and run it by executing `make run`. To execute
-`populate_db_logging.py` you will need to run `make logrun`. Make will handle
-the dependencies.
+To use the logging functions, you will need to install various dependencies:
+
+```
+pip install -r requirements.txt
+pip install -e .
+```
+
+The files in the `examples` folder contain sample scripts you can run. You can also look at them for examples on how to integrate `mltrace` into your ML pipelines, or check out the [official documentation](https://mltrace.readthedocs.io/en/latest/).
 
 ### Launch UI
 
 To launch the UI, navigate to `./mltrace/server/ui` and execute `yarn
 install` then `yarn start`. The UI is based on `create-react-app`. Hopefully
-navigating the UI is intuitive.
+navigating the UI is intuitive. It should be served at [localhost:3000](localhost:3000). Here's an example of what tracing an output would give:
+
+![screenshot](./res/trace.png)
 
 #### Commands supported in the UI
 
@@ -63,4 +69,21 @@ navigating the UI is intuitive.
 | `trace OUTPUT_ID` | Shows a trace of steps for the output ID |
 | `tag TAG_NAME` | Shows all components with the tag name|
 
-## Code organization
+### Future directions
+
+The following projects are in the immediate roadmap:
+
+* Displaying whether components are "stale" (i.e. you need to rerun a component such as training)
+* REST API to log from any type of file, not just a Python file
+* Prometheus integrations to monitor component output distributions
+
+### Contributing
+
+Anyone is welcome to contribute, and your contribution is greatly appreciated! Feel free to either create issues or pull requests to address issues.
+
+1. Fork the repo
+2. Create your branch (`git checkout -b YOUR_GITHUB_USERNAME/somefeature`)
+3. Make changes and add files to the commit (`git add .`)
+4. Commit your changes (`git commit -m 'Add something'`)
+5. Push to your branch (`git push origin YOUR_GITHUB_USERNAME/somefeature`)
+6. Make a pull request

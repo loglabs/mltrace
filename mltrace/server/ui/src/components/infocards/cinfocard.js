@@ -116,7 +116,7 @@ export default class CInfoCard extends Component {
                     <Button onClick={this.handleClick} className='bp3-minimal' outlined={true}>
                         {this.state.isOpen ? "Hide" : "Show"} recent runs
                     </Button>
-                    <Collapse isOpen={this.state.isOpen} className='bp3-minimal' keepChildrenMounted={true} style={{maxWidth: '100%', display: 'inline-block'}}>
+                    <Collapse isOpen={this.state.isOpen} className='bp3-minimal' keepChildrenMounted={true} style={{ maxWidth: '100%', display: 'inline-block' }}>
                         <HTMLTable bordered={true} interactive={true} style={{ marginTop: '1em', maxWidth: '100%', display: 'inline-block', tableLayout: 'fixed' }}>
                             <thead>
                                 <tr>
@@ -126,7 +126,7 @@ export default class CInfoCard extends Component {
                                     <th>Outputs</th>
                                 </tr>
                             </thead>
-                            <tbody style={{maxWidth: '100%'}}>
+                            <tbody style={{ maxWidth: '100%' }}>
                                 {runElements}
                             </tbody>
                         </HTMLTable>

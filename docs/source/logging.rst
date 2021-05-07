@@ -3,7 +3,11 @@
 Logging
 ========
 
-``mltrace`` functions can be added to existing Python files to log component and run information to the server. Logging can be done via a decorator or explicit Python API. All logging functions are defined in the :py:mod:`mltrace` module.
+``mltrace`` functions can be added to existing Python files to log component and run information to the server. Logging can be done via a decorator or explicit Python API. All logging functions are defined in the :py:mod:`mltrace` module, which you can install via pip:
+
+.. code-block :: python
+
+    pip install mltrace
 
 For this example, we will add logging functions to a hypothetical ``cleaning.py`` that loads raw data and cleans it. In your Python file, before you call any logging functions, you will need to make sure you are connected to your server. To do so, include the following code snippet at the beginning of your file:
 
