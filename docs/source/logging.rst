@@ -21,7 +21,12 @@ For runs of components to be logged, you must first create the components themse
 
 .. code-block :: python
 
-    mltrace.create_component(name="cleaning", description="Removes records with data out of bounds", owner="shreya", tags=["etl"])
+    mltrace.create_component(
+        name="cleaning",
+        description="Removes records with data out of bounds",
+        owner="shreya",
+        tags=["etl"],
+    )
 
 You only need to do this once; however nothing happens if you run this code snippet more than once. It is fine to leave it in your Python file to run every time this file is run. If the component hasn't been created, you cannot have any runs of this component name. This is to enforce users to enter static metadata about a component, such as the description and owner, to better facilitate collaboration.
 
@@ -29,7 +34,7 @@ Logging runs
 ^^^^^^^^^^^^
 
 Decorator approach
-==================
+"""""""""
 
 Suppose we have a function ``clean`` in our ``cleaning.py`` file:
 
@@ -43,7 +48,7 @@ Suppose we have a function ``clean`` in our ``cleaning.py`` file:
         # Do some cleaning
         ...
         # Save cleaned dataframe
-        clean_version = filename + '_clean_{datetime.utcnow().strftime("%m%d%Y%H%M%S")}
+        clean_version = filename + '_clean_{datetime.utcnow().strftime("%m%d%Y%H%M%S")}.csv'
         df.to_csv(clean_version)
         return clean_version
 
@@ -55,20 +60,22 @@ We can include the :py:func:`~mltrace.register` decorator such that every time t
     from mltrace import register
     import pandas as pd
 
-    @register(component_name="cleaning", input_vars=["filename"], output_vars=["clean_version"])
+    @register(
+        component_name="cleaning", input_vars=["filename"], output_vars=["clean_version"]
+    )
     def clean_data(filename: str) -> str:
         df = pd.read_csv(filename)
         # Do some cleaning
         ...
         # Save cleaned dataframe
-        clean_version = filename + '_clean_{datetime.utcnow().strftime("%m%d%Y%H%M%S")}
+        clean_version = filename + '_clean_{datetime.utcnow().strftime("%m%d%Y%H%M%S")}.csv'
         df.to_csv(clean_version)
         return clean_version
 
 Note that ``input_vars`` and ``output_vars`` correspond to variables in the function. Their values at the time of return are logged. The start and end times, git hash, and source code snapshots are automatically captured. The dependencies are also automatically captured based on the values of the input variables.
 
 Python approach
-===============
+"""""""""
 
 You can also create an instance of a :py:class:`~mltrace.entities.ComponentRun` and log it using :py:func:`mltrace.log_component_run` yourself for greater flexibility. An example of this is as follows:
 
@@ -119,20 +126,27 @@ To put it all together, here's an end to end example of ``cleaning.py``:
     from mltrace import create_component, register, set_address
     import pandas as pd
 
-    @register(component_name="cleaning", input_vars=["filename"], output_vars=["clean_version"])
+    @register(
+        component_name="cleaning", input_vars=["filename"], output_vars=["clean_version"]
+    )
     def clean_data(filename: str) -> str:
         df = pd.read_csv(filename)
         # Do some cleaning
         ...
         # Save cleaned dataframe
-        clean_version = filename + '_clean_{datetime.utcnow().strftime("%m%d%Y%H%M%S")}
+        clean_version = filename + '_clean_{datetime.utcnow().strftime("%m%d%Y%H%M%S")}.csv'
         df.to_csv(clean_version)
         return clean_version
     
     if __name__ == "main":
         # Set hostname and create component
         set_address("localhost")
-        create_component(name="cleaning", description="Removes records with data out of bounds", owner="shreya", tags=["etl"])
+        create_component(
+            name="cleaning",
+            description="Removes records with data out of bounds",
+            owner="shreya",
+            tags=["etl"],
+        )
 
         # Run cleaning function
         clean_data("raw_data.csv")
