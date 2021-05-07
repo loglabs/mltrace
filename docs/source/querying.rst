@@ -8,7 +8,7 @@ The simplest way to query the logged runs is to use the ``mltrace`` UI. There ar
 Using the UI
 ^^^^^^^^^^^^
 
-As mentioned in the quickstart_, you should set up the database and server using ``docker-compose`` and serve the UI with ``yarn start``. The UI starts up showing the results of the ``recent`` command, or the most recent component runs logged.
+As mentioned in the :ref:`quickstart`, you should set up the database and server using ``docker-compose`` and serve the UI with ``yarn start``. The UI starts up showing the results of the ``recent`` command, or the most recent component runs logged.
 
 .. image:: images/darkrecent.png
 
