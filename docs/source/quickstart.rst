@@ -21,6 +21,7 @@ On the machine you would like to run the server (can be your local machine), clo
 
 .. code-block :: python
 
+    docker-compose build
     docker-compose up [-d]
 
 To set up the UI, navigate to ``mltrace/server/ui`` and run:
