@@ -142,7 +142,7 @@ To put it all together, here's an end to end example of ``cleaning.py``:
         df.to_csv(clean_version)
         return clean_version
     
-    if __name__ == "main":
+    if __name__ == "__main__"::
         # Set hostname and create component
         set_address("localhost")
         create_component(
