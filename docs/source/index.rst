@@ -1,7 +1,7 @@
 mltrace documentation
 ===================================
 
-``mltrace`` is an open-source Python tool to track data flow through various
+mltrace_ is an open-source Python tool to track data flow through various
 components in ML pipelines. It offers the following:
 
 - coarse-grained lineage and tracing
@@ -10,6 +10,8 @@ components in ML pipelines. It offers the following:
 - UI to show the trace of steps in a pipeline taken to produce an output
 
 ``mltrace`` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines.
+
+.. _mltrace: https://github.com/loglabs/mltrace
 
 Design principles
 ^^^^^^^^^^^^^^^^^
