@@ -155,4 +155,6 @@ To put it all together, here's an end to end example of ``cleaning.py``:
         # Run cleaning function
         clean_data("raw_data.csv")
 
-That's it! Now, every time this file is run, a new run for the cleaning component is logged. The next step will demonstrate how to query and use the UI.
+That's it! Now, every time this file is run, a new run for the cleaning component is logged. 
+
+To see an example of ``mltrace`` integrated in a toy ML pipeline, check out the ``db`` branch of [this repo](https://github.com/shreyashankar/toy-ml-pipeline/tree/shreyashankar/db). The next step will demonstrate how to query and use the UI.
