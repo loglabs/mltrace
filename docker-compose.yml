@@ -1,6 +1,14 @@
 version: '3'
 services:
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ./mltrace/server/ui
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+
   database:
     image: postgres
     volumes:      
