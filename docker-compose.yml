@@ -7,7 +7,12 @@ services:
       context: ./mltrace/server/ui
       dockerfile: Dockerfile
     ports:
-      - 80:80
+      - "80:80"
+    restart: always
+      networks:
+        services-network:
+          aliases:
+            - frontend
 
   database:
     image: postgres
