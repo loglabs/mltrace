@@ -37,7 +37,7 @@ def serialize_component_run(c: Component, cr: ComponentRun) -> str:
     return json.dumps(web_cr_dict)
 
 
-@app.route("/component_run", methods=["GET"])
+@api.route("/component_run", methods=["GET"])
 def component_run():
     if "id" not in request.args:
         return error(f"id not specified.", HTTPStatus.NOT_FOUND)
@@ -56,7 +56,7 @@ def component_run():
         )
 
 
-@app.route("/io_pointer", methods=["GET"])
+@api.route("/io_pointer", methods=["GET"])
 def io_pointer():
     if "id" not in request.args:
         return error(f"id not specified.", HTTPStatus.NOT_FOUND)
@@ -69,7 +69,7 @@ def io_pointer():
         return error(f"IOPointer {io_pointer_id} not found", HTTPStatus.NOT_FOUND)
 
 
-@app.route("/tag", methods=["GET"])
+@api.route("/tag", methods=["GET"])
 def tag():
     if "id" not in request.args:
         return error(f"id not specified.", HTTPStatus.NOT_FOUND)
@@ -82,7 +82,7 @@ def tag():
         return error(f"Tag {tag_name} not found", HTTPStatus.NOT_FOUND)
 
 
-@app.route("/history", methods=["GET"])
+@api.route("/history", methods=["GET"])
 def history():
     if "component_name" not in request.args:
         return error(f"component_name not specified.", HTTPStatus.NOT_FOUND)
@@ -99,7 +99,7 @@ def history():
         return error(f"Component {component_name} has no runs", HTTPStatus.NOT_FOUND)
 
 
-@app.route("/component", methods=["GET"])
+@api.route("/component", methods=["GET"])
 def component():
     if "id" not in request.args:
         return error(f"id not specified.", HTTPStatus.NOT_FOUND)
@@ -112,7 +112,7 @@ def component():
         return error(f"Component {component_name} not found", HTTPStatus.NOT_FOUND)
 
 
-@app.route("/recent", methods=["GET"])
+@api.route("/recent", methods=["GET"])
 def recent():
     component_run_ids = (
         get_recent_run_ids(request.args["limit"])
@@ -122,7 +122,7 @@ def recent():
     return json.dumps(component_run_ids)
 
 
-@app.route("/trace", methods=["GET"])
+@api.route("/trace", methods=["GET"])
 def trace():
     if "output_id" not in request.args:
         return error(f"output_id not specified.", HTTPStatus.NOT_FOUND)
