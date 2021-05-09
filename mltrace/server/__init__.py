@@ -16,7 +16,7 @@ import copy
 import json
 import logging
 
-app = Flask(__name__, static_folder="./ui/build/static/")
+app = Flask(__name__, static_folder="ui/build", static_url_path="")
 set_db_uri("postgresql://admin:admin@database:5432/sqlalchemy")
 
 
