@@ -147,9 +147,6 @@ class App extends Component {
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
         <BrowserRouter>
           <Switch>
-            <Route path="/recent">
-              <Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />
-            </Route>
             <Route path="/">
               {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
               {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
