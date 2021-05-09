@@ -66,7 +66,7 @@ You can also look at `examples` for ways to integrate `mltrace` into your ML pip
 ### Launch UI
 
 To launch the UI, navigate to `./mltrace/server/ui` and execute `yarn
-install` then `yarn start`. The UI is based on `create-react-app`. Hopefully
+install` then `yarn start`. The UI is based on `create-react-app` and [`blueprintjs`](https://blueprintjs.com/docs/). Hopefully
 navigating the UI is intuitive. It should be served at [localhost:3000](localhost:3000). Here's an example of what tracing an output would give:
 
 ![screenshot](./res/trace.png)
