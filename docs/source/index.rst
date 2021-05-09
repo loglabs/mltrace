@@ -34,6 +34,9 @@ We are actively working on the following:
 - Displaying whether components are "stale" (i.e. you need to rerun a component such as training)
 - REST API to log from any type of file, not just a Python file
 - Prometheus integrations to monitor component output distributions
+- Causal analysis for ML bugs — if you flag several outputs as mispredicted, which component runs were common in producing these outputs? Which component is most likely to be the biggest culprit in an issue?
+- Support for finer-grained lineage (at the record level)
+
 
 
 Guides
