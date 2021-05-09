@@ -8,7 +8,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const TAG_API_URL = '/tag'
+const TAG_API_URL = 'api/tag'
 
 export default class TagView extends Component {
 

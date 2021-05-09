@@ -6,7 +6,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const HISTORY_API_URL = '/history';
+const HISTORY_API_URL = '/api/history';
 
 export default class CInfoCard extends Component {
 

@@ -9,7 +9,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const TRACE_API_URL = "/trace";
+const TRACE_API_URL = "api/trace";
 
 function styleLabels(node) {
     // Set label to monospace style
@@ -92,7 +92,7 @@ export default class Trace extends Component {
             </div>
         );
 
-        let style = { display: 'flex', margin: '1em'};
+        let style = { display: 'flex', margin: '1em' };
 
         return (
             <div style={style}>

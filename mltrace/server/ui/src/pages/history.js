@@ -8,7 +8,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const COMPONENT_API_URL = '/component';
+const COMPONENT_API_URL = 'api/component';
 
 export default class History extends Component {
 
