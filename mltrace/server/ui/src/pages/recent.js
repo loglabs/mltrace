@@ -8,7 +8,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import InfoCard from '../components/infocard.js';
 
-const RECENT_API_URL = '/recent';
+const RECENT_API_URL = 'api/recent';
 
 export default class Recent extends Component {
 

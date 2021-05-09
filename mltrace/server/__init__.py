@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Blueprint, Flask, request, Response
 from http import HTTPStatus
 from mltrace.entities import Component, ComponentRun, IOPointer
 from mltrace import (
@@ -17,6 +17,7 @@ import json
 import logging
 
 app = Flask(__name__, static_folder="ui/build", static_url_path="")
+api = Blueprint("api", __name__)
 set_db_uri("postgresql://admin:admin@database:5432/sqlalchemy")
 
 
@@ -131,3 +132,6 @@ def trace():
         return json.dumps(res)
     except RuntimeError:
         return error(f"Output {output_id} not found", HTTPStatus.NOT_FOUND)
+
+
+app.register_blueprint(api, url_prefix="/api")
