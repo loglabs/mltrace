@@ -24,17 +24,10 @@ On the machine you would like to run the server (can be your local machine), clo
     docker-compose build
     docker-compose up [-d]
 
-To set up the UI, navigate to ``mltrace/server/ui`` and run:
-
-.. code-block :: python
-
-    yarn install
-    yarn start
-
-Then you can navigate to ``<server_ip_address>:3000`` (or localhost:3000_ if you are running locally) to use the UI.
+You can access the UI by navigating to ``<server_ip_address>:8080`` (or localhost:8080_ if you are running locally) in your browser. 
 
 .. _mltrace: https://github.com/loglabs/mltrace
-.. _localhost:3000: http://localhost:3000
+.. _localhost:8080: http://localhost:8080
 
 Client
 ^^^^^^

@@ -65,9 +65,7 @@ You can also look at `examples` for ways to integrate `mltrace` into your ML pip
 
 ### Launch UI
 
-To launch the UI, navigate to `./mltrace/server/ui` and execute `yarn
-install` then `yarn start`. The UI is based on `create-react-app` and [`blueprintjs`](https://blueprintjs.com/docs/). Hopefully
-navigating the UI is intuitive. It should be served at [localhost:3000](localhost:3000). Here's an example of what tracing an output would give:
+If you ran `docker-compose up` from the root directory, you can just navigate to the server's IP address at port 8080 (or `localhost:8080`) in your browser. To launch a dev version of the UI, navigate to `./mltrace/server/ui` and execute `yarn install` then `yarn start`. It should be served at [localhost:3000](localhost:3000). The UI is based on `create-react-app` and [`blueprintjs`](https://blueprintjs.com/docs/). Here's an example of what tracing an output would give:
 
 ![screenshot](./res/trace.png)
 
