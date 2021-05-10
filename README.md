@@ -42,7 +42,7 @@ And then to tear down the containers, you can run `docker-compose down`.
 
 ### Run pipelines
 
-To use the logging functions, you will need to install various dependencies:
+To use the logging functions in dev mode, you will need to install various dependencies:
 
 ```
 pip install -r requirements.txt
