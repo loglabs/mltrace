@@ -1,3 +1,4 @@
+from datetime import datetime
 from mltrace.db import Store, PointerTypeEnum
 from mltrace.entities import Component, ComponentRun, IOPointer
 
@@ -241,12 +242,17 @@ def get_git_hash() -> str:
 # ------------------------- Basic retrieval functions ------------------------ #
 
 
-def get_history(component_name: str, limit: int = 10) -> typing.List[ComponentRun]:
+def get_history(
+    component_name: str,
+    limit: int = 10,
+    date_lower: typing.Union[datetime, str] = datetime.min,
+    date_upper: typing.Union[datetime, str] = datetime.max,
+) -> typing.List[ComponentRun]:
     """Returns a list of ComponentRuns that are part of the component's
     history."""
     store = Store(_db_uri)
 
-    history = store.get_history(component_name, limit)
+    history = store.get_history(component_name, limit, date_lower, date_upper)
 
     # Convert to client-facing ComponentRuns
     component_runs = []
