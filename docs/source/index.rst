@@ -9,9 +9,10 @@ components in ML pipelines. It offers the following:
 - database to store information about component runs
 - UI to show the trace of steps in a pipeline taken to produce an output
 
-``mltrace`` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines.
+``mltrace`` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines. A more detailed blog post on why the tool was developed can be found here_.
 
 .. _mltrace: https://github.com/loglabs/mltrace
+.. _here: https://www.shreya-shankar.com/introducing-mltrace/
 
 Design principles
 ^^^^^^^^^^^^^^^^^

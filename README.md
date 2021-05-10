@@ -14,7 +14,7 @@ an output. It offers the following:
 - database to store information about component runs
 - UI to show the trace of steps in a pipeline taken to produce an output
 
-`mltrace` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines. The prototype is very lofi, but this `README` contains instructions on how to run the prototype on your machine **if you are interested in developing.** For general usage instructions, please see the [official documentation](https://mltrace.readthedocs.io/en/latest/).
+`mltrace` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines. The prototype is very lofi, but this `README` contains instructions on how to run the prototype on your machine **if you are interested in developing.** For general usage instructions, please see the [official documentation](https://mltrace.readthedocs.io/en/latest/). The accompanying blog post can be found [here](https://www.shreya-shankar.com/introducing-mltrace/).
 
 ![screenshot](./res/home.png)
 
