@@ -1,3 +1,4 @@
+from datetime import datetime
 from mltrace.db.utils import (
     _create_engine_wrapper,
     _initialize_db_tables,
@@ -326,12 +327,17 @@ class Store(object):
         pass
 
     def get_history(
-        self, component_name: str, limit: int = 10
+        self,
+        component_name: str,
+        limit: int = 10,
+        date_lower: typing.Union[datetime, str] = datetime.min,
+        date_upper: typing.Union[datetime, str] = datetime.max,
     ) -> typing.List[ComponentRun]:
         """Gets lineage for the component, or a history of all its runs."""
         history = (
             self.session.query(ComponentRun)
             .filter(ComponentRun.component_name == component_name)
+            .filter(ComponentRun.start_timestamp.between(date_lower, date_upper))
             .order_by(ComponentRun.start_timestamp.desc())
             .limit(limit)
             .all()
