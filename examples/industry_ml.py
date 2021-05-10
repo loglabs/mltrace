@@ -91,7 +91,6 @@ def inference(filename: str, model_path: str) -> str:
 if __name__ == "__main__":
     # Set server
     set_address("localhost")
-    clean_db()
 
     # Create components
     create_component(
