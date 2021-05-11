@@ -252,6 +252,12 @@ def get_history(
     history."""
     store = Store(_db_uri)
 
+    # Check if none
+    if not date_lower:
+        date_lower = datetime.min
+    if not date_upper:
+        date_upper = datetime.max
+
     history = store.get_history(component_name, limit, date_lower, date_upper)
 
     # Convert to client-facing ComponentRuns

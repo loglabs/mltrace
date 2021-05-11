@@ -1,3 +1,4 @@
+from dateutil import parser
 from flask import Blueprint, Flask, request, Response
 from http import HTTPStatus
 from mltrace.entities import Component, ComponentRun, IOPointer
@@ -89,10 +90,24 @@ def history():
 
     component_name = request.args["component_name"]
     limit = request.args["limit"] if "limit" in request.args else None
+    date_upper = (
+        parser.parse(request.args["date_upper"])
+        if "date_upper" in request.args
+        else None
+    )
+    date_lower = (
+        parser.parse(request.args["date_lower"])
+        if "date_lower" in request.args
+        else None
+    )
 
     try:
         history = (
-            get_history(component_name, limit) if limit else get_history(component_name)
+            get_history(component_name, limit, date_lower, date_upper)
+            if limit
+            else get_history(
+                component_name, date_lower=date_lower, date_upper=date_upper
+            )
         )
         return str(history)
     except RuntimeError:

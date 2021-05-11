@@ -17,7 +17,9 @@ export default class CInfoCard extends Component {
             isOpen: false,
             history: [],
             componentName: '',
-            limit: undefined
+            limit: undefined,
+            dateLower: undefined,
+            dateUpper: undefined
         }
 
         this._isMounted = false;
@@ -29,11 +31,15 @@ export default class CInfoCard extends Component {
 
         // set history if calling from history page
         if (this.props.showHistoryOnLoad === true) {
+            let params = {
+                component_name: this.props.src.name,
+                limit: this.props.limit,
+                date_lower: this.props.dateLower,
+                date_upper: this.props.dateUpper
+            };
+
             axios.get(HISTORY_API_URL, {
-                params: {
-                    component_name: this.props.src.name,
-                    limit: this.props.limit
-                }
+                params: params
             }).then(
                 ({ data }) => {
                     this._isMounted && this.setState({ history: data, componentName: this.props.src.name, isOpen: true });
@@ -54,18 +60,20 @@ export default class CInfoCard extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.componentName === this.props.src.name && this.props.limit === this.state.limit) {
+        if (this.state.componentName === this.props.src.name && this.props.limit === this.state.limit && this.props.dateUpper === this.state.dateUpper && this.props.dateLower === this.state.dateLower) {
             return null;
         }
 
         axios.get(HISTORY_API_URL, {
             params: {
                 component_name: this.props.src.name,
-                limit: this.props.limit
+                limit: this.props.limit,
+                date_lower: this.props.dateLower,
+                date_upper: this.props.dateUpper
             }
         }).then(
             ({ data }) => {
-                this._isMounted && this.setState({ history: data, componentName: this.props.src.name, limit: this.props.limit });
+                this._isMounted && this.setState({ history: data, componentName: this.props.src.name, limit: this.props.limit, dateLower: this.props.dateLower, dateUpper: this.props.dateUpper });
             }
         ).catch(e => {
             console.log(e);
