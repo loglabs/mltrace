@@ -14,7 +14,7 @@ from mltrace.db import (
     component_run_output_association,
 )
 from mltrace.db.models import component_run_output_association
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from sqlalchemy.orm import sessionmaker, joinedload
 
 import logging
@@ -337,7 +337,12 @@ class Store(object):
         history = (
             self.session.query(ComponentRun)
             .filter(ComponentRun.component_name == component_name)
-            .filter(ComponentRun.start_timestamp.between(date_lower, date_upper))
+            .filter(
+                and_(
+                    ComponentRun.start_timestamp >= date_lower,
+                    ComponentRun.start_timestamp <= date_upper,
+                )
+            )
             .order_by(ComponentRun.start_timestamp.desc())
             .limit(limit)
             .all()

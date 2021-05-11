@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Intent, Card } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import CInfoCard from '../components/infocards/cinfocard.js';
+import { DateRangeInput, TimePrecision } from "@blueprintjs/datetime";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
+import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 
 const COMPONENT_API_URL = 'api/component';
 
@@ -17,8 +19,17 @@ export default class History extends Component {
         this.state = {
             componentName: '',
             component: {},
-            limit: undefined
+            limit: undefined,
+            dateLower: undefined,
+            dateUpper: undefined
         }
+
+        this.handleRangeChange = this.handleRangeChange.bind(this);
+    }
+
+
+    handleRangeChange(range) {
+        this.setState({ dateLower: range[0], dateUpper: range[1] })
     }
 
     componentDidUpdate() {
@@ -62,20 +73,28 @@ export default class History extends Component {
             // paddingRight: '10em'
         }
 
-
         let renderedComponent = (
             <Card style={childStyle}>
-                <CInfoCard src={this.state.component} commandHandler={this.props.commandHandler} showHistoryOnLoad={true} limit={this.state.limit} />
+                <CInfoCard src={this.state.component} commandHandler={this.props.commandHandler} showHistoryOnLoad={true} limit={this.state.limit} dateLower={this.state.dateLower} dateUpper={this.state.dateUpper} />
             </Card>
         );
 
         return (
-            <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
-                <div style={{ display: 'flex', margin: '1em' }}>
-                    <h3> Showing history for component:
-                    </h3>
-                </div >
-                {renderedComponent}
+            <div>
+                <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
+                    <div style={{ margin: '1em' }}>
+                        <h3> Showing history for component:</h3>
+                        <div>
+                            <DateRangeInput
+                                formatDate={date => date.toLocaleString()}
+                                parseDate={str => new Date(str)}
+                                timePickerProps={{ precision: TimePrecision.MINUTE, showArrowButtons: false }}
+                                onChange={this.handleRangeChange}
+                            />
+                        </div>
+                    </div >
+                    {renderedComponent}
+                </div>
             </div>
         );
     }
