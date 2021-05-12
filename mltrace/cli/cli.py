@@ -38,17 +38,17 @@ def show_info_card(run_id: int):
     inputs = cr_info.inputs
     for idx, inp in enumerate(inputs):
         if idx == len(inputs) - 1:
-            click.echo(f"|  └{inp['name']}")
+            click.echo(f"│  └{inp['name']}")
         else:
-            click.echo(f"|  ├─{inp['name']}")
+            click.echo(f"│  ├─{inp['name']}")
     click.echo("├─Outputs:")
     outputs = cr_info.outputs
     for idx, out in enumerate(outputs):
         if idx == len(outputs) - 1:
-            click.echo(f"|  └{out['name']}")
+            click.echo(f"│  └{out['name']}")
         else:
-            click.echo(f"|  ├─{out['name']}")
-    code = textwrap.indent(cr_info.code_snapshot, "|  ")
+            click.echo(f"│  ├─{out['name']}")
+    code = textwrap.indent(cr_info.code_snapshot, "│  ")
     click.echo(f"├─Code Snapshot:\n{code.rstrip()}")
     dependencies = (
         " ".join(cr_info.dependencies)
