@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="mltrace",
-    version="0.13",
+    version="0.14",
     description="Lineage and tracing for ML pipelines",
     long_description=README,
     long_description_content_type="text/markdown",
