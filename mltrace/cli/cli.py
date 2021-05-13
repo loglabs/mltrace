@@ -2,7 +2,7 @@
 
 
 import click
-from mltrace.client import (
+from mltrace import (
     set_address,
     get_recent_run_ids,
     get_component_run_information,
@@ -123,42 +123,32 @@ def show_res(res, indent, count, pos, need_stick):
     """
     if isinstance(res, dict):
         # dictionary is a node
-        if count == pos:
-            # Last child
-            label = f"└─{res['label']}"
-
-            pre = "  " if indent > 0 else ""
-            sticks = "│ " * (need_stick)
-            temp_indent = (indent - 1) - (need_stick)
-            post = "  " * (temp_indent)
-
-            label = pre + sticks + post + label
-            click.echo(label)
-            if "childNodes" in res.keys():
-                show_res(
+        # BUILD THE TREE STRUCTURE
+        label = (
+            f"└─{res['label']}" 
+            if count == pos 
+            else f"├─{res['label']}"
+            )
+        pre = "  " if indent > 0 else ""
+        sticks = "│ " * (need_stick)
+        temp_indent = (indent - 1) - (need_stick)
+        post = "  " * (temp_indent)
+        label = pre + sticks + post + label
+        click.echo(label)
+        # NEED STICK LOGIC
+        need_stick = (
+            need_stick
+            if count == pos
+            else need_stick+1
+        )
+        # CALL METHOD RECURSIVELY
+        if "childNodes" in res.keys():
+            show_res(
                     res=res["childNodes"],
                     indent=indent + 1,
                     count=count,
                     pos=pos,
                     need_stick=need_stick,
-                )
-        else:
-            label = f"├─{res['label']}"
-
-            pre = "  " if indent > 0 else ""
-            sticks = "│ " * (need_stick)
-            temp_indent = (indent - 1) - (need_stick)
-            post = "  " * (temp_indent)
-
-            label = pre + sticks + post + label
-            click.echo(label)
-            if "childNodes" in res.keys():
-                show_res(
-                    res=res["childNodes"],
-                    indent=indent + 1,
-                    count=count,
-                    pos=pos,
-                    need_stick=need_stick + 1,
                 )
 
     if isinstance(res, list):
@@ -182,8 +172,8 @@ def mltrace():
 
 
 @mltrace.command("recent")
-@click.option("--url", default="localhost", help="URL of the database.")
 @click.option("--count", default=5, help="Count of recent objects.")
+@click.argument("url")
 def recent(
     url: str, count: int,
 ):
@@ -199,8 +189,8 @@ def recent(
 
 
 @mltrace.command("history")
-@click.option("--url", default="localhost", help="URL of the database.")
 @click.option("--count", default=5, help="Count of recent objects.")
+@click.argument("url")
 @click.argument("component_name")
 def history(
     url: str, component_name: str, count: int,
@@ -217,7 +207,7 @@ def history(
 
 
 @mltrace.command("trace")
-@click.option("--url", default="localhost", help="URL of the database.")
+@click.argument("url")
 @click.argument("output_id")
 def trace(
     url: str, output_id: str,
@@ -228,4 +218,6 @@ def trace(
     # Set db
     set_address(url)
     res = web_trace(output_id)
-    show_res(res=res, indent=0, count=0, pos=0, need_stick=0)
+    click.echo(res[0]['label'])
+    if "childNodes" in res[0].keys():
+        show_res(res=res[0]["childNodes"], indent=1, count=0, pos=0, need_stick=0)
