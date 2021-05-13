@@ -167,7 +167,8 @@ def mltrace():
 @click.option("--count", default=5, help="Count of recent objects.")
 @click.argument("url")
 def recent(
-    url: str, count: int,
+    url: str,
+    count: int,
 ):
     """
     CLI for recent objects.
@@ -181,11 +182,13 @@ def recent(
 
 
 @mltrace.command("history")
+@click.argument("component_name")
 @click.option("--count", default=5, help="Count of recent objects.")
 @click.argument("url")
-@click.argument("component_name")
 def history(
-    url: str, component_name: str, count: int,
+    url: str,
+    component_name: str,
+    count: int,
 ):
     """
     CLI for history of ComponentName.
@@ -199,10 +202,11 @@ def history(
 
 
 @mltrace.command("trace")
-@click.argument("url")
 @click.argument("output_id")
+@click.argument("url")
 def trace(
-    url: str, output_id: str,
+    url: str,
+    output_id: str,
 ):
     """
     CLI for trace.
