@@ -5,7 +5,7 @@ This file contains one component, a function to increment a number, and runs tha
 """
 
 
-from mltrace import create_component, register, set_address
+from mltrace import create_component, register
 
 import random
 import string
@@ -21,9 +21,6 @@ def increment(inp: int) -> int:
 
 
 if __name__ == "__main__":
-    # Set server
-    set_address("localhost")
-
     # Create component
     create_component(
         name="tiny",

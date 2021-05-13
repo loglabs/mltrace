@@ -9,14 +9,13 @@ Logging
 
     pip install mltrace
 
-For this example, we will add logging functions to a hypothetical ``cleaning.py`` that loads raw data and cleans it. In your Python file, before you call any logging functions, you will need to make sure you are connected to your server. To do so, include the following code snippet at the beginning of your file:
+For this example, we will add logging functions to a hypothetical ``cleaning.py`` that loads raw data and cleans it. In your Python file, before you call any logging functions, you will need to make sure you are connected to your server. You can easily do so by setting the environment variable ``DB_SERVER`` to your server's IP address:
 
 .. code-block :: python
 
-    import mltrace
-    mltrace.set_address(SERVER_IP_ADDRESS)
+    export DB_SERVER=SERVER_IP_ADDRESS
 
-where ``SERVER_IP_ADDRESS`` is your server's IP address or "localhost" if you are running locally.
+where ``SERVER_IP_ADDRESS`` is your server's IP address or "localhost" if you are running locally. You can also call ``mltrace.set_address(SERVER_IP_ADDRESS)`` in your Python script instead if you do not want to set the environment variable.
 
 Component creation
 ^^^^^^^^^^^^^^^^^^
@@ -127,7 +126,7 @@ To put it all together, here's an end to end example of ``cleaning.py``:
     """
 
     from datetime import datetime
-    from mltrace import create_component, register, set_address
+    from mltrace import create_component, register
     import pandas as pd
 
     @register(
@@ -143,8 +142,9 @@ To put it all together, here's an end to end example of ``cleaning.py``:
         return clean_version
     
     if __name__ == "__main__"::
-        # Set hostname and create component
-        set_address("localhost")
+        # Optional set hostname if you have not set DB_SERVER env var: mltrace.set_address("localhost")
+
+        # Create component
         create_component(
             name="cleaning",
             description="Removes records with data out of bounds",
