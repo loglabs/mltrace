@@ -124,11 +124,7 @@ def show_res(res, indent, count, pos, need_stick):
     if isinstance(res, dict):
         # dictionary is a node
         # BUILD THE TREE STRUCTURE
-        label = (
-            f"└─{res['label']}" 
-            if count == pos 
-            else f"├─{res['label']}"
-            )
+        label = f"└─{res['label']}" if count == pos else f"├─{res['label']}"
         pre = "  " if indent > 0 else ""
         sticks = "│ " * (need_stick)
         temp_indent = (indent - 1) - (need_stick)
@@ -136,20 +132,16 @@ def show_res(res, indent, count, pos, need_stick):
         label = pre + sticks + post + label
         click.echo(label)
         # NEED STICK LOGIC
-        need_stick = (
-            need_stick
-            if count == pos
-            else need_stick+1
-        )
+        need_stick = need_stick if count == pos else need_stick + 1
         # CALL METHOD RECURSIVELY
         if "childNodes" in res.keys():
             show_res(
-                    res=res["childNodes"],
-                    indent=indent + 1,
-                    count=count,
-                    pos=pos,
-                    need_stick=need_stick,
-                )
+                res=res["childNodes"],
+                indent=indent + 1,
+                count=count,
+                pos=pos,
+                need_stick=need_stick,
+            )
 
     if isinstance(res, list):
         # list of children
@@ -218,6 +210,6 @@ def trace(
     # Set db
     set_address(url)
     res = web_trace(output_id)
-    click.echo(res[0]['label'])
+    click.echo(res[0]["label"])
     if "childNodes" in res[0].keys():
         show_res(res=res[0]["childNodes"], indent=1, count=0, pos=0, need_stick=0)
