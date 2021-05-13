@@ -17,7 +17,7 @@ To use ``mltrace``, you first need to set up a server to log to. You will need t
 Server
 ^^^^^^
 
-On the machine you would like to run the server (can be your local machine), clone the latest version of mltrace_. In the root directory, start the server by running:
+On the machine you would like to run the server (can be your local machine), clone the latest release of mltrace_. In the root directory, start the server by running:
 
 .. code-block :: python
 
@@ -26,7 +26,7 @@ On the machine you would like to run the server (can be your local machine), clo
 
 You can access the UI by navigating to ``<server_ip_address>:8080`` (or localhost:8080_ if you are running locally) in your browser. 
 
-.. _mltrace: https://github.com/loglabs/mltrace
+.. _mltrace: https://github.com/loglabs/mltrace/tree/v0.13
 .. _localhost:8080: http://localhost:8080
 
 Client
