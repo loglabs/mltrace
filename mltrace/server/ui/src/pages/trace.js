@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree } from "@blueprintjs/core";
+import { Tree, Classes } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import { Intent } from "@blueprintjs/core";
 import InfoCard from "../components/infocard.js";
@@ -75,15 +75,8 @@ export default class Trace extends Component {
     render() {
         if (this.state.output_id === '') return null;
 
-        let childStyle = {
-            flex: '0 1 auto',
-            marginTop: '1em',
-            marginBottom: '1em',
-            // paddingRight: '10em'
-        }
-
         let treeContent = (
-            <div style={childStyle}>
+            <div style={{ marginTop: '1em', marginBottom: '1em', marginRight: '1em', flex: '0 1 auto' }} className={Classes.MINIMAL}>
                 <Tree
                     contents={this.state.nodes}
                     className="bp3-minimal"
@@ -97,7 +90,10 @@ export default class Trace extends Component {
         return (
             <div style={style}>
                 {treeContent}
-                <InfoCard style={childStyle} selected_id={this.state.selected_id} commandHandler={this.props.commandHandler} />
+                <InfoCard style={{
+                    flex: '0 1 auto',
+                    margin: '1em'
+                }} selected_id={this.state.selected_id} commandHandler={this.props.commandHandler} />
             </div >
         )
     }
