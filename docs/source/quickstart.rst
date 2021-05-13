@@ -26,7 +26,7 @@ On the machine you would like to run the server (can be your local machine), clo
 
 You can access the UI by navigating to ``<SERVER'S IP ADDRESS>:8080`` (or localhost:8080_ if you are running locally) in your browser. 
 
-.. _mltrace: https://github.com/loglabs/mltrace/tree/v0.13
+.. _mltrace: https://github.com/loglabs/mltrace/tree/v0.14
 .. _localhost:8080: http://localhost:8080
 
 Client
