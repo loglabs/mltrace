@@ -28,10 +28,10 @@ You should have Docker installed on your machine. To get started, you will need 
 
 If you are interested in learning about specific `mltrace` concepts, please read [this page](https://mltrace.readthedocs.io/en/latest/concepts.html) in the official docs.
 
-### Database and server setup
+### Database setup (server-side)
 
 We use Postgres-backed SQLAlchemy. Assuming you have Docker installed, you can run the following commands from the
-root directory:
+root directory after cloning the most recent release:
 
 ```
 docker-compose build
@@ -40,7 +40,7 @@ docker-compose up [-d]
 
 And then to tear down the containers, you can run `docker-compose down`.
 
-### Run pipelines
+### Run pipelines (client-side)
 
 To use the logging functions in dev mode, you will need to install various dependencies:
 
@@ -48,6 +48,14 @@ To use the logging functions in dev mode, you will need to install various depen
 pip install -r requirements.txt
 pip install -e .
 ```
+
+Next, you will need to set the database URI. It is recommended to use environment variables for this. To set the database address, set the `DB_SERVER` variable:
+
+```
+export DB_SERVER=<SERVER'S IP ADDRESS>
+```
+
+where `<SERVER'S IP ADDRESS>` is either the IP address of a remote machine or `localhost` if running locally. If, when you set up the server, you changed the URI in `docker-compose.yaml`, you can set the `DB_URI` variable (which represents the entire database URI) client-side instead of `DB_SERVER`.
 
 The files in the `examples` folder contain sample scripts you can run. For instance, if you run `examples/industry_ml.py`, you might get an output like:
 
@@ -63,7 +71,7 @@ And if you trace this output in the UI (`trace zguzvnwsux`), you will get:
 
 You can also look at `examples` for ways to integrate `mltrace` into your ML pipelines, or check out the [official documentation](https://mltrace.readthedocs.io/en/latest/).
 
-### Launch UI
+### Launch UI (client-side)
 
 If you ran `docker-compose up` from the root directory, you can just navigate to the server's IP address at port 8080 (or `localhost:8080`) in your browser. To launch a dev version of the UI, navigate to `./mltrace/server/ui` and execute `yarn install` then `yarn start`. It should be served at [localhost:3000](localhost:3000). The UI is based on `create-react-app` and [`blueprintjs`](https://blueprintjs.com/docs/). Here's an example of what tracing an output would give:
 
@@ -78,6 +86,16 @@ If you ran `docker-compose up` from the root directory, you can just navigate to
 | `inspect COMPONENT_RUN_ID` | Shows info for that component run ID |
 | `trace OUTPUT_ID` | Shows a trace of steps for the output ID |
 | `tag TAG_NAME` | Shows all components with the tag name|
+
+### Using the CLI for querying
+
+The following commands are supported via CLI:
+
+- `history`
+- `recent`
+- `trace`
+
+You can execute `mltrace --help` in your shell for usage instructions, or you can execute `mltrace command --help` for usage instructions for a specific command.
 
 ### Future directions
 

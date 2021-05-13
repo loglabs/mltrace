@@ -16,16 +16,6 @@ import textwrap
 # ------------------------- Utilities ------------------------ #
 
 
-def set_server(url: str):
-    """
-    Set the database server connection.
-
-    Args:
-        url: The db url.
-    """
-    set_address(url)
-
-
 def show_info_card(run_id: int):
     """
     Prints the info cards corresponding to run ids.
@@ -165,16 +155,14 @@ def mltrace():
 
 @mltrace.command("recent")
 @click.option("--count", default=5, help="Count of recent objects.")
-@click.argument("url")
-def recent(
-    url: str,
-    count: int,
-):
+@click.option("--address", help="Database server address")
+def recent(count: int, address: str = ""):
     """
     CLI for recent objects.
     """
-    # Set Server
-    set_server(url)
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
     # Get the recent ids
     component_run_ids = get_recent_run_ids()
     for id in component_run_ids[:count]:
@@ -184,17 +172,14 @@ def recent(
 @mltrace.command("history")
 @click.argument("component_name")
 @click.option("--count", default=5, help="Count of recent objects.")
-@click.argument("url")
-def history(
-    url: str,
-    component_name: str,
-    count: int,
-):
+@click.option("--address", help="Database server address")
+def history(component_name: str, count: int, address: str = ""):
     """
     CLI for history of ComponentName.
     """
-    # Set Server
-    set_server(url)
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
     history = (
         get_history(component_name, count) if count else get_history(component_name)
     )
@@ -204,15 +189,14 @@ def history(
 @mltrace.command("trace")
 @click.argument("output_id")
 @click.argument("url")
-def trace(
-    url: str,
-    output_id: str,
-):
+@click.option("--address", help="Database server address")
+def trace(output_id: str, address: str = ""):
     """
     CLI for trace.
     """
-    # Set db
-    set_address(url)
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
     res = web_trace(output_id)
     click.echo(res[0]["label"])
     if "childNodes" in res[0].keys():

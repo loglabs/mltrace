@@ -24,7 +24,7 @@ On the machine you would like to run the server (can be your local machine), clo
     docker-compose build
     docker-compose up [-d]
 
-You can access the UI by navigating to ``<server_ip_address>:8080`` (or localhost:8080_ if you are running locally) in your browser. 
+You can access the UI by navigating to ``<SERVER'S IP ADDRESS>:8080`` (or localhost:8080_ if you are running locally) in your browser. 
 
 .. _mltrace: https://github.com/loglabs/mltrace/tree/v0.13
 .. _localhost:8080: http://localhost:8080
@@ -37,4 +37,12 @@ To log to the server using the client library, install the latest version of mlt
 .. code-block:: python
 
     pip install mltrace
+
+Next, you will need to set the database URI. It is recommended to use environment variables for this. To set the database address, set the ``DB_SERVER`` variable:
+
+.. code-block :: python
+
+    export DB_SERVER=<SERVER'S IP ADDRESS>
+
+where ``<SERVER'S IP ADDRESS>`` is either the IP address of a remote machine or ``localhost`` if running locally. If, when you set up the server, you changed the URI in ``docker-compose.yaml``, you can set the ``DB_URI`` variable (which represents the entire database URI) client-side instead of ``DB_SERVER``.
 
