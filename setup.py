@@ -31,6 +31,10 @@ setup(
         "python-dotenv",
         "sqlalchemy",
     ],
+    entry_points="""
+        [console_scripts]
+        mltrace=mltrace.cli.cli:mltrace
+    """,
     include_package_data=True,
     project_urls={
         "Bug Tracker": "https://github.com/loglabs/mltrace/issues",
