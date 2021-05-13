@@ -1,0 +1,11 @@
+# DB migrations
+
+The following releases have DB migrations:
+
+- v0.13 (Component staleness)
+
+To run DB migrations:
+
+1. Navigate to `mltrace/db/migrations` in your shell
+2. Edit the url in `alembic.ini` to reflect your database url
+3. Run `alembic upgrade head`
