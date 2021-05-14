@@ -3,10 +3,10 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY package.json /usr/src/app
 
-RUN npm install
+RUN yarn install
 
 COPY . /usr/src/app
-RUN npm run build
+RUN yarn build
 
 FROM nginx:alpine
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
