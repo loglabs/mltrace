@@ -8,7 +8,7 @@ If you navigate to the UI and run `history research_model_development`, you will
 However, using something like wandb or mlflow might be better for research. This is because mltrace inputs and outputs are not stored as key/value pairs; only the values are stored.
 """
 
-from mltrace import create_component, register, set_address
+from mltrace import create_component, register
 
 import itertools
 import random
@@ -26,8 +26,6 @@ def train_and_evaluate_model(lr, num_epochs, hidden_size):
 
 
 if __name__ == "__main__":
-    # Set server
-    set_address("localhost")
 
     # Create component
     create_component(

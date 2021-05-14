@@ -28,6 +28,16 @@ You can toggle between light and dark mode using the moon or sun button at the t
 | ``tag``     | Displays all components with the given tag name.                                                                                                                                              | ``tag TAG_NAME``              |
 +-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 
+Using the CLI
+^^^^^^^^^^^^
+
+The following commands are supported via CLI:
+
+- :py:func:`~mltrace.cli.cli.history`
+- :py:func:`~mltrace.cli.cli.recent`
+- :py:func:`~mltrace.cli.cli.trace`
+
+You can execute ``mltrace --help`` in your shell for usage instructions, or you can execute ``mltrace command --help`` for usage instructions for a specific command.
 
 :py:mod:`mltrace` module functions
 ^^^^^^^^^^^^^^^^^^

@@ -19,7 +19,6 @@ import logging
 
 app = Flask(__name__, static_folder="ui/build", static_url_path="")
 api = Blueprint("api", __name__)
-set_db_uri("postgresql://admin:admin@database:5432/sqlalchemy")
 
 
 def error(err_msg, status_code):

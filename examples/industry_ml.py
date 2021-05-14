@@ -13,13 +13,7 @@ The code in each of these components is placeholder code. When you run this file
 """
 
 
-from mltrace import (
-    create_component,
-    register,
-    set_address,
-    clean_db,
-    get_components_with_tag,
-)
+from mltrace import create_component, register
 
 import random
 import string
@@ -89,9 +83,6 @@ def inference(filename: str, model_path: str) -> str:
 
 
 if __name__ == "__main__":
-    # Set server
-    set_address("localhost")
-
     # Create components
     create_component(
         name="ingest",
