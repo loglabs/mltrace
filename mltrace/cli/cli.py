@@ -188,7 +188,6 @@ def history(component_name: str, count: int, address: str = ""):
 
 @mltrace.command("trace")
 @click.argument("output_id")
-@click.argument("url")
 @click.option("--address", help="Database server address")
 def trace(output_id: str, address: str = ""):
     """
