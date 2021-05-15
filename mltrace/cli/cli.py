@@ -174,7 +174,7 @@ def recent(count: int, address: str = ""):
 @click.argument("component_run_id")
 def inspect(component_run_id, address: str = ""):
     """
-    CLI for recent objects.
+    CLI to inspect objects.
     """
     # Set address
     if address and len(address) > 0:
