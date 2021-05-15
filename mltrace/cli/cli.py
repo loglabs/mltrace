@@ -169,6 +169,22 @@ def recent(count: int, address: str = ""):
         show_info_card(id)
 
 
+@mltrace.command("inspect")
+@click.option("--address", help="Database server address")
+@click.argument("component_run_id")
+def inspect(component_run_id, address: str = ""):
+    """
+    CLI for recent objects.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+    # Get the recent ids
+    component_run_ids = get_recent_run_ids()
+    if int(component_run_id) in component_run_ids:
+        show_info_card(component_run_id)
+
+
 @mltrace.command("history")
 @click.argument("component_name")
 @click.option("--count", default=5, help="Count of recent objects.")
