@@ -83,7 +83,7 @@ export default class History extends Component {
             <div>
                 <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
                     <div style={{ margin: '1em' }}>
-                        <h3> Showing history for component:</h3>
+                        <h3> Showing history of runs </h3>
                         <div>
                             <DateRangeInput
                                 formatDate={date => date.toLocaleString()}

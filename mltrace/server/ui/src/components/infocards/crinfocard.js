@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position } from "@blueprintjs/core";
+import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout } from "@blueprintjs/core";
 
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -37,6 +37,17 @@ export default class CRInfoCard extends Component {
         let commit = info.git_hash ? info.git_hash : "no commit found";
         let end = new Date(info.end_timestamp);
         let start = new Date(info.start_timestamp);
+        let stale = null;
+        if (info.stale !== undefined && info.stale !== null && info.stale.length >= 1) {
+            stale = (
+                <Callout className={Classes.MINIMAL} intent={Intent.WARNING}>
+                    Some dependencies may be stale:
+                    <ul>
+                        {info.stale.map((inf, index) => (<li id={"callout_" + index}>{inf}</li>))}
+                    </ul>
+                </Callout>
+            );
+        }
 
         let tagElements = info.tags.map((name, index) => {
             return (
@@ -54,35 +65,35 @@ export default class CRInfoCard extends Component {
         let codeSnapshot = info.code_snapshot ? info.code_snapshot : 'no snapshot found';
 
         let inputElements = info.inputs.map((inp, index) =>
-            (
-                {
-                    id: 'inp' + index,
-                    label: (
-                        <Tooltip content={inp.pointer_type}>
-                            {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
-                                {inp.name}
-                            </div>)}
-                        </Tooltip>
-                    ),
-                    hasCaret: false
+        (
+            {
+                id: 'inp' + index,
+                label: (
+                    <Tooltip content={inp.pointer_type}>
+                        {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
+                            {inp.name}
+                        </div>)}
+                    </Tooltip>
+                ),
+                hasCaret: false
 
-                }
-            )
+            }
+        )
         );
         let outputElements = info.outputs.map((out, index) =>
-            (
-                {
-                    id: 'out' + index,
-                    label: (
-                        <Tooltip content={out.pointer_type}>
-                            {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
-                                {out.name}
-                            </div>)}
-                        </Tooltip>
-                    ),
-                    hasCaret: false
-                }
-            )
+        (
+            {
+                id: 'out' + index,
+                label: (
+                    <Tooltip content={out.pointer_type}>
+                        {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
+                            {out.name}
+                        </div>)}
+                    </Tooltip>
+                ),
+                hasCaret: false
+            }
+        )
         );
         let inputElement = {
             id: 'inputElement',
@@ -112,6 +123,7 @@ export default class CRInfoCard extends Component {
                 >
                     {(<h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2>)}
                 </Tooltip>
+                {stale}
                 <HTMLTable bordered={false} interactive={false} className='bp3-minimal'>
                     <thead>
                         <tr>

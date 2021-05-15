@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Tag, Intent, Classes, Text, Button, Collapse, HTMLTable } from "@blueprintjs/core";
+import { Tag, Intent, Classes, Text, Button, Collapse, HTMLTable, Icon, Tooltip } from "@blueprintjs/core";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
+import { INTENT_DANGER } from '@blueprintjs/core/lib/esm/common/classes';
 
 const HISTORY_API_URL = '/api/history';
 
@@ -102,10 +103,20 @@ export default class CInfoCard extends Component {
             let start = new Date(cr.start_timestamp);
             var outputs = cr.outputs.map((elem) => (String(elem.name)));
             outputs = String(outputs.join(','));
+            var id =
+                <div style={{ textAlign: 'right' }}>{cr.id}</div>;
+            if (cr.stale !== undefined && cr.stale !== null && cr.stale.length >= 1) {
+                id = (
+                    <div>
+                        <Icon icon="warning-sign" intent={Intent.WARNING} style={{ marginRight: '1em' }} />
+                        {cr.id}
+                    </div>
+                )
+            }
 
             return (
                 <tr key={'componentrun_' + index} onClick={() => this.props.commandHandler("inspect " + cr.id)}>
-                    <td>{cr.id}</td>
+                    <td>{id}</td>
                     <td>{cr.start_timestamp}</td>
                     <td>{(end - start) / 1000}sec</td>
                     <td style={{ fontFamily: 'monospace', maxWidth: '100%', wordWrap: 'break-word' }}>
