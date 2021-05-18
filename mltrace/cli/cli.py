@@ -28,7 +28,9 @@ def show_info_card(run_id: int):
 
     click.echo(f"Name: {c_info.name}")
     if cr_info.stale and len(cr_info.stale) > 0:
-        click.echo(click.style(f"├─Warnings:", fg="yellow", bg="black"))
+        click.echo(
+            click.style(f"├─Some dependencies may be stale:", fg="yellow", bg="black")
+        )
         for idx, warning in enumerate(cr_info.stale):
             if idx == len(cr_info.stale) - 1:
                 click.echo(click.style(f"│  └─{warning}", fg="yellow", bg="black"))
@@ -75,7 +77,11 @@ def show_history(history):
     for hist in history:
         click.echo(f"{hist.component_name}--{hist.id}")
         if hist.stale and len(hist.stale) > 0:
-            click.echo(click.style(f"├─Warnings:", fg="yellow", bg="black"))
+            click.echo(
+                click.style(
+                    f"├─Some dependencies may be stale:", fg="yellow", bg="black"
+                )
+            )
             for idx, warning in enumerate(hist.stale):
                 if idx == len(hist.stale) - 1:
                     click.echo(click.style(f"│  └─{warning}", fg="yellow", bg="black"))
