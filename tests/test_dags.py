@@ -1,6 +1,7 @@
 import copy
 import unittest
 
+from datetime import datetime
 from mltrace.db import Component, ComponentRun, IOPointer, Store
 
 
@@ -134,6 +135,88 @@ class TestDags(unittest.TestCase):
         trace_2 = [(l, cr.id) for l, cr in self.store.trace("iop2")]
         self.assertEqual(trace_1, [(0, 2), (1, 1)])
         self.assertEqual(trace_2, [(0, 1)])
+
+    def testStaleUpdate(self):
+        # Create computation with stale update.
+        iop1 = self.store.get_io_pointer("iop1")
+        iop2 = self.store.get_io_pointer("iop2")
+        iop3 = self.store.get_io_pointer("iop3")
+        iop4 = self.store.get_io_pointer("iop4")
+        self.store.create_component("component_1", "", "")
+        self.store.create_component("component_2", "", "")
+
+        # Create first component
+        cr = self.store.initialize_empty_component_run("component_1")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(iop1)
+        cr.add_output(iop2)
+        self.store.set_dependencies_from_inputs(cr)
+        self.store.commit_component_run(cr)
+
+        # Create second component run
+        cr = self.store.initialize_empty_component_run("component_1")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(iop1)
+        cr.add_output(iop3)
+        self.store.set_dependencies_from_inputs(cr)
+        self.store.commit_component_run(cr)
+
+        # Create third component run that depends on the first (stale update)
+        cr = self.store.initialize_empty_component_run("component_2")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(iop2)
+        cr.add_output(iop4)
+        self.store.set_dependencies_from_inputs(cr)
+        self.store.commit_component_run(cr)
+
+        # Trace iop4
+        trace = [(l, cr.id, cr.stale) for l, cr in self.store.trace("iop4")]
+        res = [
+            (
+                0,
+                3,
+                [
+                    "component_1 (ID 1) has 1 fresher run(s) that began before this component run started."
+                ],
+            ),
+            (1, 1, []),
+        ]
+        self.assertEqual(trace, res)
+
+    def testStaleTime(self):
+        # Create computation with stale update.
+        iop1 = self.store.get_io_pointer("iop1")
+        iop2 = self.store.get_io_pointer("iop2")
+        iop3 = self.store.get_io_pointer("iop3")
+        self.store.create_component("component_1", "", "")
+        self.store.create_component("component_2", "", "")
+        now = datetime.utcnow()
+
+        # Create first component
+        cr = self.store.initialize_empty_component_run("component_1")
+        cr.set_start_timestamp(now.replace(month=now.month - 2))
+        cr.set_end_timestamp()
+        cr.add_input(iop1)
+        cr.add_output(iop2)
+        self.store.set_dependencies_from_inputs(cr)
+        self.store.commit_component_run(cr)
+
+        # Create second component run
+        cr = self.store.initialize_empty_component_run("component_2")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(iop2)
+        cr.add_output(iop3)
+        self.store.set_dependencies_from_inputs(cr)
+        self.store.commit_component_run(cr)
+
+        # Trace
+        trace = [(l, cr.id, cr.stale) for l, cr in self.store.trace("iop3")]
+        res = [(0, 2, ["component_1 (ID 1) was run 61 days ago."]), (1, 1, [])]
+        self.assertEqual(trace, res)
 
 
 if __name__ == "__main__":
