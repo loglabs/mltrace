@@ -27,6 +27,13 @@ def show_info_card(run_id: int):
     c_info = get_component_information(cr_info.component_name)
 
     click.echo(f"Name: {c_info.name}")
+    if cr_info.stale and len(cr_info.stale) > 0:
+        click.echo(click.style(f"├─Warnings:", fg="yellow", bg="black"))
+        for idx, warning in enumerate(cr_info.stale):
+            if idx == len(cr_info.stale) - 1:
+                click.echo(click.style(f"│  └─{warning}", fg="yellow", bg="black"))
+            else:
+                click.echo(click.style(f"│  ├─{warning}", fg="yellow", bg="black"))
     click.echo(f"├─Owner: {c_info.owner}")
     click.echo(f"├─Desc: {c_info.description}")
     click.echo(f"├─Run ID: {run_id}")
@@ -67,6 +74,13 @@ def show_history(history):
     """
     for hist in history:
         click.echo(f"{hist.component_name}--{hist.id}")
+        if hist.stale and len(hist.stale) > 0:
+            click.echo(click.style(f"├─Warnings:", fg="yellow", bg="black"))
+            for idx, warning in enumerate(hist.stale):
+                if idx == len(hist.stale) - 1:
+                    click.echo(click.style(f"│  └─{warning}", fg="yellow", bg="black"))
+                else:
+                    click.echo(click.style(f"│  ├─{warning}", fg="yellow", bg="black"))
         click.echo(f"├─Started: {hist.start_timestamp}")
         click.echo(f"├─Git: {hist.git_hash}")
         elapsed_time = hist.end_timestamp - hist.start_timestamp
@@ -154,9 +168,9 @@ def mltrace():
 
 
 @mltrace.command("recent")
-@click.option("--count", default=5, help="Count of recent objects.")
+@click.option("--limit", default=5, help="Limit of recent objects.")
 @click.option("--address", help="Database server address")
-def recent(count: int, address: str = ""):
+def recent(limit: int, address: str = ""):
     """
     CLI for recent objects.
     """
@@ -165,15 +179,15 @@ def recent(count: int, address: str = ""):
         set_address(address)
     # Get the recent ids
     component_run_ids = get_recent_run_ids()
-    for id in component_run_ids[:count]:
+    for id in component_run_ids[:limit]:
         show_info_card(id)
 
 
 @mltrace.command("history")
 @click.argument("component_name")
-@click.option("--count", default=5, help="Count of recent objects.")
+@click.option("--limit", default=5, help="Limit of recent objects.")
 @click.option("--address", help="Database server address")
-def history(component_name: str, count: int, address: str = ""):
+def history(component_name: str, limit: int, address: str = ""):
     """
     CLI for history of ComponentName.
     """
@@ -181,7 +195,7 @@ def history(component_name: str, count: int, address: str = ""):
     if address and len(address) > 0:
         set_address(address)
     history = (
-        get_history(component_name, count) if count else get_history(component_name)
+        get_history(component_name, limit) if limit else get_history(component_name)
     )
     show_history(history)
 
