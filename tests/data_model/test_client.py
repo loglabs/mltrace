@@ -47,6 +47,7 @@ class TestComponentRun(unittest.TestCase):
             "end_timestamp": None,
             "dependencies": [],
             "id": None,
+            "stale": [],
         }
 
         self.mock_inputs = [IOPointer("mock_input_1"), IOPointer("mock_input_2")]

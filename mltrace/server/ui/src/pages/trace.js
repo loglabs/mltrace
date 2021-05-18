@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Classes } from "@blueprintjs/core";
+import { Tree, Classes, Tooltip, Icon } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import { Intent } from "@blueprintjs/core";
 import InfoCard from "../components/infocard.js";
@@ -17,6 +17,14 @@ function styleLabels(node) {
         node.label = (
             <div style={{ fontFamily: 'monospace', wordWrap: 'break-word' }}>{node.label}</div>
         )
+    }
+
+    if (node.stale !== undefined && node.stale !== null && node.stale.length >= 1) {
+        node.secondaryLabel = (
+            <Tooltip content="This component run may have stale dependencies.">
+                <Icon icon="warning-sign" intent={Intent.WARNING} />
+            </Tooltip>
+        );
     }
 
     if ('childNodes' in node) {

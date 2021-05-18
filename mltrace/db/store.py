@@ -190,7 +190,11 @@ class Store(object):
         self.session.delete(io_pointer)
         logging.info(f'Successfully deleted IOPointer with name "{io_pointer.name}".')
 
-    def commit_component_run(self, component_run: ComponentRun):
+    def commit_component_run(
+        self,
+        component_run: ComponentRun,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
+    ):
         """Commits a fully initialized component run to the DB."""
         status_dict = component_run.check_completeness()
         if not status_dict["success"]:
@@ -198,6 +202,29 @@ class Store(object):
 
         if status_dict["msg"]:
             logging.info(status_dict["msg"])
+
+        # Check for staleness. https://github.com/loglabs/mltrace/issues/165#issue-891397631
+        for dep in component_run.dependencies:
+            # First case: there is over a month between component runs
+            time_diff = (
+                component_run.start_timestamp - dep.start_timestamp
+            ).total_seconds()
+            if time_diff > staleness_threshold:
+                days_diff = int(time_diff // (60 * 60 * 24))
+                component_run.add_staleness_message(
+                    f"{dep.component_name} (ID {dep.id}) was run {days_diff} days ago."
+                )
+            # Second case: there is a newer run of the dependency
+            fresher_runs = self.get_history(
+                dep.component_name,
+                limit=None,
+                date_lower=dep.start_timestamp,
+                date_upper=component_run.start_timestamp,
+            )
+            if len(fresher_runs) != 1:
+                component_run.add_staleness_message(
+                    f"{dep.component_name} (ID {dep.id}) has {len(fresher_runs) - 1} fresher run(s) that began before this component run started."
+                )
 
         # Commit to DB
         self.session.add(component_run)
@@ -260,6 +287,7 @@ class Store(object):
         res["label"] = component_run_object.component_name
         res["hasCaret"] = True
         res["isExpanded"] = True
+        res["stale"] = component_run_object.stale
         res["childNodes"] = []
 
         for out in sorted(component_run_object.outputs, key=lambda x: x.name):

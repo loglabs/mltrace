@@ -6,8 +6,6 @@ from mltrace.entities.base import Base
 from mltrace.entities.io_pointer import IOPointer
 
 import json
-import pickle
-import pprint
 import typing
 
 
@@ -29,6 +27,7 @@ class ComponentRun(Base):
         git_hash: str = None,
         code_snapshot: str = None,
         id: str = None,
+        stale: typing.List[str] = [],
         dependencies: typing.List[str] = [],
     ):
         """Set class attributes. Note that timestamps are represented in
@@ -45,6 +44,7 @@ class ComponentRun(Base):
             else code_snapshot
         )
         self._id = id
+        self._stale = stale
         self._dependencies = dependencies
 
     @property
@@ -106,6 +106,10 @@ class ComponentRun(Base):
     @property
     def id(self) -> str:
         return self._id
+
+    @property
+    def stale(self) -> typing.List[str]:
+        return self._stale
 
     def set_start_timestamp(self, ts: datetime = None):
         if ts is None:

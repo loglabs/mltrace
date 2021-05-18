@@ -10,6 +10,7 @@ from sqlalchemy import (
     Table,
     ForeignKey,
     Enum,
+    PickleType,
 )
 from sqlalchemy.orm import relationship
 
@@ -130,6 +131,7 @@ class ComponentRun(Base):
         backref="left_component_run_ids",
         cascade="all",
     )
+    stale = Column(PickleType)
 
     def __init__(self, component_name):
         """Initialize ComponentRun, or an instance of a Component's 'run.'"""
@@ -137,6 +139,7 @@ class ComponentRun(Base):
         self.inputs = []
         self.outputs = []
         self.dependencies = []
+        self.stale = []
 
     def set_start_timestamp(self, ts: datetime = None):
         """Call this function to set the start timestamp to a specific timestamp or now."""
@@ -165,6 +168,10 @@ class ComponentRun(Base):
     def set_git_hash(self, git_hash: str):
         """Git hash setter."""
         self.git_hash = git_hash
+
+    def add_staleness_message(self, message: str):
+        """Staleness indicator."""
+        self.stale = self.stale + [message]
 
     def add_input(self, input: IOPointer):
         """Add a single input (instance of IOPointer)."""
