@@ -130,25 +130,29 @@ class TestStore(unittest.TestCase):
     def _set_up_computation(self):
         # Create dag of computation
         # Create component and IOPointers
-        self.store.create_component("test_component", "test_description", "shreya")
+        for i in range(1, 5):
+            self.store.create_component(
+                f"test_component_{i}", "test_description", "shreya"
+            )
+
         iop = [self.store.get_io_pointer(f"iop_{i}") for i in range(1, 5)]
 
         # Create component runs
-        cr1 = self.store.initialize_empty_component_run("test_component")
+        cr1 = self.store.initialize_empty_component_run("test_component_1")
         cr1.set_start_timestamp()
         cr1.set_end_timestamp()
         cr1.add_output(iop[0])
         self.store.set_dependencies_from_inputs(cr1)
         self.store.commit_component_run(cr1)
 
-        cr2 = self.store.initialize_empty_component_run("test_component")
+        cr2 = self.store.initialize_empty_component_run("test_component_2")
         cr2.set_start_timestamp()
         cr2.set_end_timestamp()
         cr2.add_output(iop[0])
         self.store.set_dependencies_from_inputs(cr2)
         self.store.commit_component_run(cr2)
 
-        cr3 = self.store.initialize_empty_component_run("test_component")
+        cr3 = self.store.initialize_empty_component_run("test_component_3")
         cr3.set_start_timestamp()
         cr3.set_end_timestamp()
         cr3.add_input(iop[0])
@@ -156,7 +160,7 @@ class TestStore(unittest.TestCase):
         self.store.set_dependencies_from_inputs(cr3)
         self.store.commit_component_run(cr3)
 
-        cr4 = self.store.initialize_empty_component_run("test_component")
+        cr4 = self.store.initialize_empty_component_run("test_component_4")
         cr4.set_start_timestamp()
         cr4.set_end_timestamp()
         cr4.add_input(iop[2])
@@ -186,9 +190,10 @@ class TestStore(unittest.TestCase):
         expected_res = [
             {
                 "id": "componentrun_4",
-                "label": "test_component",
+                "label": "test_component_4",
                 "hasCaret": True,
                 "isExpanded": True,
+                "stale": [],
                 "childNodes": [
                     {
                         "id": "iopointer_iop_4",
@@ -198,9 +203,10 @@ class TestStore(unittest.TestCase):
                     },
                     {
                         "id": "componentrun_3",
-                        "label": "test_component",
+                        "label": "test_component_3",
                         "hasCaret": True,
                         "isExpanded": True,
+                        "stale": [],
                         "childNodes": [
                             {
                                 "id": "iopointer_iop_2",
@@ -216,9 +222,10 @@ class TestStore(unittest.TestCase):
                             },
                             {
                                 "id": "componentrun_2",
-                                "label": "test_component",
+                                "label": "test_component_2",
                                 "hasCaret": True,
                                 "isExpanded": True,
+                                "stale": [],
                                 "childNodes": [
                                     {
                                         "id": "iopointer_iop_1",

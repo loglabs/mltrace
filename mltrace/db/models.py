@@ -10,7 +10,7 @@ from sqlalchemy import (
     Table,
     ForeignKey,
     Enum,
-    ARRAY,
+    PickleType,
 )
 from sqlalchemy.orm import relationship
 
@@ -131,7 +131,7 @@ class ComponentRun(Base):
         backref="left_component_run_ids",
         cascade="all",
     )
-    stale = Column(ARRAY(String))
+    stale = Column(PickleType)
 
     def __init__(self, component_name):
         """Initialize ComponentRun, or an instance of a Component's 'run.'"""
