@@ -20,6 +20,7 @@ class ComponentRun(Base):
     def __init__(
         self,
         component_name: str,
+        notes: str,
         start_timestamp: datetime = None,
         end_timestamp: datetime = None,
         inputs: typing.List[IOPointer] = [],
@@ -33,6 +34,7 @@ class ComponentRun(Base):
         """Set class attributes. Note that timestamps are represented in
         seconds since epoch."""
         self._component_name = component_name
+        self._notes = notes
         self._start_timestamp = start_timestamp
         self._end_timestamp = end_timestamp
         self._inputs = inputs
@@ -50,6 +52,18 @@ class ComponentRun(Base):
     @property
     def component_name(self) -> str:
         return self._component_name
+
+    @property
+    def notes(self) -> str:
+        return self._notes
+
+    @notes.setter
+    def notes(self, notes: str):
+        self._notes = notes
+
+    @notes.deleter
+    def notes(self):
+        del self._notes
 
     @property
     def inputs(self) -> typing.List[IOPointer]:
@@ -128,6 +142,12 @@ class ComponentRun(Base):
             raise TypeError("Timestamp must be of type datetime.")
 
         self._end_timestamp = ts
+
+    def add_notes(self, notes: str):
+        """Add notes describing details of component run"""
+        if not isinstance(notes, str):
+            raise TypeError("notes field must be of type str")
+        self._notes = notes
 
     def add_input(
         self, inp: typing.Union[str, IOPointer], pointer_type: PointerTypeEnum = None
