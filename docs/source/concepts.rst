@@ -9,6 +9,8 @@ Machine learning pipelines, or even complex data pipelines, are made up of sever
 
 Keeping track of data flow in and out of these components can be tedious, especially if multiple people are collaborating on the same end-to-end pipeline.This is because in ML pipelines, *different* artifacts are produced (inputs and outputs) when the *same* component is run more than once.
 
+Knowing data flow is a precursor to debugging issues in data pipelines. ``mltrace`` also determines whether components of pipelines are stale.
+
 Data model
 ^^^^^^^^^^
 
@@ -43,3 +45,14 @@ If you dig into the codebase, you will find another abstraction, the :py:class:`
 
 You will not need to explicitly define all of these variables, nor do you have to create instances of a ``ComponentRun`` yourself. See the next section for logging functions and an example.
 
+.. _Staleness Overview:
+
+Staleness
+^^^^^^^^^^
+
+We define a component run as "stale" if it may need to be rerun. Currently, ``mltrace`` detects two types of staleness in component runs:
+
+1. A significant number of days (default 30) have passed between when a component run's inputs were generated and the component is run
+2. At the time a component is run, its dependencies have fresher runs that began before the component run started
+
+We are working on "data drift" as another measure of staleness.

@@ -2,7 +2,7 @@ mltrace documentation
 ===================================
 
 mltrace_ is an open-source Python tool to track data flow through various
-components in ML pipelines. It offers the following:
+components and diagnose failure modes in ML pipelines. It offers the following:
 
 - coarse-grained lineage and tracing
 - Python API to log versions of data and pipeline components
@@ -32,7 +32,6 @@ Roadmap
 
 We are actively working on the following:
 
-- Displaying whether components are "stale" (i.e. you need to rerun a component such as training)
 - REST API to log from any type of file, not just a Python file
 - Prometheus integrations to monitor component output distributions
 - Causal analysis for ML bugs — if you flag several outputs as mispredicted, which component runs were common in producing these outputs? Which component is most likely to be the biggest culprit in an issue?
@@ -46,6 +45,7 @@ Guides
 .. toctree::
    :maxdepth: 2
    
+   changelog
    quickstart
    concepts
    logging
