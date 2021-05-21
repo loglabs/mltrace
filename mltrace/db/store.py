@@ -381,7 +381,8 @@ class Store(object):
     def trace(self, output_id: str):
         """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
-        many hops away the node is from the node that produced the output_id."""
+        many hops away the node is from the node that produced the
+        output_id."""
         if not isinstance(output_id, str):
             raise RuntimeError("Please specify an output id of string type.")
 

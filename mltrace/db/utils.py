@@ -45,8 +45,8 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
     inspector = Inspector.from_engine(engine)
 
     # We need to re-create a minimal metadata with only the required things to
-    # successfully emit drop constraints and tables commands for postgres (based
-    # on the actual schema of the running instance)
+    # successfully emit drop constraints and tables commands for
+    # postgres (based on the actual schema of the running instance)
     meta = MetaData()
     tables = []
     all_fkeys = []
