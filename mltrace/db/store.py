@@ -76,8 +76,8 @@ class Store(object):
 
         # Add to the DB if it is not already there
         logging.info(
-            f'Creating new Component with name "{name}", description \
-                "{description}", owner "{owner}", and tags "{tags}".'
+            f'Creating new Component with name "{name}", description '
+            + f'"{description}", owner "{owner}", and tags "{tags}".'
         )
         tags = list(set([self.get_tag(t) for t in tags]))
         component = Component(
@@ -187,8 +187,8 @@ class Store(object):
         if len(res) == 0:
             if create is False:
                 raise RuntimeError(
-                    f"IOPointer with name {name} noes not exist. Set create \
-                    flag to True if you would like to create it."
+                    f"IOPointer with name {name} noes not exist. Set create"
+                    + f"flag to True if you would like to create it."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')
@@ -212,8 +212,8 @@ class Store(object):
     def delete_component_run(self, component_run: ComponentRun):
         self.session.delete(component_run)
         logging.info(
-            f'Successfully deleted ComponentRun with id "{component_run.id}" \
-                and name "{component_run.component_name}".'
+            f'Successfully deleted ComponentRun with id "{component_run.id}"'
+            + f' and name "{component_run.component_name}".'
         )
 
     def delete_io_pointer(self, io_pointer: IOPointer):
@@ -244,8 +244,8 @@ class Store(object):
             if time_diff > staleness_threshold:
                 days_diff = int(time_diff // (60 * 60 * 24))
                 component_run.add_staleness_message(
-                    f"{dep.component_name} (ID {dep.id}) was run {days_diff} \
-                    days ago."
+                    f"{dep.component_name} (ID {dep.id}) was run {days_diff}"
+                    + "days ago."
                 )
             # Second case: there is a newer run of the dependency
             fresher_runs = self.get_history(
@@ -256,9 +256,9 @@ class Store(object):
             )
             if len(fresher_runs) != 1:
                 component_run.add_staleness_message(
-                    f"{dep.component_name} (ID {dep.id}) has \
-                        {len(fresher_runs) - 1} fresher run(s) that began \
-                            before this component run started."
+                    f"{dep.component_name} (ID {dep.id}) has "
+                    + f"{len(fresher_runs) - 1} fresher run(s) that began "
+                    + "before this component run started."
                 )
 
         # Warn user if there is a staleness message
@@ -268,8 +268,8 @@ class Store(object):
         # Commit to DB
         self.session.add(component_run)
         logging.info(
-            f'Committing ComponentRun of type \
-                "{component_run.component_name}" to the database.'
+            f"Committing ComponentRun of type "
+            + f'"{component_run.component_name}" to the database.'
         )
         self.session.commit()
 
