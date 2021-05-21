@@ -37,7 +37,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "releases",
-    "sphinx.ext.autosectionlabel",
 ]
 
 # 'releases' (changelog) settings
