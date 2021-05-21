@@ -2,7 +2,7 @@
 Changelog
 =========
 
-- :release:`v0.15 <2021-05-21>`
+- :release:`0.15 <2021-05-21>`
 - :support:`-` Added CLI (command line utilities) and component run staleness features. 
 
   .. warning::
