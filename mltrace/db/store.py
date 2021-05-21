@@ -245,7 +245,7 @@ class Store(object):
                 days_diff = int(time_diff // (60 * 60 * 24))
                 component_run.add_staleness_message(
                     f"{dep.component_name} (ID {dep.id}) was run {days_diff}"
-                    + "days ago."
+                    + " days ago."
                 )
             # Second case: there is a newer run of the dependency
             fresher_runs = self.get_history(
