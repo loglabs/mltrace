@@ -154,7 +154,8 @@ class ComponentRun(Base):
         self.stale = []
 
     def set_start_timestamp(self, ts: datetime = None):
-        """Call this function to set the start timestamp to a specific timestamp or now."""
+        """Call this function to set the start timestamp
+        to a specific timestamp or now."""
         if ts is None:
             ts = datetime.utcnow()
 
@@ -164,7 +165,8 @@ class ComponentRun(Base):
         self.start_timestamp = ts
 
     def set_end_timestamp(self, ts: datetime = None):
-        """Call this function to set the end timestamp to a specific timestamp or now."""
+        """Call this function to set the end timestamp
+        to a specific timestamp or now."""
         if ts is None:
             ts = datetime.utcnow()
 
@@ -190,7 +192,8 @@ class ComponentRun(Base):
         self._add_io(input, True)
 
     def add_inputs(self, inputs: typing.List[IOPointer]):
-        """Add a list of inputs (each element should be an instance of IOPointer)."""
+        """Add a list of inputs (each element should be
+        an instance of IOPointer)."""
         self._add_io(inputs, True)
 
     def add_output(self, output: IOPointer):
@@ -198,7 +201,8 @@ class ComponentRun(Base):
         self._add_io(output, False)
 
     def add_outputs(self, outputs: typing.List[IOPointer]):
-        """Add a list of outputs (each element should be an instance of IOPointer)."""
+        """Add a list of outputs (each element should be an
+        instance of IOPointer)."""
         self._add_io(outputs, False)
 
     def _add_io(
@@ -218,7 +222,8 @@ class ComponentRun(Base):
         self,
         dependencies: typing.Union[typing.List[ComponentRun], ComponentRun],
     ):
-        """Set dependencies for this ComponentRun. API similar to Airflow set_upstream."""
+        """Set dependencies for this ComponentRun. API similar
+        to Airflow set_upstream."""
         # Dependencies can be a list or a single ComponentRun. Set to a list.
         dependencies = (
             [dependencies]

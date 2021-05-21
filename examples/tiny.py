@@ -1,7 +1,11 @@
 """
 examples/tiny.py
 
-This file contains one component, a function to increment a number, and runs that component 10 times. The output of the ith component run is the input to the (i+1)th component run. Thus if you trace the last output in the UI, you should see that it depends on 9 things.
+This file contains one component, a function to increment
+a number, and runs that component 10 times. The output of
+the ith component run is the input to the (i+1)th component
+run. Thus if you trace the last output in the UI, you should
+see that it depends on 9 things.
 """
 
 

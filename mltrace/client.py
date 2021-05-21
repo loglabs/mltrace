@@ -29,7 +29,7 @@ if _db_uri is None:
             f"Please set DB_URI or DB_SERVER as an environment variable. Otherwise, DB_URI is set to {_db_uri}."
         )
 
-# ----------------------- Database management functions ---------------------- #
+# --------------------- Database management functions ------------------- #
 
 
 def set_db_uri(uri: str):
@@ -52,7 +52,7 @@ def clean_db():
     store = Store(_db_uri, delete_first=True)
 
 
-# ---------------------------- Creation functions ---------------------------- #
+# ----------------------- Creation functions ---------------------------- #
 
 
 def create_component(
@@ -123,7 +123,8 @@ def log_component_run(
 
 
 def create_random_ids(num_outputs=1) -> typing.List[str]:
-    """Returns a list of num_outputs ids that a client can use to tag outputs."""
+    """Returns a list of num_outputs ids
+    that a client can use to tag outputs."""
 
     return [str(uuid.uuid4()) for _ in range(num_outputs)]
 
@@ -171,7 +172,7 @@ def register(
                         )
                         continue
                     val = local_vars[var]
-                    if val == None:
+                    if val is None:
                         logging.debug(f"Variable {var} has value {val}.")
                         continue
                     if isinstance(val, list):
@@ -185,7 +186,7 @@ def register(
                         )
                         continue
                     val = local_vars[var]
-                    if val == None:
+                    if val is None:
                         logging.debug(f"Variable {var} has value {val}.")
                         continue
                     if isinstance(val, list):
@@ -245,7 +246,7 @@ def register(
             try:
                 repo = git.Repo(search_parent_directories=True)
                 component_run.set_git_hash(str(repo.head.object.hexsha))
-            except:
+            except Exception as e:
                 logging.info("No git repo found.")
 
             # Add source code if less than 2^16
@@ -270,13 +271,13 @@ def get_git_hash() -> str:
     try:
         repo = git.Repo(search_parent_directories=True)
         return str(repo.head.object.hexsha)
-    except:
+    except Exception as e:
         logging.info("No git repo found.")
 
     return None
 
 
-# ------------------------- Basic retrieval functions ------------------------ #
+# ----------------- Basic retrieval functions ------------------- #
 
 
 def get_history(
@@ -404,7 +405,7 @@ def get_io_pointer(io_pointer_id: str, create=True):
     return IOPointer.from_dictionary(iop.__dict__)
 
 
-# ------------------------ Complex retrieval functions ----------------------- #
+# --------------- Complex retrieval functions ------------------ #
 
 
 def backtrace(output_pointer: str):

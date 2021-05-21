@@ -1,7 +1,8 @@
 """
 examples/industry_ml.py
 
-This file contains several different components, mimicking that of a machine learning pipeline at a company:
+This file contains several different components, mimicking that
+of a machine learning pipeline at a company:
 
 - ingestion
 - cleaning
@@ -9,7 +10,10 @@ This file contains several different components, mimicking that of a machine lea
 - model training
 - model inference
 
-The code in each of these components is placeholder code. When you run this file, an output ID will be printed. You can then enter "trace {OUTPUT_ID}" in the UI's command bar to see the trace of steps that produced that output ID.
+The code in each of these components is placeholder code.
+When you run this file, an output ID will be printed. You can
+then enter "trace {OUTPUT_ID}" in the UI's command bar to see
+the trace of steps that produced that output ID.
 """
 
 
