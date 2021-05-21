@@ -108,7 +108,8 @@ class TestDags(unittest.TestCase):
         self.assertEqual(level_id, [(0, 3), (1, 1)])
 
     def testCycle(self):
-        # Create cycle. Since dependencies are versioned, we shouldn't run into problems.
+        # Create cycle. Since dependencies are versioned, we shouldn't run
+        # into problems.
         # Create io pointers and components
         iop1 = self.store.get_io_pointer("iop1")
         iop2 = self.store.get_io_pointer("iop2")
@@ -183,7 +184,8 @@ class TestDags(unittest.TestCase):
                 0,
                 3,
                 [
-                    "component_1 (ID 1) has 1 fresher run(s) that began before this component run started."
+                    "component_1 (ID 1) has 1 fresher run(s) that began \
+                        before this component run started."
                 ],
             ),
             (1, 1, []),

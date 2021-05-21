@@ -5,7 +5,8 @@ class Base(ABC):
     """The Base class provides methods to save and store attributes as well as
     print them out."""
 
-    # Taken from https://dev.to/mattconway1984/python-creating-instance-properties-2ej0
+    # Taken from https://dev.to/mattconway1984/
+    # python-creating-instance-properties-2ej0
     def __setattr__(self, attr, value):
         try:
             # Try invoking the descriptor protocol __set__ "manually"

@@ -35,8 +35,8 @@ def _initialize_db_tables(engine: sqlalchemy.engine.base.Engine):
 
 
 def _drop_everything(engine: sqlalchemy.engine.base.Engine):
-    """(On a live db) drops all foreign key constraints before dropping all tables.
-    Workaround for SQLAlchemy not doing DROP ## CASCADE for drop_all()
+    """(On a live db) drops all foreign key constraints before dropping all
+    tables. Workaround for SQLAlchemy not doing DROP ## CASCADE for drop_all()
     (https://github.com/pallets/flask-sqlalchemy/issues/722)
     """
 

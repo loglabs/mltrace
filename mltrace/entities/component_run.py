@@ -167,7 +167,8 @@ class ComponentRun(Base):
         self._add_io(IOPointer(out, pointer_type), False)
 
     def add_outputs(self, outputs: typing.List[typing.Union[str, IOPointer]]):
-        """Add a list of outputs (each element should be an instance of IOPointer)."""
+        """Add a list of outputs (each element should be an instance of
+        IOPointer)."""
         for out in outputs:
             if isinstance(out, str):
                 self.add_output(out)
