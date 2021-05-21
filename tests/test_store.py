@@ -187,7 +187,7 @@ class TestStore(unittest.TestCase):
 
         # Call trace functionality
         trace = self.store.trace("iop_4")
-        level_id = [(l, cr.id) for l, cr in trace]
+        level_id = [(level, cr.id) for level, cr in trace]
 
         self.assertEqual(level_id, [(0, 4), (1, 3), (2, 2)])
 

@@ -20,7 +20,8 @@ class TestComponentRun(unittest.TestCase):
         status = cr.check_completeness()
         self.assertTrue(status["success"])
 
-        # Assert that there are warning statements because of no I/O or dependencies
+        # Assert that there are warning statements
+        # because of no I/O or dependencies
         msg = status["msg"]
         self.assertTrue(len(msg) > 0)
 

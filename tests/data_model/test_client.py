@@ -70,7 +70,8 @@ class TestComponentRun(unittest.TestCase):
 
     def testSetStartEndError(self):
         """
-        Test that setting start and end ts as non datetime types throws an error.
+        Test that setting start and end ts as non
+        datetime types throws an error.
         """
 
         with self.assertRaises(TypeError):

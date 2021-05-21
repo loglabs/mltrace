@@ -33,7 +33,7 @@ class TestDags(unittest.TestCase):
 
         # Trace the final output
         trace = self.store.trace("iop_11")
-        level_id = [(l, cr.id) for l, cr in trace]
+        level_id = [(level, cr.id) for level, cr in trace]
         self.assertEqual(expected_result, level_id)
 
     def testVersionedComputation(self):
@@ -104,7 +104,7 @@ class TestDags(unittest.TestCase):
         # Grab last iop id and trace it
         last_iop_id = f"iop_{iop_counter - 1}"
         trace = self.store.trace(last_iop_id)
-        level_id = [(l, cr.id) for l, cr in trace]
+        level_id = [(level, cr.id) for level, cr in trace]
         self.assertEqual(level_id, [(0, 3), (1, 1)])
 
     def testCycle(self):
@@ -133,8 +133,8 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace iop1
-        trace_1 = [(l, cr.id) for l, cr in self.store.trace("iop1")]
-        trace_2 = [(l, cr.id) for l, cr in self.store.trace("iop2")]
+        trace_1 = [(level, cr.id) for level, cr in self.store.trace("iop1")]
+        trace_2 = [(level, cr.id) for level, cr in self.store.trace("iop2")]
         self.assertEqual(trace_1, [(0, 2), (1, 1)])
         self.assertEqual(trace_2, [(0, 1)])
 
@@ -175,7 +175,9 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace iop4
-        trace = [(l, cr.id, cr.stale) for l, cr in self.store.trace("iop4")]
+        trace = [
+            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop4")
+        ]
         res = [
             (
                 0,
@@ -216,7 +218,9 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace
-        trace = [(l, cr.id, cr.stale) for l, cr in self.store.trace("iop3")]
+        trace = [
+            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop3")
+        ]
         res = [(0, 2, ["component_1 (ID 1) was run 61 days ago."]), (1, 1, [])]
         self.assertEqual(trace, res)
 
