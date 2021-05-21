@@ -5,7 +5,7 @@ This file contains one large component. Although mltrace is
 primarily designed for more collaborative ML pipelines (where
 more than one person is actively developing code for the prediction
 task), here's an example of using mltrace to keep track of some of
-the experiments you might have run. 
+the experiments you might have run.
 
 If you navigate to the UI and run `history research_model_development`,
 you will see a list of runs for the `research_model_development`

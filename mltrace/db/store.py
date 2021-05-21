@@ -156,7 +156,7 @@ class Store(object):
 
         if len(need_to_add) != 0:
             # Create new IOPointers
-            if pointer_type == None:
+            if pointer_type is None:
                 pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
             iops = [
                 IOPointer(name=name, pointer_type=pointer_type)
@@ -180,13 +180,13 @@ class Store(object):
 
         # Must create new IOPointer
         if len(res) == 0:
-            if create == False:
+            if create is False:
                 raise RuntimeError(
                     f"IOPointer with name {name} noes not exist. Set create flag to True if you would like to create it."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')
-            if pointer_type == None:
+            if pointer_type is None:
                 pointer_type = _map_extension_to_enum(name)
 
             iop = IOPointer(name=name, pointer_type=pointer_type)

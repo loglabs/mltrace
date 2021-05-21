@@ -26,7 +26,8 @@ if _db_uri is None:
         _db_uri = _set_address_helper(_db_uri, os.environ.get("DB_SERVER"))
     else:
         logging.warning(
-            f"Please set DB_URI or DB_SERVER as an environment variable. Otherwise, DB_URI is set to {_db_uri}."
+            f"Please set DB_URI or DB_SERVER as an environment variable. \
+            Otherwise, DB_URI is set to {_db_uri}."
         )
 
 # --------------------- Database management functions ------------------- #
