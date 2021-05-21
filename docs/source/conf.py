@@ -32,7 +32,18 @@ master_doc = "index"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.viewcode", "sphinx.ext.napoleon"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "releases",
+    "sphinx.ext.autosectionlabel",
+]
+
+# 'releases' (changelog) settings
+releases_issue_uri = "https://github.com/loglabs/mltrace/issues/%s"
+releases_release_uri = "https://github.com/loglabs/mltrace/tree/%s"
+releases_unstable_prehistory = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

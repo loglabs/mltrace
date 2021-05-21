@@ -226,6 +226,10 @@ class Store(object):
                     f"{dep.component_name} (ID {dep.id}) has {len(fresher_runs) - 1} fresher run(s) that began before this component run started."
                 )
 
+        # Warn user if there is a staleness message
+        if len(component_run.stale) > 0:
+            logging.warning(component_run.stale)
+
         # Commit to DB
         self.session.add(component_run)
         logging.info(
