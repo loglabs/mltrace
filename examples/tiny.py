@@ -13,7 +13,9 @@ import string
 _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
 
-@register(component_name="tiny", input_vars=["inp_str"], output_vars=["out_str"])
+@register(
+    component_name="tiny", input_vars=["inp_str"], output_vars=["out_str"]
+)
 def increment(inp: int) -> int:
     inp_str = f"{_identifier}_{str(inp)}"
     out_str = f"{_identifier}_{str(inp + 1)}"

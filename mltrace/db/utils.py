@@ -14,7 +14,9 @@ import pprint
 import sqlalchemy
 
 
-def _create_engine_wrapper(uri: str, max_retries=5) -> sqlalchemy.engine.base.Engine:
+def _create_engine_wrapper(
+    uri: str, max_retries=5
+) -> sqlalchemy.engine.base.Engine:
     """Creates engine using sqlalchemy API. Includes max retries parameter."""
     retries = 0
     while retries < max_retries:
@@ -73,8 +75,26 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
 
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevnat enum for the filename."""
-    data_extensions = ["csv", "pq", "parquet", "txt", "md", "rtf", "tsv", "xml", "pdf"]
-    model_extensions = ["h5", "hdf5", "joblib", "pkl", "pickle", "ckpt", "mlmodel"]
+    data_extensions = [
+        "csv",
+        "pq",
+        "parquet",
+        "txt",
+        "md",
+        "rtf",
+        "tsv",
+        "xml",
+        "pdf",
+    ]
+    model_extensions = [
+        "h5",
+        "hdf5",
+        "joblib",
+        "pkl",
+        "pickle",
+        "ckpt",
+        "mlmodel",
+    ]
 
     words = filename.split(".")
 

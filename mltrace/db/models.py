@@ -40,10 +40,16 @@ class Component(Base):
     description = Column(String)
     owner = Column(String)
     component_runs = relationship("ComponentRun", cascade="all, delete-orphan")
-    tags = relationship("Tag", secondary=component_tag_association, cascade="all")
+    tags = relationship(
+        "Tag", secondary=component_tag_association, cascade="all"
+    )
 
     def __init__(
-        self, name: str, description: str, owner: str, tags: typing.List[Tag] = []
+        self,
+        name: str,
+        description: str,
+        owner: str,
+        tags: typing.List[Tag] = [],
     ):
         self.name = name
         self.description = description
@@ -70,7 +76,9 @@ class IOPointer(Base):
     pointer_type = Column(Enum(PointerTypeEnum))
 
     def __init__(
-        self, name: str, pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN
+        self,
+        name: str,
+        pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN,
     ):
         self.name = name
         self.pointer_type = pointer_type
@@ -97,7 +105,10 @@ component_run_dependencies = Table(
     "component_run_dependencies",
     Base.metadata,
     Column(
-        "component_run_id", Integer, ForeignKey("component_runs.id"), primary_key=True
+        "component_run_id",
+        Integer,
+        ForeignKey("component_runs.id"),
+        primary_key=True,
     ),
     Column(
         "depends_on_component_run_id",
@@ -127,7 +138,8 @@ class ComponentRun(Base):
         "ComponentRun",
         secondary=component_run_dependencies,
         primaryjoin=id == component_run_dependencies.c.component_run_id,
-        secondaryjoin=id == component_run_dependencies.c.depends_on_component_run_id,
+        secondaryjoin=id
+        == component_run_dependencies.c.depends_on_component_run_id,
         backref="left_component_run_ids",
         cascade="all",
     )
@@ -190,7 +202,9 @@ class ComponentRun(Base):
         self._add_io(outputs, False)
 
     def _add_io(
-        self, elems: typing.Union[typing.List[IOPointer], IOPointer], input: bool
+        self,
+        elems: typing.Union[typing.List[IOPointer], IOPointer],
+        input: bool,
     ):
         """Helper function to add inputs or outputs."""
         # Elems can be a list or a single IOPointer. Set to a list.
@@ -201,12 +215,15 @@ class ComponentRun(Base):
             self.outputs = list(set(self.outputs + elems))
 
     def set_upstream(
-        self, dependencies: typing.Union[typing.List[ComponentRun], ComponentRun]
+        self,
+        dependencies: typing.Union[typing.List[ComponentRun], ComponentRun],
     ):
         """Set dependencies for this ComponentRun. API similar to Airflow set_upstream."""
         # Dependencies can be a list or a single ComponentRun. Set to a list.
         dependencies = (
-            [dependencies] if not isinstance(dependencies, list) else dependencies
+            [dependencies]
+            if not isinstance(dependencies, list)
+            else dependencies
         )
 
         self.dependencies += dependencies
@@ -229,9 +246,13 @@ class ComponentRun(Base):
 
         # Show warnings if there are no dependencies or I/O.
         if len(self.inputs) == 0:
-            status_dict["msg"] += f"{self.component_name} ComponentRun has no inputs. "
+            status_dict[
+                "msg"
+            ] += f"{self.component_name} ComponentRun has no inputs. "
         if len(self.outputs) == 0:
-            status_dict["msg"] += f"{self.component_name} ComponentRun has no outputs. "
+            status_dict[
+                "msg"
+            ] += f"{self.component_name} ComponentRun has no outputs. "
         if len(self.dependencies) == 0:
             status_dict[
                 "msg"

@@ -48,7 +48,9 @@ class TestClient(unittest.TestCase):
         create_component("test_component", "test_description", "shreya")
 
         @register(
-            component_name="test_component", input_vars=["foo"], output_vars=["bar"]
+            component_name="test_component",
+            input_vars=["foo"],
+            output_vars=["bar"],
         )
         def test_func():
             foo = "foo"
@@ -62,7 +64,9 @@ class TestClient(unittest.TestCase):
         create_component("test_component", "test_description", "shreya")
 
         @register(
-            component_name="test_component", input_vars=["foo"], output_vars=["bar"]
+            component_name="test_component",
+            input_vars=["foo"],
+            output_vars=["bar"],
         )
         def test_func():
             x = 0

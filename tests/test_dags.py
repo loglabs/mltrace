@@ -17,7 +17,9 @@ class TestDags(unittest.TestCase):
             self.store.create_component(f"mock_component_{i}", "", "")
             inp = self.store.get_io_pointer(f"iop_{i}")
             out = self.store.get_io_pointer(f"iop_{i + 1}")
-            cr = self.store.initialize_empty_component_run(f"mock_component_{i}")
+            cr = self.store.initialize_empty_component_run(
+                f"mock_component_{i}"
+            )
             cr.set_start_timestamp()
             cr.set_end_timestamp()
             cr.add_input(inp)

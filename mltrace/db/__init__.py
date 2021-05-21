@@ -8,4 +8,11 @@ from mltrace.db.models import (
 )
 from mltrace.db.store import Store
 
-__all__ = ["Component", "ComponentRun", "IOPointer", "Store", "PointerTypeEnum", "Tag"]
+__all__ = [
+    "Component",
+    "ComponentRun",
+    "IOPointer",
+    "Store",
+    "PointerTypeEnum",
+    "Tag",
+]

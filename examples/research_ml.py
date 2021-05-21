@@ -45,5 +45,7 @@ if __name__ == "__main__":
 
     for lr, num_epochs, hidden_size in candidates:
         train_and_evaluate_model(
-            f"lr_{lr}", f"num_epochs_{num_epochs}", f"hidden_size_{hidden_size}"
+            f"lr_{lr}",
+            f"num_epochs_{num_epochs}",
+            f"hidden_size_{hidden_size}",
         )

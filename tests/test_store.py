@@ -9,7 +9,9 @@ class TestStore(unittest.TestCase):
         self.store = Store("test")
 
     def testComponent(self):
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
         component = self.store.get_component("test_component")
         self.assertEqual(component.name, "test_component")
 
@@ -19,7 +21,9 @@ class TestStore(unittest.TestCase):
 
     def testCompleteComponentRun(self):
         # Create component
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
 
         # Create component run
         cr = self.store.initialize_empty_component_run("test_component")
@@ -36,7 +40,9 @@ class TestStore(unittest.TestCase):
 
     def testIncompleteComponentRun(self):
         # Create component
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
 
         # Create incomplete component run
         cr = self.store.initialize_empty_component_run("test_component")
@@ -45,7 +51,9 @@ class TestStore(unittest.TestCase):
 
     def testTags(self):
         # Create component without tags
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
 
         # Add tags
         self.store.add_tags_to_component("test_component", ["tag1", "tag2"])
@@ -58,7 +66,9 @@ class TestStore(unittest.TestCase):
 
     def testDuplicateTags(self):
         # Create component without tags
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
 
         # Add duplicate tags
         self.store.add_tags_to_component("test_component", ["tag1", "tag1"])
@@ -95,7 +105,9 @@ class TestStore(unittest.TestCase):
         another_out = self.store.get_io_pointer("another_out")
 
         # Create two component runs that have the same output
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
         for idx in range(2):
             cr = self.store.initialize_empty_component_run("test_component")
             cr.set_start_timestamp()
@@ -105,7 +117,9 @@ class TestStore(unittest.TestCase):
             self.store.commit_component_run(cr)
 
         # Create another two component runs that have the same output
-        self.store.create_component("test_component", "test_description", "shreya")
+        self.store.create_component(
+            "test_component", "test_description", "shreya"
+        )
         for idx in range(2):
             cr = self.store.initialize_empty_component_run("test_component")
             cr.set_start_timestamp()

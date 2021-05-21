@@ -32,11 +32,15 @@ class Base(ABC):
 
     @classmethod
     def _properties(cls):
-        return [p for p in cls.__dict__ if isinstance(getattr(cls, p), property)]
+        return [
+            p for p in cls.__dict__ if isinstance(getattr(cls, p), property)
+        ]
 
     @classmethod
     def from_dictionary(cls, d):
-        d = {key: value for key, value in d.items() if key in cls._properties()}
+        d = {
+            key: value for key, value in d.items() if key in cls._properties()
+        }
         return cls(**d)
 
     def to_dictionary(self):

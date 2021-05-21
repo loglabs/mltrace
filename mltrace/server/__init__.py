@@ -52,7 +52,8 @@ def component_run():
         return serialize_component_run(component, component_run)
     except RuntimeError:
         return error(
-            f"Component run ID {component_run_id} not found", HTTPStatus.NOT_FOUND
+            f"Component run ID {component_run_id} not found",
+            HTTPStatus.NOT_FOUND,
         )
 
 
@@ -64,9 +65,13 @@ def io_pointer():
     io_pointer_id = request.args["id"]
     try:
         res = get_io_pointer(io_pointer_id, create=False)
-        return json.dumps(IOPointer.from_dictionary(res.__dict__).to_dictionary())
+        return json.dumps(
+            IOPointer.from_dictionary(res.__dict__).to_dictionary()
+        )
     except RuntimeError:
-        return error(f"IOPointer {io_pointer_id} not found", HTTPStatus.NOT_FOUND)
+        return error(
+            f"IOPointer {io_pointer_id} not found", HTTPStatus.NOT_FOUND
+        )
 
 
 @api.route("/tag", methods=["GET"])
@@ -110,7 +115,9 @@ def history():
         )
         return str(history)
     except RuntimeError:
-        return error(f"Component {component_name} has no runs", HTTPStatus.NOT_FOUND)
+        return error(
+            f"Component {component_name} has no runs", HTTPStatus.NOT_FOUND
+        )
 
 
 @api.route("/component", methods=["GET"])
@@ -123,7 +130,9 @@ def component():
         component = get_component_information(component_name)
         return str(component)
     except RuntimeError:
-        return error(f"Component {component_name} not found", HTTPStatus.NOT_FOUND)
+        return error(
+            f"Component {component_name} not found", HTTPStatus.NOT_FOUND
+        )
 
 
 @api.route("/recent", methods=["GET"])
