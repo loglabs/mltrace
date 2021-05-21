@@ -1,7 +1,8 @@
 """
 examples/industry_ml.py
 
-This file contains several different components, mimicking that of a machine learning pipeline at a company:
+This file contains several different components, mimicking that
+of a machine learning pipeline at a company:
 
 - ingestion
 - cleaning
@@ -9,7 +10,10 @@ This file contains several different components, mimicking that of a machine lea
 - model training
 - model inference
 
-The code in each of these components is placeholder code. When you run this file, an output ID will be printed. You can then enter "trace {OUTPUT_ID}" in the UI's command bar to see the trace of steps that produced that output ID.
+The code in each of these components is placeholder code.
+When you run this file, an output ID will be printed. You can
+then enter "trace {OUTPUT_ID}" in the UI's command bar to see
+the trace of steps that produced that output ID.
 """
 
 
@@ -31,7 +35,9 @@ def ingest(client_data_filename: str) -> str:
 
 
 @register(
-    component_name="clean", input_vars=["filename"], output_vars=["clean_data_filename"]
+    component_name="clean",
+    input_vars=["filename"],
+    output_vars=["clean_data_filename"],
 )
 def clean(filename: str) -> str:
     # Read data into dataframe and clean it
@@ -78,7 +84,9 @@ def training(filename: str, dev_model: str = "") -> str:
 def inference(filename: str, model_path: str) -> str:
     # Load model and data
     # Run some inference
-    output_id = "".join(random.choice(string.ascii_lowercase) for i in range(10))
+    output_id = "".join(
+        random.choice(string.ascii_lowercase) for i in range(10)
+    )
     return output_id
 
 

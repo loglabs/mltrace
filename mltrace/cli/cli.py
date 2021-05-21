@@ -29,13 +29,19 @@ def show_info_card(run_id: int):
     click.echo(f"Name: {c_info.name}")
     if cr_info.stale and len(cr_info.stale) > 0:
         click.echo(
-            click.style(f"├─Some dependencies may be stale:", fg="yellow", bg="black")
+            click.style(
+                f"├─Some dependencies may be stale:", fg="yellow", bg="black"
+            )
         )
         for idx, warning in enumerate(cr_info.stale):
             if idx == len(cr_info.stale) - 1:
-                click.echo(click.style(f"│  └─{warning}", fg="yellow", bg="black"))
+                click.echo(
+                    click.style(f"│  └─{warning}", fg="yellow", bg="black")
+                )
             else:
-                click.echo(click.style(f"│  ├─{warning}", fg="yellow", bg="black"))
+                click.echo(
+                    click.style(f"│  ├─{warning}", fg="yellow", bg="black")
+                )
     click.echo(f"├─Owner: {c_info.owner}")
     click.echo(f"├─Desc: {c_info.description}")
     click.echo(f"├─Run ID: {run_id}")
@@ -62,7 +68,9 @@ def show_info_card(run_id: int):
             click.echo(f"│  ├─{out['name']}")
     code = textwrap.indent(cr_info.code_snapshot, "│  ")
     click.echo(f"├─Code Snapshot:\n{code.rstrip()}")
-    dependencies = " ".join(cr_info.dependencies) if cr_info.dependencies else "None"
+    dependencies = (
+        " ".join(cr_info.dependencies) if cr_info.dependencies else "None"
+    )
     click.echo(f"└─Dependencies: {dependencies}")
     click.echo()
 
@@ -79,14 +87,20 @@ def show_history(history):
         if hist.stale and len(hist.stale) > 0:
             click.echo(
                 click.style(
-                    f"├─Some dependencies may be stale:", fg="yellow", bg="black"
+                    f"├─Some dependencies may be stale:",
+                    fg="yellow",
+                    bg="black",
                 )
             )
             for idx, warning in enumerate(hist.stale):
                 if idx == len(hist.stale) - 1:
-                    click.echo(click.style(f"│  └─{warning}", fg="yellow", bg="black"))
+                    click.echo(
+                        click.style(f"│  └─{warning}", fg="yellow", bg="black")
+                    )
                 else:
-                    click.echo(click.style(f"│  ├─{warning}", fg="yellow", bg="black"))
+                    click.echo(
+                        click.style(f"│  ├─{warning}", fg="yellow", bg="black")
+                    )
         click.echo(f"├─Started: {hist.start_timestamp}")
         click.echo(f"├─Git: {hist.git_hash}")
         elapsed_time = hist.end_timestamp - hist.start_timestamp
@@ -109,7 +123,9 @@ def show_history(history):
                 click.echo(f"│  ├─{out['name']}")
         code = textwrap.indent(hist.code_snapshot, "│  ")
         click.echo(f"├─Code Snapshot:\n{code.rstrip()}")
-        dependencies = " ".join(hist.dependencies) if hist.dependencies else "None"
+        dependencies = (
+            " ".join(hist.dependencies) if hist.dependencies else "None"
+        )
         click.echo(f"└─Dependencies: {dependencies}")
         click.echo()
 
@@ -201,7 +217,9 @@ def history(component_name: str, limit: int, address: str = ""):
     if address and len(address) > 0:
         set_address(address)
     history = (
-        get_history(component_name, limit) if limit else get_history(component_name)
+        get_history(component_name, limit)
+        if limit
+        else get_history(component_name)
     )
     show_history(history)
 
@@ -219,4 +237,6 @@ def trace(output_id: str, address: str = ""):
     res = web_trace(output_id)
     click.echo(res[0]["label"])
     if "childNodes" in res[0].keys():
-        show_res(res=res[0]["childNodes"], indent=1, count=0, pos=0, need_stick=0)
+        show_res(
+            res=res[0]["childNodes"], indent=1, count=0, pos=0, need_stick=0
+        )

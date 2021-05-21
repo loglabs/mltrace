@@ -7,7 +7,9 @@ import pprint
 
 class IOPointer(Base):
     def __init__(
-        self, name: str, pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN
+        self,
+        name: str,
+        pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN,
     ):
         self._name = name
         self._pointer_type = pointer_type

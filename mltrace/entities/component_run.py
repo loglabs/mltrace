@@ -130,7 +130,9 @@ class ComponentRun(Base):
         self._end_timestamp = ts
 
     def add_input(
-        self, inp: typing.Union[str, IOPointer], pointer_type: PointerTypeEnum = None
+        self,
+        inp: typing.Union[str, IOPointer],
+        pointer_type: PointerTypeEnum = None,
     ):
         """Add a single input (instance of IOPointer)."""
         if isinstance(inp, IOPointer):
@@ -151,7 +153,9 @@ class ComponentRun(Base):
                 self._add_io(inp, True)
 
     def add_output(
-        self, out: typing.Union[str, IOPointer], pointer_type: PointerTypeEnum = None
+        self,
+        out: typing.Union[str, IOPointer],
+        pointer_type: PointerTypeEnum = None,
     ):
         """ "Add a single output (instance of IOPointer)."""
         if isinstance(out, IOPointer):
@@ -163,7 +167,8 @@ class ComponentRun(Base):
         self._add_io(IOPointer(out, pointer_type), False)
 
     def add_outputs(self, outputs: typing.List[typing.Union[str, IOPointer]]):
-        """Add a list of outputs (each element should be an instance of IOPointer)."""
+        """Add a list of outputs (each element should be an instance of
+        IOPointer)."""
         for out in outputs:
             if isinstance(out, str):
                 self.add_output(out)
@@ -171,7 +176,9 @@ class ComponentRun(Base):
                 self._add_io(out, False)
 
     def _add_io(
-        self, elems: typing.Union[typing.List[IOPointer], IOPointer], input: bool
+        self,
+        elems: typing.Union[typing.List[IOPointer], IOPointer],
+        input: bool,
     ):
         """Helper function to add inputs or outputs."""
         # Elems can be a list or a single IOPointer. Set to a list.
@@ -187,7 +194,9 @@ class ComponentRun(Base):
         name."""
         # Dependencies can be a list or a single string. Set to a list.
         dependencies = (
-            [dependencies] if not isinstance(dependencies, list) else dependencies
+            [dependencies]
+            if not isinstance(dependencies, list)
+            else dependencies
         )
 
         self._dependencies = self._dependencies + dependencies

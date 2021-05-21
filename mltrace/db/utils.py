@@ -14,7 +14,9 @@ import pprint
 import sqlalchemy
 
 
-def _create_engine_wrapper(uri: str, max_retries=5) -> sqlalchemy.engine.base.Engine:
+def _create_engine_wrapper(
+    uri: str, max_retries=5
+) -> sqlalchemy.engine.base.Engine:
     """Creates engine using sqlalchemy API. Includes max retries parameter."""
     retries = 0
     while retries < max_retries:
@@ -33,8 +35,8 @@ def _initialize_db_tables(engine: sqlalchemy.engine.base.Engine):
 
 
 def _drop_everything(engine: sqlalchemy.engine.base.Engine):
-    """(On a live db) drops all foreign key constraints before dropping all tables.
-    Workaround for SQLAlchemy not doing DROP ## CASCADE for drop_all()
+    """(On a live db) drops all foreign key constraints before dropping all
+    tables. Workaround for SQLAlchemy not doing DROP ## CASCADE for drop_all()
     (https://github.com/pallets/flask-sqlalchemy/issues/722)
     """
 
@@ -43,8 +45,8 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
     inspector = Inspector.from_engine(engine)
 
     # We need to re-create a minimal metadata with only the required things to
-    # successfully emit drop constraints and tables commands for postgres (based
-    # on the actual schema of the running instance)
+    # successfully emit drop constraints and tables commands for
+    # postgres (based on the actual schema of the running instance)
     meta = MetaData()
     tables = []
     all_fkeys = []
@@ -73,8 +75,26 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
 
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevnat enum for the filename."""
-    data_extensions = ["csv", "pq", "parquet", "txt", "md", "rtf", "tsv", "xml", "pdf"]
-    model_extensions = ["h5", "hdf5", "joblib", "pkl", "pickle", "ckpt", "mlmodel"]
+    data_extensions = [
+        "csv",
+        "pq",
+        "parquet",
+        "txt",
+        "md",
+        "rtf",
+        "tsv",
+        "xml",
+        "pdf",
+    ]
+    model_extensions = [
+        "h5",
+        "hdf5",
+        "joblib",
+        "pkl",
+        "pickle",
+        "ckpt",
+        "mlmodel",
+    ]
 
     words = filename.split(".")
 

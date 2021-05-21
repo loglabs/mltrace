@@ -6,17 +6,25 @@ import random
 import string
 
 
-@register(component_name="training", input_vars=["version"], output_vars=["model_file"])
+@register(
+    component_name="training",
+    input_vars=["version"],
+    output_vars=["model_file"],
+)
 def training(version: str) -> str:
     model_file = "model_" + version
     return model_file
 
 
 @register(
-    component_name="inference", input_vars=["model_files"], output_vars=["identifier"]
+    component_name="inference",
+    input_vars=["model_files"],
+    output_vars=["identifier"],
 )
 def inference(model_files) -> str:
-    identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
+    identifier = "".join(
+        random.choice(string.ascii_lowercase) for i in range(10)
+    )
     return identifier
 
 

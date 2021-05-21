@@ -5,7 +5,8 @@ class Base(ABC):
     """The Base class provides methods to save and store attributes as well as
     print them out."""
 
-    # Taken from https://dev.to/mattconway1984/python-creating-instance-properties-2ej0
+    # Taken from https://dev.to/mattconway1984/
+    # python-creating-instance-properties-2ej0
     def __setattr__(self, attr, value):
         try:
             # Try invoking the descriptor protocol __set__ "manually"
@@ -32,11 +33,15 @@ class Base(ABC):
 
     @classmethod
     def _properties(cls):
-        return [p for p in cls.__dict__ if isinstance(getattr(cls, p), property)]
+        return [
+            p for p in cls.__dict__ if isinstance(getattr(cls, p), property)
+        ]
 
     @classmethod
     def from_dictionary(cls, d):
-        d = {key: value for key, value in d.items() if key in cls._properties()}
+        d = {
+            key: value for key, value in d.items() if key in cls._properties()
+        }
         return cls(**d)
 
     def to_dictionary(self):
