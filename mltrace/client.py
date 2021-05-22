@@ -87,6 +87,9 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
     if component_run_dict["end_timestamp"]:
         component_run_sql.set_end_timestamp(component_run_dict["end_timestamp"])
 
+    if component_run_dict["notes"]:
+        component_run_sql.add_notes(component_run_dict["notes"])
+
     component_run_sql.set_git_hash(component_run_dict["git_hash"])
     component_run_sql.set_code_snapshot(component_run_dict["code_snapshot"])
 

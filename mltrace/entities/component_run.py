@@ -20,7 +20,7 @@ class ComponentRun(Base):
     def __init__(
         self,
         component_name: str,
-        notes: str,
+        notes: str = None,
         start_timestamp: datetime = None,
         end_timestamp: datetime = None,
         inputs: typing.List[IOPointer] = [],
