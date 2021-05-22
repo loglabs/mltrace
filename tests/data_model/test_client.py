@@ -39,6 +39,7 @@ class TestComponentRun(unittest.TestCase):
         self.mock_component_run = ComponentRun("mock_component_run")
         self.mock_component_run_dict = {
             "component_name": "mock_component_run",
+            "notes": None,
             "inputs": [],
             "outputs": [],
             "git_hash": None,
