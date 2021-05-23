@@ -17,7 +17,9 @@ class TestDags(unittest.TestCase):
             self.store.create_component(f"mock_component_{i}", "", "")
             inp = self.store.get_io_pointer(f"iop_{i}")
             out = self.store.get_io_pointer(f"iop_{i + 1}")
-            cr = self.store.initialize_empty_component_run(f"mock_component_{i}")
+            cr = self.store.initialize_empty_component_run(
+                f"mock_component_{i}"
+            )
             cr.set_start_timestamp()
             cr.set_end_timestamp()
             cr.add_input(inp)
@@ -31,7 +33,7 @@ class TestDags(unittest.TestCase):
 
         # Trace the final output
         trace = self.store.trace("iop_11")
-        level_id = [(l, cr.id) for l, cr in trace]
+        level_id = [(level, cr.id) for level, cr in trace]
         self.assertEqual(expected_result, level_id)
 
     def testVersionedComputation(self):
@@ -102,11 +104,12 @@ class TestDags(unittest.TestCase):
         # Grab last iop id and trace it
         last_iop_id = f"iop_{iop_counter - 1}"
         trace = self.store.trace(last_iop_id)
-        level_id = [(l, cr.id) for l, cr in trace]
+        level_id = [(level, cr.id) for level, cr in trace]
         self.assertEqual(level_id, [(0, 3), (1, 1)])
 
     def testCycle(self):
-        # Create cycle. Since dependencies are versioned, we shouldn't run into problems.
+        # Create cycle. Since dependencies are versioned, we shouldn't run
+        # into problems.
         # Create io pointers and components
         iop1 = self.store.get_io_pointer("iop1")
         iop2 = self.store.get_io_pointer("iop2")
@@ -131,8 +134,8 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace iop1
-        trace_1 = [(l, cr.id) for l, cr in self.store.trace("iop1")]
-        trace_2 = [(l, cr.id) for l, cr in self.store.trace("iop2")]
+        trace_1 = [(level, cr.id) for level, cr in self.store.trace("iop1")]
+        trace_2 = [(level, cr.id) for level, cr in self.store.trace("iop2")]
         self.assertEqual(trace_1, [(0, 2), (1, 1)])
         self.assertEqual(trace_2, [(0, 1)])
 
@@ -173,13 +176,16 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace iop4
-        trace = [(l, cr.id, cr.stale) for l, cr in self.store.trace("iop4")]
+        trace = [
+            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop4")
+        ]
         res = [
             (
                 0,
                 3,
                 [
-                    "component_1 (ID 1) has 1 fresher run(s) that began before this component run started."
+                    "component_1 (ID 1) has 1 fresher run(s) that began "
+                    + "before this component run started."
                 ],
             ),
             (1, 1, []),
@@ -214,7 +220,9 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace
-        trace = [(l, cr.id, cr.stale) for l, cr in self.store.trace("iop3")]
+        trace = [
+            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop3")
+        ]
         res = [(0, 2, ["component_1 (ID 1) was run 61 days ago."]), (1, 1, [])]
         self.assertEqual(trace, res)
 

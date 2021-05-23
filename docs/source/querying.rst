@@ -28,6 +28,8 @@ You can toggle between light and dark mode using the moon or sun button at the t
 | ``tag``     | Displays all components with the given tag name.                                                                                                                                              | ``tag TAG_NAME``              |
 +-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 
+.. _Using the CLI:
+
 Using the CLI
 ^^^^^^^^^^^^
 

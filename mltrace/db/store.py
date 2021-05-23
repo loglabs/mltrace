@@ -31,13 +31,16 @@ class Store(object):
 
         Args:
             uri (str): URI string to connect to the SQLAlchemy database.
-            delete_first (bool): Whether all the tables in the db should be deleted.
+            delete_first (bool): Whether all the tables in the db should be
+                deleted.
         """
         if uri.lower().strip() == "test":
             uri = "sqlite:///:memory:"
 
         elif not uri.startswith("postgresql://"):
-            raise RuntimeError("Database URI must be prefixed with `postgresql://`")
+            raise RuntimeError(
+                "Database URI must be prefixed with `postgresql://`"
+            )
 
         self.engine = _create_engine_wrapper(uri)
 
@@ -57,9 +60,14 @@ class Store(object):
         self.session.close()
 
     def create_component(
-        self, name: str, description: str, owner: str, tags: typing.List[str] = []
+        self,
+        name: str,
+        description: str,
+        owner: str,
+        tags: typing.List[str] = [],
     ):
-        """Creates a component entity in the database if it does not already exist."""
+        """Creates a component entity in the database if it does
+        not already exist."""
         res = self.get_component(name)
 
         if res:
@@ -68,7 +76,8 @@ class Store(object):
 
         # Add to the DB if it is not already there
         logging.info(
-            f'Creating new Component with name "{name}", description "{description}", owner "{owner}", and tags "{tags}".'
+            f'Creating new Component with name "{name}", description '
+            + f'"{description}", owner "{owner}", and tags "{tags}".'
         )
         tags = list(set([self.get_tag(t) for t in tags]))
         component = Component(
@@ -91,23 +100,31 @@ class Store(object):
     def get_component_run(self, id: str) -> ComponentRun:
         """Retrieves component run if exists."""
         component_run = (
-            self.session.query(ComponentRun).filter(ComponentRun.id == id).first()
+            self.session.query(ComponentRun)
+            .filter(ComponentRun.id == id)
+            .first()
         )
 
         return component_run
 
-    def add_tags_to_component(self, component_name: str, tags: typing.List[str]):
+    def add_tags_to_component(
+        self, component_name: str, tags: typing.List[str]
+    ):
         """Retreives existing component and adds tags."""
         component = self.get_component(component_name)
 
         if not component:
-            raise RuntimeError(f'Component with name "{component_name}" not found.')
+            raise RuntimeError(
+                f'Component with name "{component_name}" not found.'
+            )
 
         tag_objects = list(set([self.get_tag(t) for t in tags]))
         component.add_tags(tag_objects)
         self.session.commit()
 
-    def initialize_empty_component_run(self, component_name: str) -> ComponentRun:
+    def initialize_empty_component_run(
+        self, component_name: str
+    ) -> ComponentRun:
         """Initializes an empty run for the specified component. Does not
         commit to the database."""
         component_run = ComponentRun(component_name=component_name)
@@ -131,17 +148,24 @@ class Store(object):
     def get_io_pointers(
         self, names: typing.List[str], pointer_type: PointerTypeEnum = None
     ) -> typing.List[IOPointer]:
-        """Creates io pointers around the specified path names. Retrieves existing io pointer if exists in DB, otherwise creates a new one with inferred pointer type."""
-        res = self.session.query(IOPointer).filter(IOPointer.name.in_(names)).all()
+        """Creates io pointers around the specified path names. Retrieves
+        existing io pointer if exists in DB, otherwise creates a new one with
+        inferred pointer type."""
+        res = (
+            self.session.query(IOPointer)
+            .filter(IOPointer.name.in_(names))
+            .all()
+        )
         res_names = set([r.name for r in res])
         need_to_add = set(names) - res_names
 
         if len(need_to_add) != 0:
             # Create new IOPointers
-            if pointer_type == None:
+            if pointer_type is None:
                 pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
             iops = [
-                IOPointer(name=name, pointer_type=pointer_type) for name in need_to_add
+                IOPointer(name=name, pointer_type=pointer_type)
+                for name in need_to_add
             ]
             self.session.add_all(iops)
             self.session.commit()
@@ -155,17 +179,20 @@ class Store(object):
         """Creates an io pointer around the specified path.
         Retrieves existing io pointer if exists in DB,
         otherwise creates a new one if create flag is set."""
-        res = self.session.query(IOPointer).filter(IOPointer.name == name).all()
+        res = (
+            self.session.query(IOPointer).filter(IOPointer.name == name).all()
+        )
 
         # Must create new IOPointer
         if len(res) == 0:
-            if create == False:
+            if create is False:
                 raise RuntimeError(
-                    f"IOPointer with name {name} noes not exist. Set create flag to True if you would like to create it."
+                    f"IOPointer with name {name} noes not exist. Set create"
+                    + f"flag to True if you would like to create it."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')
-            if pointer_type == None:
+            if pointer_type is None:
                 pointer_type = _map_extension_to_enum(name)
 
             iop = IOPointer(name=name, pointer_type=pointer_type)
@@ -178,17 +205,22 @@ class Store(object):
 
     def delete_component(self, component: Component):
         self.session.delete(component)
-        logging.info(f'Successfully deleted Component with name "{component.name}".')
+        logging.info(
+            f'Successfully deleted Component with name "{component.name}".'
+        )
 
     def delete_component_run(self, component_run: ComponentRun):
         self.session.delete(component_run)
         logging.info(
-            f'Successfully deleted ComponentRun with id "{component_run.id}" and name "{component_run.component_name}".'
+            f'Successfully deleted ComponentRun with id "{component_run.id}"'
+            + f' and name "{component_run.component_name}".'
         )
 
     def delete_io_pointer(self, io_pointer: IOPointer):
         self.session.delete(io_pointer)
-        logging.info(f'Successfully deleted IOPointer with name "{io_pointer.name}".')
+        logging.info(
+            f'Successfully deleted IOPointer with name "{io_pointer.name}".'
+        )
 
     def commit_component_run(
         self,
@@ -203,7 +235,7 @@ class Store(object):
         if status_dict["msg"]:
             logging.info(status_dict["msg"])
 
-        # Check for staleness. https://github.com/loglabs/mltrace/issues/165#issue-891397631
+        # Check for staleness
         for dep in component_run.dependencies:
             # First case: there is over a month between component runs
             time_diff = (
@@ -212,7 +244,8 @@ class Store(object):
             if time_diff > staleness_threshold:
                 days_diff = int(time_diff // (60 * 60 * 24))
                 component_run.add_staleness_message(
-                    f"{dep.component_name} (ID {dep.id}) was run {days_diff} days ago."
+                    f"{dep.component_name} (ID {dep.id}) was run {days_diff}"
+                    + " days ago."
                 )
             # Second case: there is a newer run of the dependency
             fresher_runs = self.get_history(
@@ -223,13 +256,20 @@ class Store(object):
             )
             if len(fresher_runs) != 1:
                 component_run.add_staleness_message(
-                    f"{dep.component_name} (ID {dep.id}) has {len(fresher_runs) - 1} fresher run(s) that began before this component run started."
+                    f"{dep.component_name} (ID {dep.id}) has "
+                    + f"{len(fresher_runs) - 1} fresher run(s) that began "
+                    + "before this component run started."
                 )
+
+        # Warn user if there is a staleness message
+        if len(component_run.stale) > 0:
+            logging.warning(component_run.stale)
 
         # Commit to DB
         self.session.add(component_run)
         logging.info(
-            f'Committing ComponentRun of type "{component_run.component_name}" to the database.'
+            f"Committing ComponentRun of type "
+            + f'"{component_run.component_name}" to the database.'
         )
         self.session.commit()
 
@@ -247,7 +287,11 @@ class Store(object):
                 func.max(component_run_output_association.c.component_run_id),
             )
             .group_by(component_run_output_association.c.output_path_name)
-            .filter(component_run_output_association.c.output_path_name.in_(input_ids))
+            .filter(
+                component_run_output_association.c.output_path_name.in_(
+                    input_ids
+                )
+            )
             .all()
         )
         match_ids = [m[0] for m in match_ids]
@@ -266,7 +310,10 @@ class Store(object):
         component_run.set_upstream(matches)
 
     def _traverse(
-        self, node: ComponentRun, depth: int, node_list: typing.List[ComponentRun]
+        self,
+        node: ComponentRun,
+        depth: int,
+        node_list: typing.List[ComponentRun],
     ):
         # Add node to node_list as the step
         node_list.append((depth, node))
@@ -308,7 +355,9 @@ class Store(object):
 
             res["childNodes"].append(out_dict)
 
-        for dep in sorted(component_run_object.dependencies, key=lambda x: x.id):
+        for dep in sorted(
+            component_run_object.dependencies, key=lambda x: x.id
+        ):
             child_res = self._web_trace_helper(dep)
             res["childNodes"].append(child_res)
 
@@ -332,7 +381,8 @@ class Store(object):
     def trace(self, output_id: str):
         """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
-        many hops away the node is from the node that produced the output_id."""
+        many hops away the node is from the node that produced the
+        output_id."""
         if not isinstance(output_id, str):
             raise RuntimeError("Please specify an output id of string type.")
 

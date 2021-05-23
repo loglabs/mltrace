@@ -26,10 +26,11 @@ if _db_uri is None:
         _db_uri = _set_address_helper(_db_uri, os.environ.get("DB_SERVER"))
     else:
         logging.warning(
-            f"Please set DB_URI or DB_SERVER as an environment variable. Otherwise, DB_URI is set to {_db_uri}."
+            f"Please set DB_URI or DB_SERVER as an environment variable. \
+            Otherwise, DB_URI is set to {_db_uri}."
         )
 
-# ----------------------- Database management functions ---------------------- #
+# --------------------- Database management functions ------------------- #
 
 
 def set_db_uri(uri: str):
@@ -52,7 +53,7 @@ def clean_db():
     store = Store(_db_uri, delete_first=True)
 
 
-# ---------------------------- Creation functions ---------------------------- #
+# ----------------------- Creation functions ---------------------------- #
 
 
 def create_component(
@@ -69,7 +70,9 @@ def tag_component(component_name: str, tags: typing.List[str]):
     store.add_tags_to_component(component_name, tags)
 
 
-def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=True):
+def log_component_run(
+    component_run: ComponentRun, set_dependencies_from_inputs=True
+):
     """Takes client-facing ComponentRun object and logs it to the DB."""
     store = Store(_db_uri)
 
@@ -82,10 +85,14 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
 
     # Add relevant attributes
     if component_run_dict["start_timestamp"]:
-        component_run_sql.set_start_timestamp(component_run_dict["start_timestamp"])
+        component_run_sql.set_start_timestamp(
+            component_run_dict["start_timestamp"]
+        )
 
     if component_run_dict["end_timestamp"]:
-        component_run_sql.set_end_timestamp(component_run_dict["end_timestamp"])
+        component_run_sql.set_end_timestamp(
+            component_run_dict["end_timestamp"]
+        )
 
     if component_run_dict["notes"]:
         component_run_sql.add_notes(component_run_dict["notes"])
@@ -120,7 +127,8 @@ def log_component_run(component_run: ComponentRun, set_dependencies_from_inputs=
 
 
 def create_random_ids(num_outputs=1) -> typing.List[str]:
-    """Returns a list of num_outputs ids that a client can use to tag outputs."""
+    """Returns a list of num_outputs ids
+    that a client can use to tag outputs."""
 
     return [str(uuid.uuid4()) for _ in range(num_outputs)]
 
@@ -146,7 +154,9 @@ def register(
 
             # Construct component run object
             store = Store(_db_uri)
-            component_run = store.initialize_empty_component_run(component_name)
+            component_run = store.initialize_empty_component_run(
+                component_name
+            )
             component_run.set_start_timestamp()
 
             # Define trace helper
@@ -161,10 +171,12 @@ def register(
                 # Add input_vars and output_vars as pointers
                 for var in input_vars:
                     if var not in local_vars:
-                        logging.debug(f"Variable {var} not in current stack frame.")
+                        logging.debug(
+                            f"Variable {var} not in current stack frame."
+                        )
                         continue
                     val = local_vars[var]
-                    if val == None:
+                    if val is None:
                         logging.debug(f"Variable {var} has value {val}.")
                         continue
                     if isinstance(val, list):
@@ -173,21 +185,29 @@ def register(
                         input_pointers.append(store.get_io_pointer(str(val)))
                 for var in output_vars:
                     if var not in local_vars:
-                        logging.debug(f"Variable {var} not in current stack frame.")
+                        logging.debug(
+                            f"Variable {var} not in current stack frame."
+                        )
                         continue
                     val = local_vars[var]
-                    if val == None:
+                    if val is None:
                         logging.debug(f"Variable {var} has value {val}.")
                         continue
                     if isinstance(val, list):
                         output_pointers += (
-                            store.get_io_pointers(val, PointerTypeEnum.ENDPOINT)
+                            store.get_io_pointers(
+                                val, PointerTypeEnum.ENDPOINT
+                            )
                             if endpoint
                             else store.get_io_pointers(val)
                         )
                     else:
                         output_pointers += (
-                            [store.get_io_pointer(str(val), PointerTypeEnum.ENDPOINT)]
+                            [
+                                store.get_io_pointer(
+                                    str(val), PointerTypeEnum.ENDPOINT
+                                )
+                            ]
                             if endpoint
                             else [store.get_io_pointer(str(val))]
                         )
@@ -215,7 +235,10 @@ def register(
             component_run.set_end_timestamp()
             input_pointers = [store.get_io_pointer(inp) for inp in inputs]
             output_pointers = (
-                [store.get_io_pointer(out, PointerTypeEnum.ENDPOINT) for out in outputs]
+                [
+                    store.get_io_pointer(out, PointerTypeEnum.ENDPOINT)
+                    for out in outputs
+                ]
                 if endpoint
                 else [store.get_io_pointer(out) for out in outputs]
             )
@@ -227,13 +250,15 @@ def register(
             try:
                 repo = git.Repo(search_parent_directories=True)
                 component_run.set_git_hash(str(repo.head.object.hexsha))
-            except:
+            except Exception as e:
                 logging.info("No git repo found.")
 
             # Add source code if less than 2^16
             func_source_code = inspect.getsource(func)
             if len(func_source_code) < 2 ** 16:
-                component_run.set_code_snapshot(bytes(func_source_code, "ascii"))
+                component_run.set_code_snapshot(
+                    bytes(func_source_code, "ascii")
+                )
 
             # Commit component run object to the DB
             store.commit_component_run(component_run)
@@ -250,13 +275,13 @@ def get_git_hash() -> str:
     try:
         repo = git.Repo(search_parent_directories=True)
         return str(repo.head.object.hexsha)
-    except:
+    except Exception as e:
         logging.info("No git repo found.")
 
     return None
 
 
-# ------------------------- Basic retrieval functions ------------------------ #
+# ----------------- Basic retrieval functions ------------------- #
 
 
 def get_history(
@@ -281,7 +306,8 @@ def get_history(
     component_runs = []
     for cr in history:
         inputs = [
-            IOPointer.from_dictionary(iop.__dict__).to_dictionary() for iop in cr.inputs
+            IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+            for iop in cr.inputs
         ]
         outputs = [
             IOPointer.from_dictionary(iop.__dict__).to_dictionary()
@@ -289,7 +315,13 @@ def get_history(
         ]
         dependencies = [dep.component_name for dep in cr.dependencies]
         d = copy.deepcopy(cr.__dict__)
-        d.update({"inputs": inputs, "outputs": outputs, "dependencies": dependencies})
+        d.update(
+            {
+                "inputs": inputs,
+                "outputs": outputs,
+                "dependencies": dependencies,
+            }
+        )
         component_runs.append(ComponentRun.from_dictionary(d))
 
     return component_runs
@@ -331,16 +363,20 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     if not cr:
         raise RuntimeError(f"Component run with id {id} not found.")
     inputs = [
-        IOPointer.from_dictionary(iop.__dict__).to_dictionary() for iop in cr.inputs
+        IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+        for iop in cr.inputs
     ]
     outputs = [
-        IOPointer.from_dictionary(iop.__dict__).to_dictionary() for iop in cr.outputs
+        IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+        for iop in cr.outputs
     ]
     dependencies = [dep.component_name for dep in cr.dependencies]
     d = copy.deepcopy(cr.__dict__)
     if cr.code_snapshot:
         d.update({"code_snapshot": str(cr.code_snapshot.decode("utf-8"))})
-    d.update({"inputs": inputs, "outputs": outputs, "dependencies": dependencies})
+    d.update(
+        {"inputs": inputs, "outputs": outputs, "dependencies": dependencies}
+    )
     return ComponentRun.from_dictionary(d)
 
 
@@ -373,7 +409,7 @@ def get_io_pointer(io_pointer_id: str, create=True):
     return IOPointer.from_dictionary(iop.__dict__)
 
 
-# ------------------------ Complex retrieval functions ----------------------- #
+# --------------- Complex retrieval functions ------------------ #
 
 
 def backtrace(output_pointer: str):
@@ -387,10 +423,18 @@ def backtrace(output_pointer: str):
     component_runs = []
     for depth, cr in trace:
         inputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.inputs]
-        outputs = [IOPointer.from_dictionary(iop.__dict__) for iop in cr.outputs]
+        outputs = [
+            IOPointer.from_dictionary(iop.__dict__) for iop in cr.outputs
+        ]
         dependencies = [dep.component_name for dep in cr.dependencies]
         d = copy.deepcopy(cr.__dict__)
-        d.update({"inputs": inputs, "outputs": outputs, "dependencies": dependencies})
+        d.update(
+            {
+                "inputs": inputs,
+                "outputs": outputs,
+                "dependencies": dependencies,
+            }
+        )
         component_runs.append((depth, ComponentRun.from_dictionary(d)))
 
     return component_runs

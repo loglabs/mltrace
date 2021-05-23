@@ -51,20 +51,28 @@ class TestComponentRun(unittest.TestCase):
             "stale": [],
         }
 
-        self.mock_inputs = [IOPointer("mock_input_1"), IOPointer("mock_input_2")]
-        self.mock_outputs = [IOPointer("mock_output_1"), IOPointer("mock_output_2")]
+        self.mock_inputs = [
+            IOPointer("mock_input_1"),
+            IOPointer("mock_input_2"),
+        ]
+        self.mock_outputs = [
+            IOPointer("mock_output_1"),
+            IOPointer("mock_output_2"),
+        ]
 
     def testSerialize(self):
         """
         Test the serialization functionality.
         """
         self.assertEqual(
-            self.mock_component_run.to_dictionary(), self.mock_component_run_dict
+            self.mock_component_run.to_dictionary(),
+            self.mock_component_run_dict,
         )
 
     def testSetStartEndError(self):
         """
-        Test that setting start and end ts as non datetime types throws an error.
+        Test that setting start and end ts as non
+        datetime types throws an error.
         """
 
         with self.assertRaises(TypeError):

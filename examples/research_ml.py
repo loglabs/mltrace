@@ -1,11 +1,19 @@
 """
 examples/research_ml.py
 
-This file contains one large component. Although mltrace is primarily designed for more collaborative ML pipelines (where more than one person is actively developing code for the prediction task), here's an example of using mltrace to keep track of some of the experiments you might have run. 
+This file contains one large component. Although mltrace is
+primarily designed for more collaborative ML pipelines (where
+more than one person is actively developing code for the prediction
+task), here's an example of using mltrace to keep track of some of
+the experiments you might have run.
 
-If you navigate to the UI and run `history research_model_development`, you will see a list of runs for the `research_model_development` component and their logged inputs/outputs.
+If you navigate to the UI and run `history research_model_development`,
+you will see a list of runs for the `research_model_development`
+component and their logged inputs/outputs.
 
-However, using something like wandb or mlflow might be better for research. This is because mltrace inputs and outputs are not stored as key/value pairs; only the values are stored.
+However, using something like wandb or mlflow might be better for
+research. This is because mltrace inputs and outputs are not stored
+as key/value pairs; only the values are stored.
 """
 
 from mltrace import create_component, register
@@ -45,5 +53,7 @@ if __name__ == "__main__":
 
     for lr, num_epochs, hidden_size in candidates:
         train_and_evaluate_model(
-            f"lr_{lr}", f"num_epochs_{num_epochs}", f"hidden_size_{hidden_size}"
+            f"lr_{lr}",
+            f"num_epochs_{num_epochs}",
+            f"hidden_size_{hidden_size}",
         )
