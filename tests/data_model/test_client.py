@@ -106,6 +106,20 @@ class TestComponentRun(unittest.TestCase):
 
         self.assertEqual(cr.inputs, list(set(self.mock_inputs)))
 
+    def testAddNotes(self):
+        cr = copy.deepcopy(self.mock_component_run)
+        expected_output = "this is a test note"
+        cr.add_notes("this is a test note")
+
+        self.assertEqual(cr.notes, expected_output)
+
+    def testAddNotesError(self):
+        """
+        Test that adding non-str input to the notes attribute 
+        gives a TypeError
+        """
+        with self.assertRaises(TypeError):
+            self.mock_component_run.add_notes(["incorrect_type"])
 
 if __name__ == "__main__":
     unittest.main()
