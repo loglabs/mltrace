@@ -457,8 +457,42 @@ class Store(object):
 
         return components
 
-    def get_recent_run_ids(self, limit: int = 50) -> typing.List[str]:
+    def get_recent_run_ids(
+        self, limit: int = 50, last_run_id=None
+    ) -> typing.List[str]:
         """Returns a list of recent component run IDs."""
+
+        if last_run_id:
+            # Get start timestamp of last run id
+            ts = (
+                self.session.query(ComponentRun)
+                .filter(ComponentRun.id == last_run_id)
+                .first()
+            ).start_timestamp
+            if not ts:
+                raise RuntimeError(
+                    f"Last run ID {last_run_id} does not exist."
+                )
+
+            # Return list of runs after ts
+            runs = list(
+                map(
+                    lambda x: int(x[0]),
+                    self.session.query(ComponentRun.id)
+                    .order_by(ComponentRun.start_timestamp.desc())
+                    .filter(
+                        and_(
+                            ComponentRun.start_timestamp <= ts,
+                            ComponentRun.id != last_run_id,
+                        )
+                    )
+                    .limit(limit)
+                    .all(),
+                )
+            )
+
+            return runs
+
         runs = list(
             map(
                 lambda x: int(x[0]),

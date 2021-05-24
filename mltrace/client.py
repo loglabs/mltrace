@@ -400,10 +400,10 @@ def get_components_with_tag(tag: str) -> typing.List[Component]:
     return components
 
 
-def get_recent_run_ids(limit: int = 50):
+def get_recent_run_ids(limit: int = 50, last_run_id=None):
     """Returns most recent component run ids."""
     store = Store(_db_uri)
-    return store.get_recent_run_ids(limit)
+    return store.get_recent_run_ids(limit, last_run_id)
 
 
 def get_io_pointer(io_pointer_id: str, create=True):

@@ -137,11 +137,8 @@ def component():
 
 @api.route("/recent", methods=["GET"])
 def recent():
-    component_run_ids = (
-        get_recent_run_ids(request.args["limit"])
-        if "limit" in request.args
-        else get_recent_run_ids()
-    )
+    kwargs = request.json
+    component_run_ids = get_recent_run_ids(**kwargs)
     return json.dumps(component_run_ids)
 
 
