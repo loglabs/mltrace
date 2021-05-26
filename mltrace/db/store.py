@@ -504,3 +504,18 @@ class Store(object):
         )
 
         return runs
+
+    def add_notes_to_component_run(
+        self, component_run_id: str, notes: str
+    ) -> str:
+        """Retreives existing component and adds tags."""
+        component_run = self.get_component_run(component_run_id)
+
+        if not component_run:
+            raise RuntimeError(
+                f'ComponentRun with ID "{component_run_id}" not found.'
+            )
+
+        component_run.add_notes(notes)
+        self.session.commit()
+        return component_run.notes

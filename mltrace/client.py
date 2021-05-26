@@ -96,6 +96,9 @@ def log_component_run(
             component_run_dict["end_timestamp"]
         )
 
+    if component_run_dict["notes"]:
+        component_run_sql.add_notes(component_run_dict["notes"])
+
     component_run_sql.set_git_hash(component_run_dict["git_hash"])
     component_run_sql.set_code_snapshot(component_run_dict["code_snapshot"])
 
@@ -283,6 +286,11 @@ def get_git_hash() -> str:
         logging.info("No git repo found.")
 
     return None
+
+
+def add_notes_to_component_run(component_run_id: str, notes: str) -> str:
+    store = Store(_db_uri)
+    return store.add_notes_to_component_run(component_run_id, notes)
 
 
 # ----------------- Basic retrieval functions ------------------- #

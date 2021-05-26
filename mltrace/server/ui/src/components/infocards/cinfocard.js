@@ -5,7 +5,7 @@ import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
-import { INTENT_DANGER } from '@blueprintjs/core/lib/esm/common/classes';
+// import { INTENT_DANGER } from '@blueprintjs/core/lib/esm/common/classes';
 
 const HISTORY_API_URL = '/api/history';
 
