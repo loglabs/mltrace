@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText } from "@blueprintjs/core";
+import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText, Icon } from "@blueprintjs/core";
 import { CustomToaster } from "../toaster.js";
 
 import axios from "axios";
@@ -155,14 +155,6 @@ export default class CRInfoCard extends Component {
                     {(<h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2>)}
                 </Tooltip>
                 {stale}
-                <div style={{ marginTop: '1em' }}>
-                    <EditableText
-                        multiline={true}
-                        minLines={3}
-                        onConfirm={(e) => this.onFinishEditingText(this.props.id, e)}
-                        defaultValue={this.state.notes}
-                    />
-                </div>
                 <HTMLTable bordered={false} interactive={false} className='bp3-minimal'>
                     <thead>
                         <tr>
@@ -194,6 +186,15 @@ export default class CRInfoCard extends Component {
                             {codeSnapshot}
                         </Pre>
                     </Collapse>
+                </div>
+                <div style={{ marginTop: '0em' }}>
+                    <h4><Icon icon="annotation" />  Notes</h4>
+                    <EditableText
+                        multiline={true}
+                        minLines={3}
+                        onConfirm={(e) => this.onFinishEditingText(this.props.id, e)}
+                        defaultValue={this.state.notes}
+                    />
                 </div>
             </div >
         );
