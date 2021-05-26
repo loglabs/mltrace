@@ -109,7 +109,7 @@ class TestComponentRun(unittest.TestCase):
     def testAddNotes(self):
         cr = copy.deepcopy(self.mock_component_run)
         expected_output = "this is a test note"
-        cr.add_notes("this is a test note")
+        cr.notes = "this is a test note"
 
         self.assertEqual(cr.notes, expected_output)
 
@@ -119,7 +119,7 @@ class TestComponentRun(unittest.TestCase):
         gives a TypeError
         """
         with self.assertRaises(TypeError):
-            self.mock_component_run.add_notes(["incorrect_type"])
+            self.mock_component_run.notes = ["incorrect_type"]
 
 
 if __name__ == "__main__":
