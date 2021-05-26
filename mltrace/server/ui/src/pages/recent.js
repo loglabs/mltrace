@@ -3,6 +3,7 @@ import { Intent } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 
 import axios from "axios";
+import debounce from 'lodash.debounce';
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
@@ -17,20 +18,40 @@ export default class Recent extends Component {
         this.state = {
             componentRuns: null,
         }
+
+        window.onscroll = debounce(() => {
+            const {
+                loadComponentRuns
+            } = this;
+
+            if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+                loadComponentRuns();
+            }
+        }, 100);
     }
 
-    componentDidMount() {
-        // Ping API if this.props.render
+    loadComponentRuns = () => {
+        let params = {
+            limit: this.props.kwargs.limit,
+        };
 
-        if (this.props.render === false) return;
+        if (this.state.componentRuns !== null && this.state.componentRuns.length !== 0) {
+            params.last_run_id = this.state.componentRuns[this.state.componentRuns.length - 1];
+        }
+
 
         axios.get(RECENT_API_URL, {
-            params: {
-                limit: this.props.kwargs.limit,
-            }
+            params: params
         }).then(
             ({ data }) => {
-                this.setState({ componentRuns: data });
+
+                if (this.state.componentRuns === null) {
+                    this.setState({ componentRuns: data });
+                }
+
+                else {
+                    this.setState({ componentRuns: this.state.componentRuns.concat(data) });
+                }
             }
         ).catch(e => {
             CustomToaster.show({
@@ -39,6 +60,14 @@ export default class Recent extends Component {
                 intent: Intent.DANGER,
             });
         });
+    }
+
+    componentDidMount() {
+        // Ping API if this.props.render
+
+        if (this.props.render === false) return;
+
+        this.loadComponentRuns();
     }
 
     componentDidUpdate() {
@@ -55,21 +84,7 @@ export default class Recent extends Component {
             return;
         }
 
-        axios.get(RECENT_API_URL, {
-            params: {
-                limit: this.props.kwargs.limit,
-            }
-        }).then(
-            ({ data }) => {
-                this.setState({ componentRuns: data });
-            }
-        ).catch(e => {
-            CustomToaster.show({
-                message: e.message,
-                icon: "error",
-                intent: Intent.DANGER,
-            });
-        });
+        this.loadComponentRuns();
     }
 
     render() {
