@@ -185,7 +185,7 @@ class ComponentRun(Base):
         """Add notes describing details of component run"""
         if not isinstance(notes, str):
             raise TypeError("notes field must be of type str")
-        self._notes = notes
+        self.notes = notes
 
     def set_git_hash(self, git_hash: str):
         """Git hash setter."""

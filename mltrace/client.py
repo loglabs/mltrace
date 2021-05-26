@@ -288,6 +288,11 @@ def get_git_hash() -> str:
     return None
 
 
+def add_notes_to_component_run(component_run_id: str, notes: str) -> str:
+    store = Store(_db_uri)
+    return store.add_notes_to_component_run(component_run_id, notes)
+
+
 # ----------------- Basic retrieval functions ------------------- #
 
 

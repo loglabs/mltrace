@@ -10,7 +10,7 @@ from mltrace import (
     web_trace,
     get_recent_run_ids,
     get_io_pointer,
-    set_db_uri,
+    add_notes_to_component_run,
 )
 
 import copy
@@ -155,6 +155,22 @@ def trace():
         return json.dumps(res)
     except RuntimeError:
         return error(f"Output {output_id} not found", HTTPStatus.NOT_FOUND)
+
+
+@api.route("/notes", methods=["GET", "POST"])
+def add_notes():
+    if "id" not in request.json:
+        return error(f"ComponentRun id not specified.", HTTPStatus.NOT_FOUND)
+    component_run_id = request.json["id"]
+    notes = request.json["notes"]
+    try:
+        res = add_notes_to_component_run(component_run_id, notes)
+        return json.dumps(res)
+    except RuntimeError:
+        return error(
+            f"ComponentRun {component_run_id} unable to set notes to {notes}",
+            HTTPStatus.NOT_FOUND,
+        )
 
 
 app.register_blueprint(api, url_prefix="/api")
