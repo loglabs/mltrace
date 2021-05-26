@@ -408,7 +408,7 @@ def get_components_with_tag(tag: str) -> typing.List[Component]:
     return components
 
 
-def get_recent_run_ids(limit: int = 50, last_run_id=None):
+def get_recent_run_ids(limit: int = 5, last_run_id=None):
     """Returns most recent component run ids."""
     store = Store(_db_uri)
     return store.get_recent_run_ids(limit, last_run_id)
