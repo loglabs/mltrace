@@ -115,11 +115,12 @@ class TestComponentRun(unittest.TestCase):
 
     def testAddNotesError(self):
         """
-        Test that adding non-str input to the notes attribute 
+        Test that adding non-str input to the notes attribute
         gives a TypeError
         """
         with self.assertRaises(TypeError):
             self.mock_component_run.add_notes(["incorrect_type"])
+
 
 if __name__ == "__main__":
     unittest.main()
