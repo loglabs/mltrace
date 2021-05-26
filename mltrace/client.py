@@ -71,7 +71,9 @@ def tag_component(component_name: str, tags: typing.List[str]):
 
 
 def log_component_run(
-    component_run: ComponentRun, set_dependencies_from_inputs=True
+    component_run: ComponentRun,
+    set_dependencies_from_inputs=True,
+    staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
     """Takes client-facing ComponentRun object and logs it to the DB."""
     store = Store(_db_uri)
@@ -123,7 +125,9 @@ def log_component_run(
         cr = store.get_history(dependency, 1)[0]
         component_run_sql.set_upstream(cr)
 
-    store.commit_component_run(component_run_sql)
+    store.commit_component_run(
+        component_run_sql, staleness_threshold=staleness_threshold
+    )
 
 
 def create_random_ids(num_outputs=1) -> typing.List[str]:
@@ -144,6 +148,7 @@ def register(
     input_vars: typing.List[str] = [],
     output_vars: typing.List[str] = [],
     endpoint: bool = False,
+    staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -261,7 +266,9 @@ def register(
                 )
 
             # Commit component run object to the DB
-            store.commit_component_run(component_run)
+            store.commit_component_run(
+                component_run, staleness_threshold=staleness_threshold
+            )
 
             return value
 
