@@ -124,6 +124,7 @@ class ComponentRun(Base):
 
     id = Column(Integer, primary_key=True)
     component_name = Column(String, ForeignKey("components.name"))
+    notes = Column(String)
     git_hash = Column(String)
     code_snapshot = Column(LargeBinary)
     start_timestamp = Column(DateTime)
@@ -148,6 +149,7 @@ class ComponentRun(Base):
     def __init__(self, component_name):
         """Initialize ComponentRun, or an instance of a Component's 'run.'"""
         self.component_name = component_name
+        self.notes = ""
         self.inputs = []
         self.outputs = []
         self.dependencies = []
@@ -178,6 +180,12 @@ class ComponentRun(Base):
     def set_code_snapshot(self, code_snapshot: bytes):
         """Code snapshot setter."""
         self.code_snapshot = code_snapshot
+
+    def add_notes(self, notes: str):
+        """Add notes describing details of component run"""
+        if not isinstance(notes, str):
+            raise TypeError("notes field must be of type str")
+        self.notes = notes
 
     def set_git_hash(self, git_hash: str):
         """Git hash setter."""

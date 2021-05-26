@@ -18,6 +18,7 @@ from mltrace.client import (
     get_db_uri,
     get_git_hash,
     set_address,
+    add_notes_to_component_run,
 )
 
 __all__ = [
@@ -40,4 +41,5 @@ __all__ = [
     "get_db_uri",
     "get_git_hash",
     "set_address",
+    "add_notes_to_component_run",
 ]

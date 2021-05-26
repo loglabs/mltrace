@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout } from "@blueprintjs/core";
+import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText, Icon } from "@blueprintjs/core";
+import { CustomToaster } from "../toaster.js";
 
+import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
+
+const NOTES_API_URL = "api/notes";
 
 export default class CRInfoCard extends Component {
 
@@ -13,11 +17,13 @@ export default class CRInfoCard extends Component {
         this.state = {
             showCode: false,
             showInputs: true,
-            showOutputs: true
+            showOutputs: true,
+            notes: this.props.src.notes
         };
 
         this.handleClick = this.handleClick.bind(this);
         this.onNodeToggle = this.onNodeToggle.bind(this);
+        this.onFinishEditingText = this.onFinishEditingText.bind(this);
     }
 
     handleClick() {
@@ -32,6 +38,31 @@ export default class CRInfoCard extends Component {
         }
     }
 
+    onFinishEditingText(id, text) {
+        if (text === this.state.notes) return;
+
+        // Update notes if there's a change
+        axios.post(NOTES_API_URL, {
+            id: this.props.id,
+            notes: text
+        }).then(
+            ({ data }) => {
+                this.setState({ notes: data });
+                CustomToaster.show({
+                    message: "Description for ComponentRun " + id + " updated.",
+                    icon: "tick-circle",
+                    intent: Intent.SUCCESS,
+                });
+            }
+        ).catch(e => {
+            CustomToaster.show({
+                message: e.message,
+                icon: "error",
+                intent: Intent.DANGER,
+            });
+        });
+    }
+
     render() {
         let info = this.props.src;
         let commit = info.git_hash ? info.git_hash : "no commit found";
@@ -43,7 +74,7 @@ export default class CRInfoCard extends Component {
                 <Callout className={Classes.MINIMAL} intent={Intent.WARNING}>
                     Some dependencies may be stale:
                     <ul>
-                        {info.stale.map((inf, index) => (<li id={"callout_" + index}>{inf}</li>))}
+                        {info.stale.map((inf, index) => (<li key={"callout_" + index}>{inf}</li>))}
                     </ul>
                 </Callout>
             );
@@ -155,6 +186,15 @@ export default class CRInfoCard extends Component {
                             {codeSnapshot}
                         </Pre>
                     </Collapse>
+                </div>
+                <div style={{ marginTop: '0em' }}>
+                    <h4><Icon icon="annotation" />  Notes</h4>
+                    <EditableText
+                        multiline={true}
+                        minLines={3}
+                        onConfirm={(e) => this.onFinishEditingText(this.props.id, e)}
+                        defaultValue={this.state.notes}
+                    />
                 </div>
             </div >
         );
