@@ -59,6 +59,9 @@ class ComponentRun(Base):
 
     @notes.setter
     def notes(self, notes: str):
+        """Add notes describing details of component run"""
+        if not isinstance(notes, str):
+            raise TypeError("notes field must be of type str")
         self._notes = notes
 
     @notes.deleter
@@ -142,12 +145,6 @@ class ComponentRun(Base):
             raise TypeError("Timestamp must be of type datetime.")
 
         self._end_timestamp = ts
-
-    def add_notes(self, notes: str):
-        """Add notes describing details of component run"""
-        if not isinstance(notes, str):
-            raise TypeError("notes field must be of type str")
-        self._notes = notes
 
     def add_input(
         self,
