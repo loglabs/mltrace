@@ -126,6 +126,7 @@ class ComponentRun(Base):
     component_name = Column(String, ForeignKey("components.name"))
     notes = Column(String)
     git_hash = Column(String)
+    git_tag = Column(String)
     code_snapshot = Column(LargeBinary)
     start_timestamp = Column(DateTime)
     end_timestamp = Column(DateTime)
@@ -190,6 +191,10 @@ class ComponentRun(Base):
     def set_git_hash(self, git_hash: str):
         """Git hash setter."""
         self.git_hash = git_hash
+
+    def set_git_tag(self, git_tag: str):
+        """Git tag setter."""
+        self.git_tag = git_tag
 
     def add_staleness_message(self, message: str):
         """Staleness indicator."""
