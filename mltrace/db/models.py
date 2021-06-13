@@ -192,9 +192,9 @@ class ComponentRun(Base):
         """Git hash setter."""
         self.git_hash = git_hash
 
-    def set_git_tag(self, git_tag: str):
+    def set_git_tags(self, git_tags: typing.List[str]):
         """Git tag setter."""
-        self.git_tag = git_tag
+        self.git_tag = git_tags
 
     def add_staleness_message(self, message: str):
         """Staleness indicator."""

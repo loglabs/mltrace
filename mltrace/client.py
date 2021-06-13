@@ -100,6 +100,7 @@ def log_component_run(
         component_run_sql.add_notes(component_run_dict["notes"])
 
     component_run_sql.set_git_hash(component_run_dict["git_hash"])
+    component_run_sql.set_git_tags(component_run_dict['git_tag'])
     component_run_sql.set_code_snapshot(component_run_dict["code_snapshot"])
 
     # Add I/O
@@ -128,7 +129,6 @@ def log_component_run(
     store.commit_component_run(
         component_run_sql, staleness_threshold=staleness_threshold
     )
-
 
 def create_random_ids(num_outputs=1) -> typing.List[str]:
     """Returns a list of num_outputs ids
@@ -258,6 +258,9 @@ def register(
             except Exception as e:
                 logging.info("No git repo found.")
 
+            # Add git tags 
+            component_run.set_git_tags(get_git_tags())
+
             # Add source code if less than 2^16
             func_source_code = inspect.getsource(func)
             if len(func_source_code) < 2 ** 16:
@@ -285,6 +288,22 @@ def get_git_hash() -> str:
     except Exception as e:
         logging.info("No git repo found.")
 
+    return None
+
+def get_git_tags() -> str:
+    """
+    Gets tags associated with commit of parent git repo, if exists
+    ref:https://stackoverflow.com/questions/34932306/get-tags-of-a-commit
+    """
+    try:
+        tagmap = {}
+        repo = git.Repo(search_parent_directories=True)
+        for t in repo.tags:
+            tagmap.setdefault(repo.commit(t), []).append(t)
+        tags = tagmap[repo.commit(repo.head.object.hexsha)]
+        return [tag.name for tag in tags]
+    except Exception as e:
+        logging.info("No git tag found")
     return None
 
 

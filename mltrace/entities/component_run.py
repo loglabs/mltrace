@@ -26,7 +26,7 @@ class ComponentRun(Base):
         inputs: typing.List[IOPointer] = [],
         outputs: typing.List[IOPointer] = [],
         git_hash: str = None,
-        git_tag: str = None,
+        git_tags: typing.List[str] = [],
         code_snapshot: str = None,
         id: str = None,
         stale: typing.List[str] = [],
@@ -41,7 +41,7 @@ class ComponentRun(Base):
         self._inputs = inputs
         self._outputs = outputs
         self._git_hash = git_hash
-        self._git_tag = git_tag
+        self._git_tags = git_tags
         self._code_snapshot = (
             code_snapshot.decode("utf-8")
             if isinstance(code_snapshot, (bytes, bytearray))
@@ -103,12 +103,12 @@ class ComponentRun(Base):
         self._git_hash = new_hash
 
     @property
-    def git_tag(self) -> str:
-        return self._git_tag
+    def git_tags(self) -> typing.List[str]:
+        return self._git_tags
 
-    @git_hash.setter
-    def git_hash(self, new_tag: str):
-        self._git_tag = new_tag
+    @git_tags.setter
+    def git_tags(self, new_tags: typing.List[str]):
+        self._git_tags = new_tags
 
     @property
     def code_snapshot(self) -> str:
