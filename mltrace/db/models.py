@@ -68,7 +68,6 @@ class Tag(Base):
     def __init__(self, name: str):
         self.name = name
 
-
 class IOPointer(Base):
     __tablename__ = "io_pointers"
 
@@ -118,7 +117,6 @@ component_run_dependencies = Table(
     ),
 )
 
-
 class ComponentRun(Base):
     __tablename__ = "component_runs"
 
@@ -126,7 +124,7 @@ class ComponentRun(Base):
     component_name = Column(String, ForeignKey("components.name"))
     notes = Column(String)
     git_hash = Column(String)
-    git_tag = Column(String)
+    git_tags = Column(String)
     code_snapshot = Column(LargeBinary)
     start_timestamp = Column(DateTime)
     end_timestamp = Column(DateTime)
@@ -194,7 +192,7 @@ class ComponentRun(Base):
 
     def set_git_tags(self, git_tags: typing.List[str]):
         """Git tag setter."""
-        self.git_tag = git_tags
+        self.git_tags = ",".join(git_tags)  # convert list of tags to str "tag1,tag2"
 
     def add_staleness_message(self, message: str):
         """Staleness indicator."""

@@ -100,7 +100,7 @@ def log_component_run(
         component_run_sql.add_notes(component_run_dict["notes"])
 
     component_run_sql.set_git_hash(component_run_dict["git_hash"])
-    component_run_sql.set_git_tags(component_run_dict['git_tag'])
+    component_run_sql.set_git_tags(component_run_dict['git_tags'])
     component_run_sql.set_code_snapshot(component_run_dict["code_snapshot"])
 
     # Add I/O
@@ -259,7 +259,8 @@ def register(
                 logging.info("No git repo found.")
 
             # Add git tags 
-            component_run.set_git_tags(get_git_tags())
+            if get_git_tags() is not None:
+                component_run.set_git_tags(get_git_tags())
 
             # Add source code if less than 2^16
             func_source_code = inspect.getsource(func)
@@ -304,7 +305,6 @@ def get_git_tags() -> str:
         return [tag.name for tag in tags]
     except Exception as e:
         logging.info("No git tag found")
-    return None
 
 
 def add_notes_to_component_run(component_run_id: str, notes: str) -> str:
