@@ -68,6 +68,7 @@ class Tag(Base):
     def __init__(self, name: str):
         self.name = name
 
+
 class IOPointer(Base):
     __tablename__ = "io_pointers"
 
@@ -116,6 +117,7 @@ component_run_dependencies = Table(
         primary_key=True,
     ),
 )
+
 
 class ComponentRun(Base):
     __tablename__ = "component_runs"
@@ -192,7 +194,7 @@ class ComponentRun(Base):
 
     def set_git_tags(self, git_tags: typing.List[str]):
         """Git tag setter."""
-        self.git_tags = ",".join(git_tags)  # convert list of tags to str "tag1,tag2"
+        self.git_tags = ",".join(git_tags) 
 
     def add_staleness_message(self, message: str):
         """Staleness indicator."""

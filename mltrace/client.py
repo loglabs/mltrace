@@ -130,6 +130,7 @@ def log_component_run(
         component_run_sql, staleness_threshold=staleness_threshold
     )
 
+
 def create_random_ids(num_outputs=1) -> typing.List[str]:
     """Returns a list of num_outputs ids
     that a client can use to tag outputs."""
@@ -290,6 +291,7 @@ def get_git_hash() -> str:
         logging.info("No git repo found.")
 
     return None
+    
 
 def get_git_tags() -> str:
     """
