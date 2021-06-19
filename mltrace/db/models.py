@@ -194,7 +194,7 @@ class ComponentRun(Base):
 
     def set_git_tags(self, git_tags: typing.List[str]):
         """Git tag setter."""
-        self.git_tags = ",".join(git_tags) 
+        self.git_tags = ",".join(git_tags)
 
     def add_staleness_message(self, message: str):
         """Staleness indicator."""

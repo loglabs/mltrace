@@ -259,7 +259,7 @@ def register(
             except Exception as e:
                 logging.info("No git repo found.")
 
-            # Add git tags 
+            # Add git tags
             if get_git_tags() is not None:
                 component_run.set_git_tags(get_git_tags())
 
@@ -291,7 +291,7 @@ def get_git_hash() -> str:
         logging.info("No git repo found.")
 
     return None
-    
+
 
 def get_git_tags() -> str:
     """
