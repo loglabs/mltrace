@@ -9,6 +9,8 @@ from mltrace import (
     get_component_information,
     get_history,
     web_trace,
+    flag_output_id,
+    unflag_output_id,
 )
 import textwrap
 
@@ -240,3 +242,29 @@ def trace(output_id: str, address: str = ""):
         show_res(
             res=res[0]["childNodes"], indent=1, count=0, pos=0, need_stick=0
         )
+
+
+@mltrace.command("flag")
+@click.argument("output_id")
+@click.option("--address", help="Database server address")
+def flag(output_id: str, address: str = ""):
+    """
+    Command to set the flag property of an output_id to true.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+    flag_output_id(output_id)
+
+
+@mltrace.command("unflag")
+@click.argument("output_id")
+@click.option("--address", help="Database server address")
+def unflag(output_id: str, address: str = ""):
+    """
+    Command to set the flag property of an output_id to false.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+    unflag_output_id(output_id)

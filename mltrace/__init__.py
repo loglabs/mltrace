@@ -19,6 +19,8 @@ from mltrace.client import (
     get_git_hash,
     set_address,
     add_notes_to_component_run,
+    flag_output_id,
+    unflag_output_id,
 )
 
 __all__ = [
@@ -42,4 +44,6 @@ __all__ = [
     "get_git_hash",
     "set_address",
     "add_notes_to_component_run",
+    "flag_output_id",
+    "unflag_output_id",
 ]
