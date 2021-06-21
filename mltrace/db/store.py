@@ -188,7 +188,7 @@ class Store(object):
             if create is False:
                 raise RuntimeError(
                     f"IOPointer with name {name} noes not exist. Set create"
-                    + f"flag to True if you would like to create it."
+                    + f" flag to True if you would like to create it."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')
@@ -519,3 +519,21 @@ class Store(object):
         component_run.add_notes(notes)
         self.session.commit()
         return component_run.notes
+
+    def set_io_pointer_flag(self, output_id: str, value: bool):
+        """Sets the flag property of an IOPointer."""
+
+        try:
+            iop = self.get_io_pointer(output_id, create=False)
+
+            if value:
+                iop.set_flag()
+            else:
+                iop.clear_flag()
+
+            self.session.commit()
+
+        except RuntimeError:
+            raise RuntimeError(
+                f"IOPointer with name {output_id} does not exist."
+            )
