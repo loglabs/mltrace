@@ -537,3 +537,32 @@ class Store(object):
             raise RuntimeError(
                 f"IOPointer with name {output_id} does not exist."
             )
+
+    def diagnose_flagged_outputs(
+        self,
+    ) -> typing.List[typing.Tuple[ComponentRun, int]]:
+        """Finds common ComponentRuns for a group of flagged outputs."""
+        # Collate flagged outputs
+        flagged_iops = (
+            self.session.query(IOPointer).filter(IOPointer.flag == True).all()
+        )
+        flagged_output_ids = [iop.name for iop in flagged_iops]
+
+        # Perform traces for each output id
+        traces = [self.trace(output_id) for output_id in flagged_output_ids]
+
+        # Sort traces by ComponentRun count & id, descending
+        trace_nodes_counts = {}
+        for trace in traces:
+            for _, node in trace:
+                if node not in trace_nodes_counts:
+                    trace_nodes_counts[node] = 0
+                trace_nodes_counts[node] += 1
+
+        trace_nodes_counts = sorted(
+            trace_nodes_counts.items(),
+            key=lambda item: (-item[1], -item[0].id),
+        )
+
+        # Return a list of the ComponentRuns in the order
+        return trace_nodes_counts

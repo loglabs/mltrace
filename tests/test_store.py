@@ -258,6 +258,55 @@ class TestStore(unittest.TestCase):
 
         self.assertEqual(web_trace, expected_res)
 
+    def testBasicFlaggedOutputs(self):
+        # Create components and iopointers
+        self.store.create_component(
+            "test_component_A", "test_description", "shreya"
+        )
+        self.store.create_component(
+            "test_component_B", "test_description", "shreya"
+        )
+
+        iop = [self.store.get_io_pointer(f"iop_{i}") for i in range(1, 5)]
+
+        # Create component runs
+        # First pipeline
+        cr_A1 = self.store.initialize_empty_component_run("test_component_A")
+        cr_A1.set_start_timestamp()
+        cr_A1.set_end_timestamp()
+        cr_A1.add_outputs([iop[0], iop[1]])
+        self.store.set_dependencies_from_inputs(cr_A1)
+        self.store.commit_component_run(cr_A1)
+        cr_B1 = self.store.initialize_empty_component_run("test_component_B")
+        cr_B1.set_start_timestamp()
+        cr_B1.set_end_timestamp()
+        cr_B1.add_input(iop[0])
+        cr_B1.add_output(iop[2])
+        self.store.set_dependencies_from_inputs(cr_B1)
+        self.store.commit_component_run(cr_B1)
+        # Second pipeline, which builds off iop2
+        cr_B2 = self.store.initialize_empty_component_run("test_component_B")
+        cr_B2.set_start_timestamp()
+        cr_B2.set_end_timestamp()
+        cr_B2.add_input(iop[1])
+        cr_B2.add_output(iop[3])
+        self.store.set_dependencies_from_inputs(cr_B2)
+        self.store.commit_component_run(cr_B2)
+
+        # Flag iop_3 and iop_4
+        self.store.set_io_pointer_flag("iop_3", True)
+        self.store.set_io_pointer_flag("iop_4", True)
+
+        # Run diagnose. It should output
+        # [component_A, component_B, component_B]'s corresponding run IDs
+        res = self.store.diagnose_flagged_outputs()
+        res = [(cr.id, count) for cr, count in res]
+        expected_res = [(1, 2), (3, 1), (2, 1)]
+        self.assertEqual(res, expected_res)
+
+    def testManyFlaggedOutputs(self):
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()
