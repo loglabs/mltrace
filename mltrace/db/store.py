@@ -544,7 +544,9 @@ class Store(object):
         """Finds common ComponentRuns for a group of flagged outputs."""
         # Collate flagged outputs
         flagged_iops = (
-            self.session.query(IOPointer).filter(IOPointer.flag is True).all()
+            self.session.query(IOPointer)
+            .filter(IOPointer.flag.is_(True))
+            .all()
         )
         flagged_output_ids = [iop.name for iop in flagged_iops]
 
