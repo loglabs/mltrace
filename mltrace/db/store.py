@@ -552,11 +552,12 @@ class Store(object):
 
         # Perform traces for each output id
         traces = [self.trace(output_id) for output_id in flagged_output_ids]
+        traces = [list(set([node for _, node in trace])) for trace in traces]
 
         # Sort traces by ComponentRun count & id, descending
         trace_nodes_counts = {}
         for trace in traces:
-            for _, node in trace:
+            for node in trace:
                 if node not in trace_nodes_counts:
                     trace_nodes_counts[node] = 0
                 trace_nodes_counts[node] += 1
