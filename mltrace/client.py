@@ -468,3 +468,12 @@ def backtrace(output_pointer: str):
 def web_trace(output_id: str):
     store = Store(_db_uri)
     return store.web_trace(output_id)
+
+
+def diagnose_flagged_outputs():
+    """Finds common ComponentRuns for a group of flagged outputs.
+    Returns a list of ComponentRuns and occurrence counts in the
+    group of flagged outputs, sorted by descending count and then
+    alphabetically."""
+    store = Store(_db_uri)
+    return store.diagnose_flagged_outputs()
