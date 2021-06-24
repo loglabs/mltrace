@@ -278,8 +278,20 @@ def unflag(output_id: str, address: str = ""):
 @click.option("--limit", default=5, help="Limit of recent objects.")
 @click.option("--address", help="Database server address")
 def diagnose(limit: int = 5, address: str = ""):
+    """Command to find common component runs in a set of flagged outputs."""
     if address and len(address) > 0:
         set_address(address)
-    component_counts = diagnose_flagged_outputs()
+    outputs, component_counts = diagnose_flagged_outputs()
+
+    # Print output ids
+    click.echo("Flagged outputs:")
+    for idx, out in enumerate(outputs):
+        if idx == len(outputs) - 1:
+            click.echo(f"└─{out}")
+        else:
+            click.echo(f"├─{out}")
+    click.echo()
+
+    # Print component runs
     for component, count in component_counts[:limit]:
         show_info_card(component.id, count)
