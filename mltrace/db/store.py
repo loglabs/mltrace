@@ -540,7 +540,9 @@ class Store(object):
 
     def diagnose_flagged_outputs(
         self,
-    ) -> typing.List[typing.Tuple[ComponentRun, int]]:
+    ) -> typing.Tuple[
+        typing.List[str], typing.List[typing.Tuple[ComponentRun, int]]
+    ]:
         """Finds common ComponentRuns for a group of flagged outputs."""
         # Collate flagged outputs
         flagged_iops = (
@@ -568,4 +570,4 @@ class Store(object):
         )
 
         # Return a list of the ComponentRuns in the order
-        return trace_nodes_counts
+        return flagged_output_ids, trace_nodes_counts
