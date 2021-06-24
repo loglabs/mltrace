@@ -11,6 +11,7 @@ from mltrace import (
     web_trace,
     flag_output_id,
     unflag_output_id,
+    diagnose_flagged_outputs,
 )
 import textwrap
 
@@ -18,17 +19,20 @@ import textwrap
 # ------------------------- Utilities ------------------------ #
 
 
-def show_info_card(run_id: int):
+def show_info_card(run_id: int, count: int = None):
     """
     Prints the info cards corresponding to run ids.
 
     Args:
         run_id: The component run id.
+        count: A number to display next to the title (used for diagnose.)
     """
     cr_info = get_component_run_information(run_id)
     c_info = get_component_information(cr_info.component_name)
 
     click.echo(f"Name: {c_info.name}")
+    if count:
+        click.echo(f"├─Occurrence count: {count}")
     if cr_info.stale and len(cr_info.stale) > 0:
         click.echo(
             click.style(
@@ -268,3 +272,14 @@ def unflag(output_id: str, address: str = ""):
     if address and len(address) > 0:
         set_address(address)
     unflag_output_id(output_id)
+
+
+@mltrace.command("diagnose")
+@click.option("--limit", default=5, help="Limit of recent objects.")
+@click.option("--address", help="Database server address")
+def diagnose(limit: int = 5, address: str = ""):
+    if address and len(address) > 0:
+        set_address(address)
+    component_counts = diagnose_flagged_outputs()
+    for component, count in component_counts[:limit]:
+        show_info_card(component.id, count)
