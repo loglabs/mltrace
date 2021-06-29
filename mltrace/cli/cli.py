@@ -11,7 +11,7 @@ from mltrace import (
     web_trace,
     flag_output_id,
     unflag_output_id,
-    diagnose_flagged_outputs,
+    review_flagged_outputs,
 )
 import textwrap
 
@@ -25,7 +25,7 @@ def show_info_card(run_id: int, count: int = None):
 
     Args:
         run_id: The component run id.
-        count: A number to display next to the title (used for diagnose.)
+        count: A number to display next to the title (used for review.)
     """
     cr_info = get_component_run_information(run_id)
     c_info = get_component_information(cr_info.component_name)
@@ -274,14 +274,14 @@ def unflag(output_id: str, address: str = ""):
     unflag_output_id(output_id)
 
 
-@mltrace.command("diagnose")
+@mltrace.command("review")
 @click.option("--limit", default=5, help="Limit of recent objects.")
 @click.option("--address", help="Database server address")
-def diagnose(limit: int = 5, address: str = ""):
+def review(limit: int = 5, address: str = ""):
     """Command to find common component runs in a set of flagged outputs."""
     if address and len(address) > 0:
         set_address(address)
-    outputs, component_counts = diagnose_flagged_outputs()
+    outputs, component_counts = review_flagged_outputs()
 
     # Print output ids
     click.echo("Flagged outputs:")

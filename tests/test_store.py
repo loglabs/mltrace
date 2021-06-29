@@ -373,7 +373,7 @@ class TestStore(unittest.TestCase):
         self.store.set_io_pointer_flag("iop_6", True)
         self.store.set_io_pointer_flag("iop_7", True)
 
-        _, res = self.store.diagnose_flagged_outputs()
+        _, res = self.store.review_flagged_outputs()
         res = [(cr.component_name, cr.id, count) for cr, count in res]
         expected_res = [
             ("test_component_B", 2, 4),
