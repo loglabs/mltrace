@@ -21,7 +21,7 @@ from mltrace.client import (
     add_notes_to_component_run,
     flag_output_id,
     unflag_output_id,
-    diagnose_flagged_outputs,
+    review_flagged_outputs,
 )
 
 __all__ = [
@@ -47,5 +47,5 @@ __all__ = [
     "add_notes_to_component_run",
     "flag_output_id",
     "unflag_output_id",
-    "diagnose_flagged_outputs",
+    "review_flagged_outputs",
 ]

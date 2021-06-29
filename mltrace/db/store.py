@@ -538,7 +538,7 @@ class Store(object):
                 f"IOPointer with name {output_id} does not exist."
             )
 
-    def diagnose_flagged_outputs(
+    def review_flagged_outputs(
         self,
     ) -> typing.Tuple[
         typing.List[str], typing.List[typing.Tuple[ComponentRun, int]]
