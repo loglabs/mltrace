@@ -1,3 +1,4 @@
+from mltrace.client import flag_output_id, unflag_output_id
 from dateutil import parser
 from flask import Blueprint, Flask, request, Response
 from http import HTTPStatus
@@ -11,6 +12,8 @@ from mltrace import (
     get_recent_run_ids,
     get_io_pointer,
     add_notes_to_component_run,
+    flag_output_id,
+    unflag_output_id,
 )
 
 import copy
@@ -166,6 +169,36 @@ def add_notes():
     except RuntimeError:
         return error(
             f"ComponentRun {component_run_id} unable to set notes to {notes}",
+            HTTPStatus.NOT_FOUND,
+        )
+
+
+@api.route("/flag", methods=["POST"])
+def flag():
+    if "id" not in request.json:
+        return error(f"IOPointer id not specified.", HTTPStatus.NOT_FOUND)
+    iopointer_name = request.json["id"]
+    try:
+        res = flag_output_id(iopointer_name)
+        return json.dumps(res)
+    except RuntimeError:
+        return error(
+            f"ComponentRun {iopointer_name} unable to be flagged for review",
+            HTTPStatus.NOT_FOUND,
+        )
+
+
+@api.route("/unflag", methods=["POST"])
+def unflag():
+    if "id" not in request.json:
+        return error(f"IOPointer id not specified.", HTTPStatus.NOT_FOUND)
+    iopointer_name = request.json["id"]
+    try:
+        res = unflag_output_id(iopointer_name)
+        return json.dumps(res)
+    except RuntimeError:
+        return error(
+            f"ComponentRun {iopointer_name} unable to be flagged for review",
             HTTPStatus.NOT_FOUND,
         )
 

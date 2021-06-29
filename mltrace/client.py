@@ -294,16 +294,16 @@ def add_notes_to_component_run(component_run_id: str, notes: str) -> str:
     return store.add_notes_to_component_run(component_run_id, notes)
 
 
-def flag_output_id(output_id: str):
+def flag_output_id(output_id: str) -> bool:
     """Sets the flag property of an IOPointer to true."""
     store = Store(_db_uri)
-    store.set_io_pointer_flag(output_id, True)
+    return store.set_io_pointer_flag(output_id, True)
 
 
-def unflag_output_id(output_id: str):
+def unflag_output_id(output_id: str) -> bool:
     """Sets the flag property of an IOPointer to false."""
     store = Store(_db_uri)
-    store.set_io_pointer_flag(output_id, False)
+    return store.set_io_pointer_flag(output_id, False)
 
 
 # ----------------- Basic retrieval functions ------------------- #
