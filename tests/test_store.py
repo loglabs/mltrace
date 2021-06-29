@@ -299,7 +299,7 @@ class TestStore(unittest.TestCase):
 
         # Run diagnose. It should output
         # [component_A, component_B, component_B]'s corresponding run IDs
-        _, res = self.store.diagnose_flagged_outputs()
+        _, res = self.store.review_flagged_outputs()
         res = [(cr.id, count) for cr, count in res]
         expected_res = [(1, 2), (3, 1), (2, 1)]
         self.assertEqual(res, expected_res)
