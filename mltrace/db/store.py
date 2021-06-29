@@ -533,6 +533,8 @@ class Store(object):
 
             self.session.commit()
 
+            return value
+
         except RuntimeError:
             raise RuntimeError(
                 f"IOPointer with name {output_id} does not exist."
