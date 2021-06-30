@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/Users/jeanne/anaconda3/envs/py38/bin/python",
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.enabled": true
+}
