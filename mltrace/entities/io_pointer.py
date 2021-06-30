@@ -10,9 +10,11 @@ class IOPointer(Base):
         self,
         name: str,
         pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN,
+        flag: bool = False,
     ):
         self._name = name
         self._pointer_type = pointer_type
+        self._flag = flag
 
     @property
     def name(self) -> str:
@@ -21,6 +23,10 @@ class IOPointer(Base):
     @property
     def pointer_type(self) -> PointerTypeEnum:
         return self._pointer_type
+
+    @property
+    def flag(self) -> bool:
+        return self._flag
 
     def __repr__(self):
         params = self.to_dictionary()

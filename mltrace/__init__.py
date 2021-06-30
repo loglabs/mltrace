@@ -20,6 +20,9 @@ from mltrace.client import (
     get_git_tags,
     set_address,
     add_notes_to_component_run,
+    flag_output_id,
+    unflag_output_id,
+    review_flagged_outputs,
 )
 
 __all__ = [
@@ -44,4 +47,7 @@ __all__ = [
     "get_git_tags",
     "set_address",
     "add_notes_to_component_run",
+    "flag_output_id",
+    "unflag_output_id",
+    "review_flagged_outputs",
 ]

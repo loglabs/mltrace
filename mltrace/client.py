@@ -310,8 +310,21 @@ def get_git_tags() -> str:
 
 
 def add_notes_to_component_run(component_run_id: str, notes: str) -> str:
+    """Adds notes to component run."""
     store = Store(_db_uri)
     return store.add_notes_to_component_run(component_run_id, notes)
+
+
+def flag_output_id(output_id: str) -> bool:
+    """Sets the flag property of an IOPointer to true."""
+    store = Store(_db_uri)
+    return store.set_io_pointer_flag(output_id, True)
+
+
+def unflag_output_id(output_id: str) -> bool:
+    """Sets the flag property of an IOPointer to false."""
+    store = Store(_db_uri)
+    return store.set_io_pointer_flag(output_id, False)
 
 
 # ----------------- Basic retrieval functions ------------------- #
@@ -476,3 +489,12 @@ def backtrace(output_pointer: str):
 def web_trace(output_id: str):
     store = Store(_db_uri)
     return store.web_trace(output_id)
+
+
+def review_flagged_outputs():
+    """Finds common ComponentRuns for a group of flagged outputs.
+    Returns a list of ComponentRuns and occurrence counts in the
+    group of flagged outputs, sorted by descending count and then
+    alphabetically."""
+    store = Store(_db_uri)
+    return store.review_flagged_outputs()

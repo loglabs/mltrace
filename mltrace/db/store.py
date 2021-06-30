@@ -188,7 +188,7 @@ class Store(object):
             if create is False:
                 raise RuntimeError(
                     f"IOPointer with name {name} noes not exist. Set create"
-                    + f"flag to True if you would like to create it."
+                    + f" flag to True if you would like to create it."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')
@@ -519,3 +519,57 @@ class Store(object):
         component_run.add_notes(notes)
         self.session.commit()
         return component_run.notes
+
+    def set_io_pointer_flag(self, output_id: str, value: bool):
+        """Sets the flag property of an IOPointer."""
+
+        try:
+            iop = self.get_io_pointer(output_id, create=False)
+
+            if value:
+                iop.set_flag()
+            else:
+                iop.clear_flag()
+
+            self.session.commit()
+
+            return value
+
+        except RuntimeError:
+            raise RuntimeError(
+                f"IOPointer with name {output_id} does not exist."
+            )
+
+    def review_flagged_outputs(
+        self,
+    ) -> typing.Tuple[
+        typing.List[str], typing.List[typing.Tuple[ComponentRun, int]]
+    ]:
+        """Finds common ComponentRuns for a group of flagged outputs."""
+        # Collate flagged outputs
+        flagged_iops = (
+            self.session.query(IOPointer)
+            .filter(IOPointer.flag.is_(True))
+            .all()
+        )
+        flagged_output_ids = [iop.name for iop in flagged_iops]
+
+        # Perform traces for each output id
+        traces = [self.trace(output_id) for output_id in flagged_output_ids]
+        traces = [list(set([node for _, node in trace])) for trace in traces]
+
+        # Sort traces by ComponentRun count & id, descending
+        trace_nodes_counts = {}
+        for trace in traces:
+            for node in trace:
+                if node not in trace_nodes_counts:
+                    trace_nodes_counts[node] = 0
+                trace_nodes_counts[node] += 1
+
+        trace_nodes_counts = sorted(
+            trace_nodes_counts.items(),
+            key=lambda item: (-item[1], -item[0].id),
+        )
+
+        # Return a list of the ComponentRuns in the order
+        return flagged_output_ids, trace_nodes_counts

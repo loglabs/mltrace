@@ -1,5 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
+
+from sqlalchemy.sql.sqltypes import Boolean
 from mltrace.db.base import Base
 from sqlalchemy import (
     Column,
@@ -74,6 +76,7 @@ class IOPointer(Base):
 
     name = Column(String, primary_key=True)
     pointer_type = Column(Enum(PointerTypeEnum))
+    flag = Column(Boolean, default=False)
 
     def __init__(
         self,
@@ -82,9 +85,16 @@ class IOPointer(Base):
     ):
         self.name = name
         self.pointer_type = pointer_type
+        self.flag = False
 
     def set_pointer_type(self, pointer_type: PointerTypeEnum):
         self.pointer_type = pointer_type
+
+    def set_flag(self):
+        self.flag = True
+
+    def clear_flag(self):
+        self.flag = False
 
 
 component_run_input_association = Table(

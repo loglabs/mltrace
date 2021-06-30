@@ -9,6 +9,9 @@ from mltrace import (
     get_component_information,
     get_history,
     web_trace,
+    flag_output_id,
+    unflag_output_id,
+    review_flagged_outputs,
 )
 import textwrap
 
@@ -16,17 +19,20 @@ import textwrap
 # ------------------------- Utilities ------------------------ #
 
 
-def show_info_card(run_id: int):
+def show_info_card(run_id: int, count: int = None):
     """
     Prints the info cards corresponding to run ids.
 
     Args:
         run_id: The component run id.
+        count: A number to display next to the title (used for review.)
     """
     cr_info = get_component_run_information(run_id)
     c_info = get_component_information(cr_info.component_name)
 
     click.echo(f"Name: {c_info.name}")
+    if count:
+        click.echo(f"├─Occurrence count: {count}")
     if cr_info.stale and len(cr_info.stale) > 0:
         click.echo(
             click.style(
@@ -242,3 +248,52 @@ def trace(output_id: str, address: str = ""):
         show_res(
             res=res[0]["childNodes"], indent=1, count=0, pos=0, need_stick=0
         )
+
+
+@mltrace.command("flag")
+@click.argument("output_id")
+@click.option("--address", help="Database server address")
+def flag(output_id: str, address: str = ""):
+    """
+    Command to set the flag property of an output_id to true.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+    flag_output_id(output_id)
+
+
+@mltrace.command("unflag")
+@click.argument("output_id")
+@click.option("--address", help="Database server address")
+def unflag(output_id: str, address: str = ""):
+    """
+    Command to set the flag property of an output_id to false.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+    unflag_output_id(output_id)
+
+
+@mltrace.command("review")
+@click.option("--limit", default=5, help="Limit of recent objects.")
+@click.option("--address", help="Database server address")
+def review(limit: int = 5, address: str = ""):
+    """Command to find common component runs in a set of flagged outputs."""
+    if address and len(address) > 0:
+        set_address(address)
+    outputs, component_counts = review_flagged_outputs()
+
+    # Print output ids
+    click.echo("Flagged outputs:")
+    for idx, out in enumerate(outputs):
+        if idx == len(outputs) - 1:
+            click.echo(f"└─{out}")
+        else:
+            click.echo(f"├─{out}")
+    click.echo()
+
+    # Print component runs
+    for component, count in component_counts[:limit]:
+        show_info_card(component.id, count)

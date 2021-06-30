@@ -8,6 +8,8 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
 const NOTES_API_URL = "api/notes";
+const FLAG_API_URL = "api/flag";
+const UNFLAG_API_URL = "api/unflag";
 
 export default class CRInfoCard extends Component {
 
@@ -18,12 +20,17 @@ export default class CRInfoCard extends Component {
             showCode: false,
             showInputs: true,
             showOutputs: true,
-            notes: this.props.src.notes
+            notes: this.props.src.notes,
+            inputs: this.props.src.inputs,
+            outputs: this.props.src.outputs
         };
 
         this.handleClick = this.handleClick.bind(this);
         this.onNodeToggle = this.onNodeToggle.bind(this);
         this.onFinishEditingText = this.onFinishEditingText.bind(this);
+        this.showIOPointerFlag = this.showIOPointerFlag.bind(this);
+        this.onFlagIOPointer = this.onFlagIOPointer.bind(this);
+        this.onUnflagIOPointer = this.onUnflagIOPointer.bind(this);
     }
 
     handleClick() {
@@ -63,8 +70,91 @@ export default class CRInfoCard extends Component {
         });
     }
 
+    onFlagIOPointer(name, idx, inputIndicator) {
+        // Update flag value
+        axios.post(FLAG_API_URL, {
+            id: name,
+        }).then(
+            ({ data }) => {
+                let items = inputIndicator === true ? [...this.state.inputs] : [...this.state.outputs];
+                let item = {
+                    ...items[idx],
+                    flag: data
+                };
+                items[idx] = item;
+
+                if (inputIndicator) {
+                    this.setState({ 'inputs': items });
+                } else {
+                    this.setState({ 'outputs': items });
+                }
+
+                CustomToaster.show({
+                    message: item.name + " flagged for review.",
+                    icon: "tick-circle",
+                    intent: Intent.SUCCESS,
+                });
+            }
+        ).catch(e => {
+            CustomToaster.show({
+                message: e.message,
+                icon: "error",
+                intent: Intent.DANGER,
+            });
+        });
+    }
+
+    onUnflagIOPointer(name, idx, inputIndicator) {
+        // Update flag value
+        axios.post(UNFLAG_API_URL, {
+            id: name,
+        }).then(
+            ({ data }) => {
+                let items = inputIndicator === true ? [...this.state.inputs] : [...this.state.outputs];
+                let item = {
+                    ...items[idx],
+                    flag: data
+                };
+                items[idx] = item;
+
+                if (inputIndicator) {
+                    this.setState({ 'inputs': items });
+                } else {
+                    this.setState({ 'outputs': items });
+                }
+
+                CustomToaster.show({
+                    message: item.name + " unflagged.",
+                    icon: "tick-circle",
+                    intent: Intent.SUCCESS,
+                });
+            }
+        ).catch(e => {
+            CustomToaster.show({
+                message: e.message,
+                icon: "error",
+                intent: Intent.DANGER,
+            });
+        });
+    }
+
+    showIOPointerFlag(iopointer, idx, inputIndicator) {
+        let placeholder = inputIndicator === true ? "input" : "output";
+
+        return iopointer.flag === true ? (
+            <Tooltip content={"This " + placeholder + " ID is flagged for review. Click to unflag."}>
+                <Button icon="error" intent={Intent.DANGER} minimal={true} onClick={() => this.onUnflagIOPointer(iopointer.name, idx, inputIndicator)} />
+            </Tooltip>
+        ) : (
+            <Tooltip content={"This " + placeholder + " ID does not have any known problems. Click to flag for review."}>
+                <Button icon="tick-circle" intent={Intent.SUCCESS} minimal={true} onClick={() => this.onFlagIOPointer(iopointer.name, idx, inputIndicator)} />
+            </Tooltip>
+        );
+    }
+
     render() {
         let info = this.props.src;
+
         let commit = info.git_hash ? info.git_hash : "no commit found";
         let end = new Date(info.end_timestamp);
         let start = new Date(info.start_timestamp);
@@ -95,7 +185,7 @@ export default class CRInfoCard extends Component {
 
         let codeSnapshot = info.code_snapshot ? info.code_snapshot : 'no snapshot found';
 
-        let inputElements = info.inputs.map((inp, index) =>
+        let inputElements = this.state.inputs.map((inp, index) =>
         (
             {
                 id: 'inp' + index,
@@ -106,12 +196,14 @@ export default class CRInfoCard extends Component {
                         </div>)}
                     </Tooltip>
                 ),
-                hasCaret: false
+                hasCaret: false,
+                icon: this.showIOPointerFlag(inp, index, true)
 
             }
         )
         );
-        let outputElements = info.outputs.map((out, index) =>
+
+        let outputElements = this.state.outputs.map((out, index) =>
         (
             {
                 id: 'out' + index,
@@ -122,10 +214,12 @@ export default class CRInfoCard extends Component {
                         </div>)}
                     </Tooltip>
                 ),
-                hasCaret: false
+                hasCaret: false,
+                icon: this.showIOPointerFlag(out, index, false)
             }
         )
         );
+
         let inputElement = {
             id: 'inputElement',
             label: <b>Inputs</b>,
