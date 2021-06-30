@@ -1,0 +1,13 @@
+stages:
+  clean:
+    cmd: python 01_clean_data.py
+    deps:
+    - 01_clean_data.py
+    - data/abalone.data
+    outs:
+    - data/abalone.csv
+  summary:
+    cmd: python 02_summary_stats.py
+    deps:
+    - 02_summary_stats.py
+    - data/abalone.csv
