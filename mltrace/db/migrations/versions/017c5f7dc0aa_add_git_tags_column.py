@@ -21,4 +21,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_column("component_runss","git_tags")
+    op.drop_column("component_runss", "git_tags")
