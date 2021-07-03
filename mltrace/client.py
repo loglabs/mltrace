@@ -100,7 +100,7 @@ def log_component_run(
         component_run_sql.add_notes(component_run_dict["notes"])
 
     component_run_sql.set_git_hash(component_run_dict["git_hash"])
-    component_run_sql.set_git_tags(component_run_dict['git_tags'])
+    component_run_sql.set_git_tags(component_run_dict["git_tags"])
     component_run_sql.set_code_snapshot(component_run_dict["code_snapshot"])
 
     # Add I/O

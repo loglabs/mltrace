@@ -4,3 +4,4 @@ venv*
 build*
 dist*
 *.egg-info
+*.vscode

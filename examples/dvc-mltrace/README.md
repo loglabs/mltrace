@@ -3,18 +3,20 @@ DVC (Data Version Control) allows us to version data pipelines ie. the series of
 
 By versioning pipelines, we can backtrack to a previous version of a model or dataset, re-run a pipeline to reproduce a colleague's work, or update our results given fresh code or data. 
 
-This versioning capability is particularly useful when we combine it with the tracing features of `mltrace`. For example, given the entire lineage of a `Component` or `ComponentRun` that we want to investigate, we can revert to a previous version of the code, data or any intermediate artefacts. After backtracking, we can then troubleshoot by compare outputs between pipeline versions. 
+This versioning capability is particularly useful when we combine it with the tracing features of `mltrace`. For example, given the entire lineage of a `Component` or `ComponentRun` that we want to investigate, we can revert to a previous version of the code, data or any intermediate artifacts. After backtracking, we can then troubleshoot by comparing outputs between pipeline versions. 
 
-We might also simplify how we stitch together multiple `mltrace` `Component`s. Specify each data processing stage, its dependencies, inputs and outputs inside a `dvc run` command, and subsequently a `dvc repro` call will automatically re-run the pipeline, refreshing and versioning any newly updated code, data or model / report artefact along the way. 
+We might also simplify how we stitch together multiple `mltrace` `Component`s. Specify each data processing stage, its dependencies, inputs and outputs inside a `dvc run` command, and subsequently a `dvc repro` call will automatically re-run the pipeline, refreshing and versioning any newly updated code, data or model / report artifact along the way. 
 
 Integrating DVC and `mltrace` is possible by applying git tags to each code commit. Then, given a `Component` or `ComponentRun` dependency we are interested in, we can run `dvc get [dvc-repo-url/path] [output-path] --rev [git-tag]` to "checkout" the version of the artefact we want. 
 
-Below is a complete example of how DVC might be used with `mltrace` 
+Below is a complete example of how DVC might be used with `mltrace`:
 
 **Note that this example assumes that you have already [installed](https://dvc.org/doc/install) DVC and [initialised](https://dvc.org/doc/start) DVC inside your current git repo** 
 
 # Folder Setup 
 For this example, we use data collected on [abalone ecology](https://archive.ics.uci.edu/ml/datasets/abalone) available from the UCI Machine Learning Repository. With this dataset, the goal is to predict the age of the abalone (measured through its number of rings) using features such as it's whole weight, diameter and height. 
+
+Download the data and place it into a folder named `data/` at the root of this `dvc-mltrace` folder. 
 
 .  
 ├── 01_clean_data.py  # file for first stage of pipeline where data is cleaned  

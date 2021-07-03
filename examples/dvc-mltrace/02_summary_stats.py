@@ -2,18 +2,15 @@ import pandas as pd
 from mltrace import create_component, register
 
 
-@register(component_name="summary", input_vars=["input_filepath"])
-def summary(input_filepath: str) -> str:
+@register(component_name="summary", input_vars=["input_filepath"],
+          output_vars=['output_filepath'])
+def summary(input_filepath: str, output_filepath: str) -> str:
     """
     print some simple stats about dataset
     """
-    a = pd.read_csv(input_filepath)
-    print('counting null values')
-    print(a.isna().sum())
-    print('counting number of rows')
-    print(a.shape[0])
-    print('counting number of columns')
-    print(a.shape[1])
+    abalone_data = pd.read_csv(input_filepath)
+    summary_stats = abalone_data.describe()
+    summary_stats.to_csv(output_filepath, index=False)
 
 
 if __name__ == "__main__":
@@ -22,4 +19,4 @@ if __name__ == "__main__":
       description="print some simple stats about dataset",
       owner="jeanne",
       tags=['eda'],)
-    summary('data/abalone.csv')
+    summary('data/abalone.csv', 'data/summary_stats.csv')

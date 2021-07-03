@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("component_runs", sa.Column("git_tags", sa.String))
+    op.add_column("component_runs", sa.Column("git_tags", sa.PickleType))
 
 
 def downgrade():
-    op.drop_column("component_runss", "git_tags")
+    op.drop_column("component_runs", "git_tags")

@@ -136,7 +136,7 @@ class ComponentRun(Base):
     component_name = Column(String, ForeignKey("components.name"))
     notes = Column(String)
     git_hash = Column(String)
-    git_tags = Column(String)
+    git_tags = Column(PickleType)
     code_snapshot = Column(LargeBinary)
     start_timestamp = Column(DateTime)
     end_timestamp = Column(DateTime)
@@ -204,7 +204,7 @@ class ComponentRun(Base):
 
     def set_git_tags(self, git_tags: typing.List[str]):
         """Git tag setter."""
-        self.git_tags = ",".join(git_tags)
+        self.git_tags = git_tags
 
     def add_staleness_message(self, message: str):
         """Staleness indicator."""
