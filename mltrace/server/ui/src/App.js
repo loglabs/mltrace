@@ -10,6 +10,10 @@ import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import axios from "axios";
+const FLAG_API_URL = "api/flag";
+const UNFLAG_API_URL = "api/unflag";
+
 class App extends Component {
 
   constructor(props) {
@@ -27,6 +31,8 @@ class App extends Component {
     this.handleDarkSwitchChange = this.handleDarkSwitchChange.bind(this);
     this.handleCommand = this.handleCommand.bind(this);
     this.handleHelp = this.handleHelp.bind(this);
+    this.handleFlag = this.handleFlag.bind(this);
+    this.handleUnflag = this.handleUnflag.bind(this);
   }
 
   handleDarkSwitchChange(useDark) {
@@ -37,6 +43,48 @@ class App extends Component {
 
   handleHelp() {
     this.setState({ showHelp: false });
+  }
+
+  handleFlag(name) {
+    // Update flag value
+    axios.post(FLAG_API_URL, {
+      id: name,
+    }).then(
+      ({ data }) => {
+        CustomToaster.show({
+          message: name + " flagged for review. Refresh this page to see changes reflected.",
+          icon: "tick-circle",
+          intent: Intent.SUCCESS,
+        });
+      }
+    ).catch(e => {
+      CustomToaster.show({
+        message: e.message,
+        icon: "error",
+        intent: Intent.DANGER,
+      });
+    });
+  }
+
+  handleUnflag(name) {
+    // Update flag value
+    axios.post(UNFLAG_API_URL, {
+      id: name,
+    }).then(
+      ({ data }) => {
+        CustomToaster.show({
+          message: name + " unflagged. Refresh this page to see changes reflected.",
+          icon: "tick-circle",
+          intent: Intent.SUCCESS,
+        });
+      }
+    ).catch(e => {
+      CustomToaster.show({
+        message: e.message,
+        icon: "error",
+        intent: Intent.DANGER,
+      });
+    });
   }
 
   handleCommand(input) {
@@ -114,6 +162,28 @@ class App extends Component {
       this.setState({ command: command, id: 'componentrun_' + args[0], kwargs: {}, input: input });
     } else if (command === "help") {
       this.setState({ showHelp: true });
+    } else if (command === "flag") {
+      if (args.length !== 1) {
+        CustomToaster.show({
+          message: "Please enter a valid output ID to flag for review.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
+      this.handleFlag(args[0]);
+    } else if (command === "unflag") {
+      if (args.length !== 1) {
+        CustomToaster.show({
+          message: "Please enter a valid output ID to unflag.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
+      this.handleUnflag(args[0]);
     }
     else {
       CustomToaster.show({

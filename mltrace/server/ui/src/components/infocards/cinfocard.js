@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tag, Intent, Classes, Text, Button, Collapse, HTMLTable, Icon, Tooltip } from "@blueprintjs/core";
+import { Tag, Intent, Classes, Text, Button, Collapse, HTMLTable, Icon } from "@blueprintjs/core";
 
 import axios from "axios";
 import 'normalize.css/normalize.css';

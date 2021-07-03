@@ -73,6 +73,16 @@ export default class HelpDialog extends Component {
                                     <td>Displays all components with the given tag name.</td>
                                     <td><tt>tag TAG_NAME</tt></td>
                                 </tr>
+                                <tr>
+                                    <td><tt>flag</tt></td>
+                                    <td>Flags an output ID for further review. Necessary to see any results from the <tt>review</tt> command.</td>
+                                    <td><tt>flag OUTPUT_ID</tt></td>
+                                </tr>
+                                <tr>
+                                    <td><tt>unflag</tt></td>
+                                    <td>Unflags an output ID. Removes this output ID from any results from the <tt>review</tt> command.</td>
+                                    <td><tt>unflag OUTPUT_ID</tt></td>
+                                </tr>
                             </tbody>
                         </HTMLTable>
                     </div>
