@@ -6,6 +6,7 @@ import TagView from "./pages/tagview.js"
 import History from "./pages/history.js"
 import Recent from "./pages/recent.js"
 import Inspect from "./pages/inspect.js"
+import Review from "./pages/review.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -184,6 +185,17 @@ class App extends Component {
       }
 
       this.handleUnflag(args[0]);
+    } else if (command === "review") {
+      if (args.length !== 0) {
+        CustomToaster.show({
+          message: "The review command does not take any parameters.",
+          icon: "error",
+          intent: Intent.DANGER,
+        });
+        return;
+      }
+
+      this.setState({ command: command, id: "", kwargs: {}, input: input });
     }
     else {
       CustomToaster.show({
@@ -223,6 +235,7 @@ class App extends Component {
               {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
               {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
               {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+              {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
             </Route>
           </Switch>
         </BrowserRouter>
