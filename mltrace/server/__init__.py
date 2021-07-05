@@ -14,6 +14,7 @@ from mltrace import (
     add_notes_to_component_run,
     flag_output_id,
     unflag_output_id,
+    review_flagged_outputs,
 )
 
 import copy
@@ -198,7 +199,22 @@ def unflag():
         return json.dumps(res)
     except RuntimeError:
         return error(
-            f"ComponentRun {iopointer_name} unable to be flagged for review",
+            f"ComponentRun {iopointer_name} unable to be unflagged",
+            HTTPStatus.NOT_FOUND,
+        )
+
+
+@api.route("/review", methods=["GET"])
+def review():
+    try:
+        flagged_output_ids, trace_nodes_counts = review_flagged_outputs()
+        cr_ids_counts = [
+            (node.id, count) for node, count in trace_nodes_counts
+        ]
+        return json.dumps([flagged_output_ids, cr_ids_counts])
+    except RuntimeError:
+        return error(
+            "Flagged outputs unable to be reviewed",
             HTTPStatus.NOT_FOUND,
         )
 

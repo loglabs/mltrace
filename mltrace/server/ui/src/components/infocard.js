@@ -81,7 +81,7 @@ export default class InfoCard extends Component {
 
         let cardContent = null;
         if (this.state.type === 'componentrun') {
-            cardContent = <CRInfoCard commandHandler={this.props.commandHandler} src={this.state.node} id={this.state.selected_id === '' ? '' : this.state.selected_id.split(/_(.+)/)[1]} />
+            cardContent = <CRInfoCard commandHandler={this.props.commandHandler} src={this.state.node} id={this.state.selected_id === '' ? '' : this.state.selected_id.split(/_(.+)/)[1]} count={this.props.count} />
         } else if (this.state.type === 'iopointer') {
             cardContent = this.state.selected_id;
         }

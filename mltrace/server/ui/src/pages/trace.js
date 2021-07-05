@@ -100,7 +100,8 @@ export default class Trace extends Component {
                 {treeContent}
                 <InfoCard style={{
                     flex: '0 1 auto',
-                    margin: '1em'
+                    margin: '1em',
+                    width: '100%'
                 }} selected_id={this.state.selected_id} commandHandler={this.props.commandHandler} />
             </div >
         )
