@@ -65,9 +65,9 @@ export default class TagView extends Component {
         ));
 
         return (
-            <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
-                <div style={{ display: 'flex', margin: '1em' }}>
-                    <h3> Showing components with tag: <Tag intent={Intent.PRIMARY} minimal={true} large={true}>{this.state.tagName}</Tag>
+            <div className='bp3-minimal' style={{ margin: '1em' }}>
+                <div style={{ display: 'flex' }}>
+                    <h3 className="bp3-heading" style={{ margin: '1em 0.5em' }}>   Components with tag: <Tag intent={Intent.PRIMARY} minimal={true} large={true}>{this.state.tagName}</Tag>
                     </h3>
                 </div >
                 {renderedComponents}

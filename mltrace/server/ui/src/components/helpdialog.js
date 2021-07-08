@@ -85,7 +85,7 @@ export default class HelpDialog extends Component {
                                 </tr>
                                 <tr>
                                     <td><tt>review</tt></td>
-                                    <td>Shows a list of output IDs flagged for review and the common component runs involved in producing the output IDs.</td>
+                                    <td>Shows a list of output IDs flagged for review and the common component runs involved in producing the output IDs. The component runs are sorted from most frequently occurring to least frequently occurring.</td>
                                     <td><tt>review</tt></td>
                                 </tr>
                             </tbody>

@@ -161,7 +161,7 @@ export default class CRInfoCard extends Component {
                 <Callout className={Classes.MINIMAL} intent={Intent.PRIMARY} style={{
                     marginBottom: '0.5em'
                 }}>
-                    Occurrence count: { this.props.count}
+                    This component run has <b>{this.props.count / this.props.numOutputs * 100}%</b> coverage: it was used <b>{this.props.count} {(this.props.count === 1) ? "time" : "times"}</b> in producing the flagged outputs.
                 </Callout >
             );
         }
@@ -283,9 +283,9 @@ export default class CRInfoCard extends Component {
                     contents={[inputElement, outputElement]}
                     onNodeExpand={this.onNodeToggle}
                     onNodeCollapse={this.onNodeToggle}
-                    style={{ padding: '15px 0px' }}
+                    style={{ margin: '1.5em 0em' }}
                 />
-                <div style={{ padding: '15px 0px' }}>
+                <div style={{ margin: '1.5em 0em' }}>
                     <Button className="bp3-minimal" outlined={true} onClick={this.handleClick}>{this.state.showCode ? "Hide" : "Show"} code snapshot </Button>
                     <Collapse isOpen={this.state.showCode} keepChildrenMounted={true} className='bp3-minimal'>
                         <Pre>
@@ -297,7 +297,7 @@ export default class CRInfoCard extends Component {
                     <h4><Icon icon="annotation" />  Notes</h4>
                     <EditableText
                         multiline={true}
-                        minLines={3}
+                        minLines={2}
                         onConfirm={(e) => this.onFinishEditingText(this.props.id, e)}
                         defaultValue={this.state.notes}
                     />
