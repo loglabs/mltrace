@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText, Icon } from "@blueprintjs/core";
+import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText, Icon, Divider } from "@blueprintjs/core";
 import { CustomToaster } from "../toaster.js";
 
 import axios from "axios";
@@ -250,6 +250,14 @@ export default class CRInfoCard extends Component {
 
         let description = info.description ? info.description : "no description found";
 
+        let gitTags = info.git_tags ? (
+            <tr>
+                <td></td>
+                < td > <b>Git tags: </b>{info.git_tags.join(', ')
+                }</td>
+            </tr>
+        ) : null;
+
         return (
             < div >
                 <Tooltip
@@ -273,18 +281,21 @@ export default class CRInfoCard extends Component {
                             <td style={{ paddingLeft: '0px' }}> <b>Started: </b>{info.start_timestamp} </td>
                             <td><b>Git commit: </b>{commit}</td>
                         </tr>
+                        {gitTags}
                         <tr>
                             <td style={{ paddingLeft: '0px' }}> <b>Owner:</b> {info.owner} </td>
                             <td><b>Duration: </b> {((end - start) / 1000) + 's'}</td>
                         </tr>
                     </tbody>
                 </HTMLTable>
-                <Tree
-                    contents={[inputElement, outputElement]}
-                    onNodeExpand={this.onNodeToggle}
-                    onNodeCollapse={this.onNodeToggle}
-                    style={{ margin: '1.5em 0em' }}
-                />
+                <Divider style={{ margin: '1em 0em' }} />
+                <div style={{ margin: '1em 0em' }}>
+                    <Tree
+                        contents={[inputElement, outputElement]}
+                        onNodeExpand={this.onNodeToggle}
+                        onNodeCollapse={this.onNodeToggle}
+                    />
+                </div>
                 <div style={{ margin: '1.5em 0em' }}>
                     <Button className="bp3-minimal" outlined={true} onClick={this.handleClick}>{this.state.showCode ? "Hide" : "Show"} code snapshot </Button>
                     <Collapse isOpen={this.state.showCode} keepChildrenMounted={true} className='bp3-minimal'>

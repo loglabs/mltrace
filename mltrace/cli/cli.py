@@ -53,7 +53,9 @@ def show_info_card(run_id: int, count: int = None):
     click.echo(f"├─Run ID: {run_id}")
     click.echo(f"├─Tags: {' '.join(c_info.tags)}")
     click.echo(f"├─Started: {cr_info.start_timestamp}")
-    click.echo(f"├─Git: {cr_info.git_hash}")
+    click.echo(f"├─Git commit: {cr_info.git_hash}")
+    if cr_info.git_tags is not None:
+        click.echo(f"|-Git Tags: {cr_info.git_tags.split(',')}")
     elapsed_time = cr_info.end_timestamp - cr_info.start_timestamp
     min, sec = divmod(elapsed_time.total_seconds(), 60)
     min = min + 1e-1 * sec
@@ -108,7 +110,7 @@ def show_history(history):
                         click.style(f"│  ├─{warning}", fg="yellow", bg="black")
                     )
         click.echo(f"├─Started: {hist.start_timestamp}")
-        click.echo(f"├─Git: {hist.git_hash}")
+        click.echo(f"├─Git commit: {hist.git_hash}")
         elapsed_time = hist.end_timestamp - hist.start_timestamp
         min, sec = divmod(elapsed_time.total_seconds(), 60)
         min = min + 1e-1 * sec
