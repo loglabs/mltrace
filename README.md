@@ -12,7 +12,7 @@ an output. It offers the following:
 - coarse-grained lineage and tracing
 - Python API to log versions of data and pipeline components
 - database to store information about component runs
-- UI to show the trace of steps in a pipeline taken to produce an output
+- UI and CLI to show the trace of steps in a pipeline taken to produce an output, flag outputs for review, and identify what steps of the pipeline to investigate first when debugging
 
 `mltrace` is designed specifically for Agile or multidisciplinary teams collaborating on machine learning or complex data pipelines. The prototype is very lofi, but this `README` contains instructions on how to run the prototype on your machine **if you are interested in developing.** For general usage instructions, please see the [official documentation](https://mltrace.readthedocs.io/en/latest/). The accompanying blog post can be found [here](https://www.shreya-shankar.com/introducing-mltrace/).
 
@@ -85,7 +85,10 @@ If you ran `docker-compose up` from the root directory, you can just navigate to
 | `history COMPONENT_NAME` | Shows history of runs for the component name. Defaults to 10 runs. Can specify number of runs by appending a positive integer to the command, like `history etl 15`|
 | `inspect COMPONENT_RUN_ID` | Shows info for that component run ID |
 | `trace OUTPUT_ID` | Shows a trace of steps for the output ID |
-| `tag TAG_NAME` | Shows all components with the tag name|
+| `tag TAG_NAME` | Shows all components with the tag name |
+| `flag OUTPUT_ID` | Flags an output ID for further review. Necessary to see any results from the `review` command. |
+| `unflag OUTPUT_ID` | Unflags an output ID. Removes this output ID from any results from the `review` command. |
+| `review` | Shows a list of output IDs flagged for review and the common component runs involved in producing the output IDs. The component runs are sorted from most frequently occurring to least frequently occurring. |
 
 ### Using the CLI for querying
 
@@ -94,6 +97,9 @@ The following commands are supported via CLI:
 - `history`
 - `recent`
 - `trace`
+- `flag`
+- `unflag`
+- `review`
 
 You can execute `mltrace --help` in your shell for usage instructions, or you can execute `mltrace command --help` for usage instructions for a specific command.
 
@@ -101,9 +107,8 @@ You can execute `mltrace --help` in your shell for usage instructions, or you ca
 
 The following projects are in the immediate roadmap:
 
-* REST API to log from any type of file, not just a Python file
+* API to log from any type of file, not just a Python file
 * Prometheus integrations to monitor component output distributions
-* Causal analysis for ML bugs — if you flag several outputs as mispredicted, which component runs were common in producing these outputs? Which component is most likely to be the biggest culprit in an issue?
 * Support for finer-grained lineage (at the record level)
 
 ### Contributing
