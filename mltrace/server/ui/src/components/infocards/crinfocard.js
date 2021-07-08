@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText, Icon } from "@blueprintjs/core";
+import { HTMLTable, Tag, Intent, Tree, Collapse, Button, Pre, Classes, Tooltip, Position, Callout, EditableText, Icon, Divider } from "@blueprintjs/core";
 import { CustomToaster } from "../toaster.js";
 
 import axios from "axios";
@@ -252,8 +252,9 @@ export default class CRInfoCard extends Component {
 
         let gitTags = info.git_tags ? (
             <tr>
-                <td style={{ paddingLeft: '0px' }}></td>
-                <td ><b>Git tags: </b>{info.git_tags.join(', ')}</td>
+                <td></td>
+                < td > <b>Git tags: </b>{info.git_tags.join(', ')
+                }</td>
             </tr>
         ) : null;
 
@@ -287,12 +288,14 @@ export default class CRInfoCard extends Component {
                         </tr>
                     </tbody>
                 </HTMLTable>
-                <Tree
-                    contents={[inputElement, outputElement]}
-                    onNodeExpand={this.onNodeToggle}
-                    onNodeCollapse={this.onNodeToggle}
-                    style={{ margin: '1.5em 0em' }}
-                />
+                <Divider style={{ margin: '1em 0em' }} />
+                <div style={{ margin: '1em 0em' }}>
+                    <Tree
+                        contents={[inputElement, outputElement]}
+                        onNodeExpand={this.onNodeToggle}
+                        onNodeCollapse={this.onNodeToggle}
+                    />
+                </div>
                 <div style={{ margin: '1.5em 0em' }}>
                     <Button className="bp3-minimal" outlined={true} onClick={this.handleClick}>{this.state.showCode ? "Hide" : "Show"} code snapshot </Button>
                     <Collapse isOpen={this.state.showCode} keepChildrenMounted={true} className='bp3-minimal'>
