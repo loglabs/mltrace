@@ -250,6 +250,13 @@ export default class CRInfoCard extends Component {
 
         let description = info.description ? info.description : "no description found";
 
+        let gitTags = info.git_tags ? (
+            <tr>
+                <td style={{ paddingLeft: '0px' }}></td>
+                <td ><b>Git tags: </b>{info.git_tags.join(', ')}</td>
+            </tr>
+        ) : null;
+
         return (
             < div >
                 <Tooltip
@@ -273,6 +280,7 @@ export default class CRInfoCard extends Component {
                             <td style={{ paddingLeft: '0px' }}> <b>Started: </b>{info.start_timestamp} </td>
                             <td><b>Git commit: </b>{commit}</td>
                         </tr>
+                        {gitTags}
                         <tr>
                             <td style={{ paddingLeft: '0px' }}> <b>Owner:</b> {info.owner} </td>
                             <td><b>Duration: </b> {((end - start) / 1000) + 's'}</td>
