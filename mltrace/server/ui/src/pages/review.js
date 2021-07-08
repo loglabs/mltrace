@@ -62,15 +62,14 @@ export default class Review extends Component {
 
         let outputIds = this.state.idsAndCrs[0];
         let componentRuns = this.state.idsAndCrs[1];
-        console.log(componentRuns);
 
         let componentRunCards = componentRuns.map((cr) => (
-            <InfoCard key={'crcard_' + cr[0]} selected_id={'componentrun_' + cr[0]} commandHandler={this.props.commandHandler} style={childStyle} count={cr[1]} />
+            <InfoCard key={'crcard_' + cr[0]} selected_id={'componentrun_' + cr[0]} commandHandler={this.props.commandHandler} style={childStyle} count={cr[1]} numOutputs={outputIds.length} />
 
         ));
 
         let outputIdContents = outputIds.map((outputId) => (
-            <tr onClick={() => { this.props.commandHandler("trace " + outputId) }}>
+            <tr onClick={() => { this.props.commandHandler("trace " + outputId) }} key={'output_' + outputId}>
                 <td>
                     {outputId}
                 </td>
@@ -78,37 +77,43 @@ export default class Review extends Component {
         ));
 
         let treeContent = (
-            <div style={{ flex: '0 1 auto' }} className="bp3-minimal">
-                <HTMLTable bordered={false} interactive={true} className='bp3-minimal'>
-                    <thead>
-                        <tr>
-                            <th>
-                                <Tooltip className={Classes.TOOLTIP_INDICATOR} content={"Click an output ID to trace it."}>
-                                    {"Outputs"}
-                                </Tooltip>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {outputIdContents}
-                    </tbody>
-                </HTMLTable>
-            </div>
+            <div style={{ minWidth: '15%', maxWidth: '40%', height: '100vh', overflow: 'scroll' }} className="bp3-minimal">
+                <div style={{ 'minHeight': '100%' }}>
+                    <HTMLTable bordered={false} interactive={true} className='bp3-minimal' style={{ width: '100%' }}>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <Tooltip className={Classes.TOOLTIP_INDICATOR} content={"Click an output ID to trace it."}>
+                                        {"All flagged outputs (" + outputIds.length + ")"}
+                                    </Tooltip>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {outputIdContents}
+                        </tbody>
+                    </HTMLTable>
+                </div>
+            </div >
         );
 
         return (
             <div className='bp3-minimal' style={{ margin: '1em' }}>
                 <div style={{ display: 'flex' }}>
-                    <h3> Reviewing flagged outputs
-                    </h3>
-                </div >
-                <div style={{ display: 'flex' }}>
-                    {treeContent}
-                    <div style={{ width: '100%' }}>
+                    {/* <div style={{ width: '20%' }}></div> */}
+                    <div style={{ width: '100%', height: '100vh', overflow: 'scroll' }}>
+                        <div style={{ display: 'flex' }}>
+                            <h3 className="bp3-heading" style={{ margin: '1em 0.5em' }}>
+                                <Tooltip className={Classes.TOOLTIP_INDICATOR} content={"ComponentRun panels are sorted from most frequently used to least frequently used in producing the flagged outputs."}>
+                                    Component runs
+                        </Tooltip>
+                            </h3>
+                        </div >
                         {componentRunCards}
                     </div>
+                    {treeContent}
                 </div>
-            </div>
+            </div >
         );
     }
 
