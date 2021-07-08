@@ -155,6 +155,17 @@ export default class CRInfoCard extends Component {
     render() {
         let info = this.props.src;
 
+        let countContent = null;
+        if (this.props.count) {
+            countContent = (
+                <Callout className={Classes.MINIMAL} intent={Intent.PRIMARY} style={{
+                    marginBottom: '0.5em'
+                }}>
+                    Occurrence count: { this.props.count}
+                </Callout >
+            );
+        }
+
         let commit = info.git_hash ? info.git_hash : "no commit found";
         let end = new Date(info.end_timestamp);
         let start = new Date(info.start_timestamp);
@@ -248,6 +259,7 @@ export default class CRInfoCard extends Component {
                 >
                     {(<h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2>)}
                 </Tooltip>
+                {countContent}
                 {stale}
                 <HTMLTable bordered={false} interactive={false} className='bp3-minimal'>
                     <thead>

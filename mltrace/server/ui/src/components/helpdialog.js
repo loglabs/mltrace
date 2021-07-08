@@ -83,6 +83,11 @@ export default class HelpDialog extends Component {
                                     <td>Unflags an output ID. Removes this output ID from any results from the <tt>review</tt> command.</td>
                                     <td><tt>unflag OUTPUT_ID</tt></td>
                                 </tr>
+                                <tr>
+                                    <td><tt>review</tt></td>
+                                    <td>Shows a list of output IDs flagged for review and the common component runs involved in producing the output IDs.</td>
+                                    <td><tt>review</tt></td>
+                                </tr>
                             </tbody>
                         </HTMLTable>
                     </div>
