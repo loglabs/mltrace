@@ -184,7 +184,7 @@ class TestDags(unittest.TestCase):
                 0,
                 3,
                 [
-                    "component_1 (ID 1) has 1 fresher run(s) that began "
+                    "component_1 (ID 1) has 1 fresher run that began "
                     + "before this component run started."
                 ],
             ),

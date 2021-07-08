@@ -255,10 +255,11 @@ class Store(object):
                 date_upper=component_run.start_timestamp,
             )
             if len(fresher_runs) != 1:
+                run_or_runs = "run" if len(fresher_runs) - 1 == 1 else "runs"
                 component_run.add_staleness_message(
                     f"{dep.component_name} (ID {dep.id}) has "
-                    + f"{len(fresher_runs) - 1} fresher run(s) that began "
-                    + "before this component run started."
+                    + f"{len(fresher_runs) - 1} fresher {run_or_runs} that "
+                    + "began before this component run started."
                 )
 
         # Warn user if there is a staleness message
