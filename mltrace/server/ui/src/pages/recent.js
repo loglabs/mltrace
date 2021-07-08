@@ -103,9 +103,9 @@ export default class Recent extends Component {
         ));
 
         return (
-            <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
-                <div style={{ display: 'flex', margin: '1em' }}>
-                    <h3> Recent runs
+            <div className='bp3-minimal' style={{ margin: '1em' }}>
+                <div style={{ display: 'flex' }}>
+                    <h3 className="bp3-heading" style={{ margin: '1em 0.5em' }}>  Latest component runs
                     </h3>
                 </div >
                 {componentRunCards}

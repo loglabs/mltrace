@@ -80,22 +80,20 @@ export default class History extends Component {
         );
 
         return (
-            <div>
-                <div className='bp3-minimal' style={{ paddingBottom: '1em' }}>
-                    <div style={{ margin: '1em' }}>
-                        <h3> Showing history of runs </h3>
-                        <div>
-                            <DateRangeInput
-                                formatDate={date => date.toLocaleString()}
-                                parseDate={str => new Date(str)}
-                                timePickerProps={{ precision: TimePrecision.MINUTE, showArrowButtons: false }}
-                                onChange={this.handleRangeChange}
-                            />
-                        </div>
-                    </div >
-                    {renderedComponent}
+            <div className='bp3-minimal' style={{ margin: '1em' }}>
+                <div style={{ display: 'flex' }} >
+                    <h3 className="bp3-heading" style={{ margin: '1em 0.5em' }}>   Showing history of runs </h3>
                 </div>
-            </div>
+                <div style={{ margin: '1em' }}>
+                    <DateRangeInput
+                        formatDate={date => date.toLocaleString()}
+                        parseDate={str => new Date(str)}
+                        timePickerProps={{ precision: TimePrecision.MINUTE, showArrowButtons: false }}
+                        onChange={this.handleRangeChange}
+                    />
+                </div>
+                {renderedComponent}
+            </div >
         );
     }
 }
