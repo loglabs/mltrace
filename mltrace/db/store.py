@@ -254,6 +254,9 @@ class Store(object):
                 date_lower=dep.start_timestamp,
                 date_upper=component_run.start_timestamp,
             )
+            fresher_runs = [
+                cr for cr in fresher_runs if component_run.id != cr.id
+            ]
             if len(fresher_runs) != 1:
                 run_or_runs = "run" if len(fresher_runs) - 1 == 1 else "runs"
                 component_run.add_staleness_message(

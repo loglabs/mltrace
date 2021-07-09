@@ -61,10 +61,10 @@ The files in the `examples` folder contain sample scripts you can run. For insta
 
 ```
 > python examples/industry_ml.py
-Final output id: zguzvnwsux
+Final output id: aafknvtoag
 ```
 
-And if you trace this output in the UI (`trace zguzvnwsux`), you will get:
+And if you trace this output in the UI (`trace aafknvtoag`), you will get:
 
 ![screenshot](./res/industry_ml.png)
 
