@@ -34,8 +34,10 @@ def show_info_card(run_id: int, count: int = None, num_outputs: int = None):
     click.echo(f"Name: {c_info.name}")
     if count:
         time_or_times = "time" if count == 1 else "times"
+        coverage = str(round(float(count / num_outputs) * 100, 2))
         click.echo(
-            f"├─This component has {str(round(float(count / num_outputs) * 100, 2))}% coverage: it was used {count} {time_or_times} in producing the flagged outputs."
+            f"├─This component has {coverage}% coverage: it was used {count} "
+            + f"{time_or_times} in producing the flagged outputs."
         )
     if cr_info.stale and len(cr_info.stale) > 0:
         click.echo(
