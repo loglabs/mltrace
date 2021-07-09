@@ -37,8 +37,8 @@ def show_info_card(run_id: int, count: int = None, num_outputs: int = None):
         coverage = str(round(float(count / num_outputs) * 100, 2))
         click.echo(
             click.style(
-                f"├─This component has {coverage}% coverage: it was used {count} "
-                + f"{time_or_times} in producing the flagged outputs.",
+                f"├─This component has {coverage}% coverage: it was used "
+                + f"{count} {time_or_times} in producing the flagged outputs.",
                 fg="cyan",
                 bg="black",
             )
