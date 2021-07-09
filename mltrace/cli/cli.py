@@ -19,20 +19,24 @@ import textwrap
 # ------------------------- Utilities ------------------------ #
 
 
-def show_info_card(run_id: int, count: int = None):
+def show_info_card(run_id: int, count: int = None, num_outputs: int = None):
     """
     Prints the info cards corresponding to run ids.
 
     Args:
         run_id: The component run id.
         count: A number to display next to the title (used for review.)
+        num_outputs: The total number of outputs flagged (used for review.)
     """
     cr_info = get_component_run_information(run_id)
     c_info = get_component_information(cr_info.component_name)
 
     click.echo(f"Name: {c_info.name}")
     if count:
-        click.echo(f"├─Occurrence count: {count}")
+        time_or_times = "time" if count == 1 else "times"
+        click.echo(
+            f"├─This component has {str(round(float(count / num_outputs) * 100, 2))}% coverage: it was used {count} {time_or_times} in producing the flagged outputs."
+        )
     if cr_info.stale and len(cr_info.stale) > 0:
         click.echo(
             click.style(
@@ -296,4 +300,4 @@ def review(limit: int = 5, address: str = ""):
 
     # Print component runs
     for component, count in component_counts[:limit]:
-        show_info_card(component.id, count)
+        show_info_card(component.id, count, len(outputs))
