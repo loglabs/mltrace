@@ -1,6 +1,6 @@
 {
-  "short_name": "React Gantt Chart",
-  "name": "Create React Gantt Chart Application Sample",
+  "short_name": "mltrace",
+  "name": "mltrace: coarse-grained lineage and tracing for data pipelines",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,14 +8,9 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "logo.png",
       "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "600x231"
     }
   ],
   "start_url": ".",
