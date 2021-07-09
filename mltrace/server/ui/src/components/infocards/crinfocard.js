@@ -91,8 +91,8 @@ export default class CRInfoCard extends Component {
 
                 CustomToaster.show({
                     message: item.name + " flagged for review.",
-                    icon: "tick-circle",
-                    intent: Intent.SUCCESS,
+                    icon: "error",
+                    intent: Intent.DANGER,
                 });
             }
         ).catch(e => {
@@ -161,7 +161,7 @@ export default class CRInfoCard extends Component {
                 <Callout className={Classes.MINIMAL} intent={Intent.PRIMARY} style={{
                     marginBottom: '0.5em'
                 }}>
-                    This component run has <b>{this.props.count / this.props.numOutputs * 100}%</b> coverage: it was used <b>{this.props.count} {(this.props.count === 1) ? "time" : "times"}</b> in producing the flagged outputs.
+                    This component run has <b>{(this.props.count / this.props.numOutputs * 100).toFixed(2)}%</b> coverage: it was used <b>{this.props.count} {(this.props.count === 1) ? "time" : "times"}</b> in producing the flagged outputs.
                 </Callout >
             );
         }

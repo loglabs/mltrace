@@ -54,8 +54,8 @@ class App extends Component {
       ({ data }) => {
         CustomToaster.show({
           message: name + " flagged for review. Refresh this page to see changes reflected.",
-          icon: "tick-circle",
-          intent: Intent.SUCCESS,
+          icon: "tick-error",
+          intent: Intent.DANGER,
         });
       }
     ).catch(e => {

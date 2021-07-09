@@ -56,3 +56,14 @@ We define a component run as "stale" if it may need to be rerun. Currently, ``ml
 2. At the time a component is run, its dependencies have fresher runs that began before the component run started
 
 We are working on "data drift" as another measure of staleness.
+
+.. _Reviewing Overview:
+
+_Reviewing erroneous outputs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Oftentimes there is a bug or error in some output of a pipeline that surfaces after the output has been produced. ML and data bugs are extra elusive because it can take a nontrivial number of mispredicted or buggy outputs to indicate that there is actually an issue with the pipeline. Given a set of erroneous outputs, it can be challenging to know where to begin debugging! Fortunately, ``mltrace`` can help with this.
+
+The idea here is to identify the common ``ComponentRun``s used in producing the erroneous outputs, as these might provide a good suggestion for what component to debug first or artifacts (inputs and outputs) to dive into. See steps on how to use the reviewer tool in the :ref:querying section.
+
+
