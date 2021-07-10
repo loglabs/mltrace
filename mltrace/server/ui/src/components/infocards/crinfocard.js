@@ -33,6 +33,16 @@ export default class CRInfoCard extends Component {
         this.onUnflagIOPointer = this.onUnflagIOPointer.bind(this);
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (props.src.notes === state.notes && props.src.inputs === state.inputs && props.src.outputs === state.outputs) return null;
+
+        return {
+            notes: props.src.notes,
+            inputs: props.src.inputs,
+            outputs: props.src.outputs
+        }
+    }
+
     handleClick() {
         this.setState({ showCode: !this.state.showCode });
     }
@@ -258,6 +268,17 @@ export default class CRInfoCard extends Component {
             </tr>
         ) : null;
 
+        let editatableTextComponent = (
+            <EditableText
+                multiline={true}
+                minLines={2}
+                onConfirm={(e) => this.onFinishEditingText(this.props.id, e)}
+                onChange={(e) => this.setState({ notes: e })}
+                value={this.state.notes}
+                alwaysRenderInput={true}
+            />
+        );
+
         return (
             < div >
                 <Tooltip
@@ -306,12 +327,7 @@ export default class CRInfoCard extends Component {
                 </div>
                 <div style={{ marginTop: '0em' }}>
                     <h4><Icon icon="annotation" />  Notes</h4>
-                    <EditableText
-                        multiline={true}
-                        minLines={2}
-                        onConfirm={(e) => this.onFinishEditingText(this.props.id, e)}
-                        defaultValue={this.state.notes}
-                    />
+                    {editatableTextComponent}
                 </div>
             </div >
         );
