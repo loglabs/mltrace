@@ -166,76 +166,71 @@ def register(
             component_run.set_start_timestamp()
 
             # Define trace helper
-            def trace_helper(frame, event, arg):
-                if event != "return":
-                    return
+            frame = None
+            trace = sys.gettrace()
 
-                logging.info(f"Inspecting {frame.f_code.co_filename}")
-                input_pointers = []
-                output_pointers = []
-                local_vars = frame.f_locals
-                # Add input_vars and output_vars as pointers
-                for var in input_vars:
-                    if var not in local_vars:
-                        logging.debug(
-                            f"Variable {var} not in current stack frame."
-                        )
-                        continue
-                    val = local_vars[var]
-                    if val is None:
-                        logging.debug(f"Variable {var} has value {val}.")
-                        continue
-                    if isinstance(val, list):
-                        input_pointers += store.get_io_pointers(val)
-                    else:
-                        input_pointers.append(store.get_io_pointer(str(val)))
-                for var in output_vars:
-                    if var not in local_vars:
-                        logging.debug(
-                            f"Variable {var} not in current stack frame."
-                        )
-                        continue
-                    val = local_vars[var]
-                    if val is None:
-                        logging.debug(f"Variable {var} has value {val}.")
-                        continue
-                    if isinstance(val, list):
-                        output_pointers += (
-                            store.get_io_pointers(
-                                val, PointerTypeEnum.ENDPOINT
-                            )
-                            if endpoint
-                            else store.get_io_pointers(val)
-                        )
-                    else:
-                        output_pointers += (
-                            [
-                                store.get_io_pointer(
-                                    str(val), PointerTypeEnum.ENDPOINT
-                                )
-                            ]
-                            if endpoint
-                            else [store.get_io_pointer(str(val))]
-                        )
-                component_run.add_inputs(input_pointers)
-                component_run.add_outputs(output_pointers)
-
-            # Define tracer
-            def tracer(frame, event, arg):
-                if event == "call":
-                    if (
-                        frame.f_code.co_name == function_name
-                        and frame.f_code.co_filename == filename
-                    ):
-                        return trace_helper
-                    return
+            def trace_helper(_frame, event, arg):
+                nonlocal frame
+                if frame is None and event == "call":
+                    frame = _frame
+                    sys.settrace(trace)
+                    return trace
 
             # Run function under the tracer
-            sys.settrace(tracer)
+            sys.settrace(trace_helper)
             try:
                 value = func(*args, **kwargs)
             finally:
-                sys.settrace(None)
+                sys.settrace(trace)
+
+            # Do logging here
+            logging.info(f"Inspecting {frame.f_code.co_filename}")
+            input_pointers = []
+            output_pointers = []
+            local_vars = frame.f_locals
+            # Add input_vars and output_vars as pointers
+            for var in input_vars:
+                if var not in local_vars:
+                    logging.debug(
+                        f"Variable {var} not in current stack frame."
+                    )
+                    continue
+                val = local_vars[var]
+                if val is None:
+                    logging.debug(f"Variable {var} has value {val}.")
+                    continue
+                if isinstance(val, list):
+                    input_pointers += store.get_io_pointers(val)
+                else:
+                    input_pointers.append(store.get_io_pointer(str(val)))
+            for var in output_vars:
+                if var not in local_vars:
+                    logging.debug(
+                        f"Variable {var} not in current stack frame."
+                    )
+                    continue
+                val = local_vars[var]
+                if val is None:
+                    logging.debug(f"Variable {var} has value {val}.")
+                    continue
+                if isinstance(val, list):
+                    output_pointers += (
+                        store.get_io_pointers(val, PointerTypeEnum.ENDPOINT)
+                        if endpoint
+                        else store.get_io_pointers(val)
+                    )
+                else:
+                    output_pointers += (
+                        [
+                            store.get_io_pointer(
+                                str(val), PointerTypeEnum.ENDPOINT
+                            )
+                        ]
+                        if endpoint
+                        else [store.get_io_pointer(str(val))]
+                    )
+            component_run.add_inputs(input_pointers)
+            component_run.add_outputs(output_pointers)
 
             # Log relevant info
             component_run.set_end_timestamp()
