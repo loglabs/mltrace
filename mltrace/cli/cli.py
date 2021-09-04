@@ -12,6 +12,8 @@ from mltrace import (
     flag_output_id,
     unflag_output_id,
     review_flagged_outputs,
+    get_components_with_tag,
+    get_components_with_owner,
 )
 import textwrap
 
@@ -323,3 +325,27 @@ def review(limit: int = 5, address: str = ""):
     for component, count in component_counts[:limit]:
         show_info_card(component.id, count, len(outputs))
 
+@mltrace.command("components")
+@click.option("--owner", help="Owner of components")
+@click.option("--tag", help="Tag of components")
+def components(owner: str = "", tag: str = ""):
+    """
+    Command to list the components with options to filter by tag or owner.
+    """
+    # Make return result
+    components = []
+    if owner:
+        components = get_components_with_owner(owner)
+    elif tag:
+        components = get_components_with_tag(tag)
+    else:
+        run_ids = get_recent_run_ids()
+        for run_id in run_ids:
+            cr_info = get_component_run_information(run_id)
+            c_info = get_component_information(cr_info.component_name)
+            components += [{"name": c_info.name, "description": c_info.description, "owner": c_info.owner, "tags": c_info.tags}]
+
+    # Display components, one per line
+    for comp in components:
+        click.echo(comp)
+    click.echo()
