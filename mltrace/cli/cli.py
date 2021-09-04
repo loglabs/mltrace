@@ -291,17 +291,27 @@ def flag(output_id: str, address: str = ""):
 
 
 @mltrace.command("unflag")
-@click.argument("output_id")
+@click.option("--output_id", help="Output ID to unflag")
+@click.option("--all", is_flag=True)
 @click.option("--address", help="Database server address")
-def unflag(output_id: str, address: str = ""):
+def unflag(output_id: str = "", all: bool = False, address: str = ""):
     """
     Command to set the flag property of an output_id to false.
     """
     # Set address
     if address and len(address) > 0:
         set_address(address)
-    unflag_output_id(output_id)
 
+    if all:
+        outputs, component_counts = review_flagged_outputs()
+        click.echo("Unflagged output ids:")
+        for id in outputs:
+            unflag_output_id(id)
+            click.echo(id)
+        click.echo()
+
+    elif (not all and output_id):
+        unflag_output_id(output_id)
 
 @mltrace.command("review")
 @click.option("--limit", default=5, help="Limit of recent objects.")
@@ -328,10 +338,14 @@ def review(limit: int = 5, address: str = ""):
 @mltrace.command("components")
 @click.option("--owner", help="Owner of components")
 @click.option("--tag", help="Tag of components")
-def components(owner: str = "", tag: str = ""):
+@click.option("--address", help="Database server address")
+def components(owner: str = "", tag: str = "", address: str = ""):
     """
     Command to list the components with options to filter by tag or owner.
     """
+    if address and len(address) > 0:
+        set_address(address)
+
     # Make return result
     components = []
     if owner:
