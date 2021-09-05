@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
+from sqlalchemy.sql.schema import UniqueConstraint
 
 from sqlalchemy.sql.sqltypes import Boolean
 from mltrace.db.base import Base
@@ -13,8 +14,10 @@ from sqlalchemy import (
     ForeignKey,
     Enum,
     PickleType,
+    UniqueConstraint,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.schema import ForeignKeyConstraint
 
 import enum
 import typing
@@ -74,16 +77,21 @@ class Tag(Base):
 class IOPointer(Base):
     __tablename__ = "io_pointers"
 
-    name = Column(String, primary_key=True)
+    name = Column(String, primary_key=True, nullable=False)
+    value = Column(LargeBinary, primary_key=True, nullable=False)
     pointer_type = Column(Enum(PointerTypeEnum))
     flag = Column(Boolean, default=False)
+
+    __table_args__ = (UniqueConstraint("name", "value", name="_iop_uc"),)
 
     def __init__(
         self,
         name: str,
+        value: bytes = b"",
         pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN,
     ):
         self.name = name
+        self.value = value
         self.pointer_type = pointer_type
         self.flag = False
 
@@ -100,15 +108,31 @@ class IOPointer(Base):
 component_run_input_association = Table(
     "component_runs_inputs",
     Base.metadata,
-    Column("input_path_name", String, ForeignKey("io_pointers.name")),
+    Column("input_path_name", String),
+    Column("input_path_value", String),
     Column("component_run_id", Integer, ForeignKey("component_runs.id")),
+    # UniqueConstraint(
+    #     "input_path_name", "input_path_value", name="inp_nameval"
+    # ),
+    ForeignKeyConstraint(
+        ["input_path_name", "input_path_value"],
+        ["io_pointers.name", "io_pointers.value"],
+    ),
 )
 
 component_run_output_association = Table(
     "component_runs_outputs",
     Base.metadata,
-    Column("output_path_name", String, ForeignKey("io_pointers.name")),
+    Column("output_path_name", String),
+    Column("output_path_value", String),
     Column("component_run_id", Integer, ForeignKey("component_runs.id")),
+    # UniqueConstraint(
+    #     "output_path_name", "output_path_value", name="out_nameval"
+    # ),
+    ForeignKeyConstraint(
+        ["output_path_name", "output_path_value"],
+        ["io_pointers.name", "io_pointers.value"],
+    ),
 )
 
 component_run_dependencies = Table(
@@ -141,10 +165,16 @@ class ComponentRun(Base):
     start_timestamp = Column(DateTime)
     end_timestamp = Column(DateTime)
     inputs = relationship(
-        "IOPointer", secondary=component_run_input_association, cascade="all"
+        "IOPointer",
+        secondary=component_run_input_association,
+        cascade="all",
+        backref=backref("component_runs_inputs", lazy="joined"),
     )
     outputs = relationship(
-        "IOPointer", secondary=component_run_output_association, cascade="all"
+        "IOPointer",
+        secondary=component_run_output_association,
+        cascade="all",
+        backref=backref("component_runs_outputs", lazy="joined"),
     )
     dependencies = relationship(
         "ComponentRun",

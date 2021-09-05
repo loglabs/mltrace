@@ -105,6 +105,9 @@ class Store(object):
             .first()
         )
 
+        # print(self.session.query(ComponentRun).subquery())
+        print(component_run.outputs)
+
         return component_run
 
     def add_tags_to_component(
