@@ -299,7 +299,7 @@ def flag(output_id: str, address: str = ""):
 @click.option("--address", help="Database server address")
 def unflag(output_id: str = "", all: bool = False, address: str = ""):
     """
-    Command to set the flag property of an output_id or all output_ids to false.
+    Command to set flag property of an output_id or all output_ids to false.
     """
     # Set address
     if address and len(address) > 0:
