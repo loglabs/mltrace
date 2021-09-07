@@ -14,6 +14,7 @@ from mltrace import (
     review_flagged_outputs,
     get_components_with_tag,
     get_components_with_owner,
+    get_all_run_ids,
 )
 import textwrap
 
@@ -296,7 +297,7 @@ def flag(output_id: str, address: str = ""):
 @click.option("--address", help="Database server address")
 def unflag(output_id: str = "", all: bool = False, address: str = ""):
     """
-    Command to set the flag property of an output_id to false.
+    Command to set the flag property of an output_id or all output_ids to false.
     """
     # Set address
     if address and len(address) > 0:
@@ -366,3 +367,18 @@ def components(owner: str = "", tag: str = "", address: str = ""):
         click.echo(f"└─Owner: {comp.owner}")
         click.echo(f"└─Tags: {comp.tags}")
         click.echo()
+
+@mltrace.command("tags")
+@click.option("--address", help="Database server address")
+def tags(address: str = ""):
+    """
+    Command to set the flag property of an output_id to true.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    # Get all ids
+    component_run_ids = get_recent_run_ids()
+    for id in component_run_ids:
+        show_info_card(id)

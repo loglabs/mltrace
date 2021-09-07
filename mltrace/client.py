@@ -443,6 +443,12 @@ def get_recent_run_ids(limit: int = 5, last_run_id=None):
     return store.get_recent_run_ids(limit, last_run_id)
 
 
+def get_all_run_ids(last_run_id=None):
+    """Returns most all component run ids."""
+    store = Store(_db_uri)
+    return store.get_recent_run_ids(last_run_id)
+
+
 def get_io_pointer(io_pointer_id: str, create=True):
     """Returns IO Pointer metadata."""
     store = Store(_db_uri)
