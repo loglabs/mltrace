@@ -207,6 +207,7 @@ def show_res(res, indent, count, pos, need_stick):
 
 @click.group()
 def mltrace():
+    # Pass
     pass
 
 
@@ -240,6 +241,7 @@ def inspect(component_run_id, address: str = ""):
     component_run_ids = get_recent_run_ids()
     if int(component_run_id) in component_run_ids:
         show_info_card(component_run_id)
+
 
 @mltrace.command("history")
 @click.argument("component_name")
@@ -311,7 +313,7 @@ def unflag(output_id: str = "", all: bool = False, address: str = ""):
             click.echo(id)
         click.echo()
 
-    elif (not all and output_id):
+    elif not all and output_id:
         unflag_output_id(output_id)
 
 
@@ -360,10 +362,14 @@ def components(owner: str = "", tag: str = "", address: str = ""):
         for run_id in run_ids:
             cr_info = get_component_run_information(run_id)
             c_info = get_component_information(cr_info.component_name)
-            components += [{"name": c_info.name,
-                            "description": c_info.description,
-                            "owner": c_info.owner,
-                            "tags": c_info.tags}]
+            components += [
+                {
+                    "name": c_info.name,
+                    "description": c_info.description,
+                    "owner": c_info.owner,
+                    "tags": c_info.tags,
+                }
+            ]
 
     # Display components, one per line
     for comp in components:
