@@ -314,6 +314,7 @@ def unflag(output_id: str = "", all: bool = False, address: str = ""):
     elif (not all and output_id):
         unflag_output_id(output_id)
 
+
 @mltrace.command("review")
 @click.option("--limit", default=5, help="Limit of recent objects.")
 @click.option("--address", help="Database server address")
@@ -335,6 +336,7 @@ def review(limit: int = 5, address: str = ""):
     # Print component runs
     for component, count in component_counts[:limit]:
         show_info_card(component.id, count, len(outputs))
+
 
 @mltrace.command("components")
 @click.option("--owner", help="Owner of components")
@@ -358,7 +360,10 @@ def components(owner: str = "", tag: str = "", address: str = ""):
         for run_id in run_ids:
             cr_info = get_component_run_information(run_id)
             c_info = get_component_information(cr_info.component_name)
-            components += [{"name": c_info.name, "description": c_info.description, "owner": c_info.owner, "tags": c_info.tags}]
+            components += [{"name": c_info.name,
+                            "description": c_info.description,
+                            "owner": c_info.owner,
+                            "tags": c_info.tags}]
 
     # Display components, one per line
     for comp in components:
@@ -367,6 +372,7 @@ def components(owner: str = "", tag: str = "", address: str = ""):
         click.echo(f"└─Owner: {comp.owner}")
         click.echo(f"└─Tags: {comp.tags}")
         click.echo()
+
 
 @mltrace.command("tags")
 @click.option("--address", help="Database server address")
