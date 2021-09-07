@@ -23,6 +23,7 @@ from mltrace.client import (
     flag_output_id,
     unflag_output_id,
     review_flagged_outputs,
+    get_all_run_ids,
 )
 
 __all__ = [
@@ -40,6 +41,7 @@ __all__ = [
     "get_component_run_information",
     "web_trace",
     "get_recent_run_ids",
+    "get_all_run_ids",
     "get_io_pointer",
     "set_db_uri",
     "get_db_uri",

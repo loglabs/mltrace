@@ -379,6 +379,14 @@ def tags(address: str = ""):
         set_address(address)
 
     # Get all ids
-    component_run_ids = get_recent_run_ids()
+    component_run_ids = get_all_run_ids()
+
+    # Get tags
+    tags = set()
     for id in component_run_ids:
-        show_info_card(id)
+        cr_info = get_component_run_information(id)
+        c_info = get_component_information(cr_info.component_name)
+        tags.add(c_info.tags[0])
+
+    click.echo(tags)
+    click.echo()
