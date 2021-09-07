@@ -577,4 +577,3 @@ class Store(object):
 
         # Return a list of the ComponentRuns in the order
         return flagged_output_ids, trace_nodes_counts
->>>>>>> ca703f195f4798c4b73fec11482e73643c0a047d
