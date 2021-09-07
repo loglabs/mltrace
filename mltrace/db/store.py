@@ -509,52 +509,6 @@ class Store(object):
 
         return runs
 
-    def get_all_run_ids(
-            self, last_run_id=None
-    ) -> typing.List[str]:
-        """Returns a list of all component run IDs."""
-
-        if last_run_id:
-            # Get start timestamp of last run id
-            ts = (
-                self.session.query(ComponentRun)
-                    .filter(ComponentRun.id == last_run_id)
-                    .first()
-            ).start_timestamp
-            if not ts:
-                raise RuntimeError(
-                    f"Last run ID {last_run_id} does not exist."
-                )
-
-            # Return list of runs after ts
-            runs = list(
-                map(
-                    lambda x: int(x[0]),
-                    self.session.query(ComponentRun.id)
-                        .order_by(ComponentRun.start_timestamp.desc())
-                        .filter(
-                        and_(
-                            ComponentRun.start_timestamp <= ts,
-                            ComponentRun.id != last_run_id,
-                            )
-                    )
-                    .all(),
-                        )
-            )
-
-            return runs
-
-        runs = list(
-            map(
-                lambda x: int(x[0]),
-                self.session.query(ComponentRun.id)
-                    .order_by(ComponentRun.start_timestamp.desc())
-                    .all(),
-                )
-        )
-
-        return runs
-
     def add_notes_to_component_run(
         self, component_run_id: str, notes: str
     ) -> str:
@@ -623,3 +577,4 @@ class Store(object):
 
         # Return a list of the ComponentRuns in the order
         return flagged_output_ids, trace_nodes_counts
+>>>>>>> ca703f195f4798c4b73fec11482e73643c0a047d
