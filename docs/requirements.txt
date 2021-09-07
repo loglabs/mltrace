@@ -10,7 +10,6 @@ attrs==20.3.0
 autopep8==1.5.6
 click==7.1.2
 Flask==1.1.2
-gitdb==4.0.7
 GitPython==3.1.14
 greenlet==1.0.0
 iniconfig==1.1.1
