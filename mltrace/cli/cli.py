@@ -2,6 +2,7 @@
 
 
 import click
+
 from mltrace import (
     set_address,
     get_recent_run_ids,
@@ -12,9 +13,10 @@ from mltrace import (
     flag_output_id,
     unflag_output_id,
     review_flagged_outputs,
-    get_components_with_tag,
-    get_components_with_owner,
     get_all_run_ids,
+    get_all_tags,
+    get_components,
+    unflag_all,
 )
 import textwrap
 
@@ -237,10 +239,8 @@ def inspect(component_run_id, address: str = ""):
     # Set address
     if address and len(address) > 0:
         set_address(address)
-    # Get the recent ids
-    component_run_ids = get_recent_run_ids()
-    if int(component_run_id) in component_run_ids:
-        show_info_card(component_run_id)
+
+    show_info_card(component_run_id)
 
 
 @mltrace.command("history")
@@ -295,23 +295,27 @@ def flag(output_id: str, address: str = ""):
 
 @mltrace.command("unflag")
 @click.option("--output_id", help="Output ID to unflag")
-@click.option("--all", is_flag=True)
+@click.option("--all", is_flag=True, help="Add flag to unflag all")
 @click.option("--address", help="Database server address")
 def unflag(output_id: str = "", all: bool = False, address: str = ""):
     """
     Command to set flag property of an output_id or all output_ids to false.
     """
+    # Check if set --all and --output_id
+    if all and output_id:
+        raise click.ClickException("Can set either --all=True or specify an "
+                                   "--output_id. Cannot set both.")
+
+    if not all and not output_id:
+        raise click.ClickException("Need to either set --all=True or specify "
+                                   "an --output_id to unflag.")
+
     # Set address
     if address and len(address) > 0:
         set_address(address)
 
     if all:
-        outputs, component_counts = review_flagged_outputs()
-        click.echo("Unflagged output ids:")
-        for id in outputs:
-            unflag_output_id(id)
-            click.echo(id)
-        click.echo()
+        unflag_all()
 
     elif not all and output_id:
         unflag_output_id(output_id)
@@ -352,31 +356,19 @@ def components(owner: str = "", tag: str = "", address: str = ""):
         set_address(address)
 
     # Make return result
-    components = []
-    if owner:
-        components = get_components_with_owner(owner)
-    elif tag:
-        components = get_components_with_tag(tag)
-    else:
-        run_ids = get_recent_run_ids()
-        for run_id in run_ids:
-            cr_info = get_component_run_information(run_id)
-            c_info = get_component_information(cr_info.component_name)
-            components += [
-                {
-                    "name": c_info.name,
-                    "description": c_info.description,
-                    "owner": c_info.owner,
-                    "tags": c_info.tags,
-                }
-            ]
+    try:
+        result = get_components(tag, owner)
+    except RuntimeError:
+        click.ClickException("No components could be found with the flags passed.")
 
     # Display components, one per line
-    for comp in components:
+    for comp in result:
+        # print("accessing: ", 1)
         click.echo(f"Name: {comp.name}")
         click.echo(f"└─Description: {comp.description}")
         click.echo(f"└─Owner: {comp.owner}")
         click.echo(f"└─Tags: {comp.tags}")
+        # print("fin")
         click.echo()
 
 
@@ -384,21 +376,14 @@ def components(owner: str = "", tag: str = "", address: str = ""):
 @click.option("--address", help="Database server address")
 def tags(address: str = ""):
     """
-    Command to set the flag property of an output_id to true.
+    Command to list all the tags currently used.
     """
     # Set address
     if address and len(address) > 0:
         set_address(address)
 
-    # Get all ids
-    component_run_ids = get_all_run_ids()
+    # Get all tags, automatically unique
+    all_tags = get_all_tags()
 
-    # Get tags
-    tags = set()
-    for id in component_run_ids:
-        cr_info = get_component_run_information(id)
-        c_info = get_component_information(cr_info.component_name)
-        tags.add(c_info.tags[0])
-
-    click.echo(tags)
+    click.echo(all_tags)
     click.echo()

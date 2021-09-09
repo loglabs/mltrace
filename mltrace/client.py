@@ -30,6 +30,7 @@ if _db_uri is None:
             Otherwise, DB_URI is set to {_db_uri}."
         )
 
+
 # --------------------- Database management functions ------------------- #
 
 
@@ -57,7 +58,7 @@ def clean_db():
 
 
 def create_component(
-    name: str, description: str, owner: str, tags: typing.List[str] = []
+        name: str, description: str, owner: str, tags: typing.List[str] = []
 ):
     """Creates a component entity in the database."""
     store = Store(_db_uri)
@@ -71,9 +72,9 @@ def tag_component(component_name: str, tags: typing.List[str]):
 
 
 def log_component_run(
-    component_run: ComponentRun,
-    set_dependencies_from_inputs=True,
-    staleness_threshold: int = (60 * 60 * 24 * 30),
+        component_run: ComponentRun,
+        set_dependencies_from_inputs=True,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
     """Takes client-facing ComponentRun object and logs it to the DB."""
     store = Store(_db_uri)
@@ -143,13 +144,13 @@ def create_random_ids(num_outputs=1) -> typing.List[str]:
 
 
 def register(
-    component_name: str,
-    inputs: typing.List[str] = [],
-    outputs: typing.List[str] = [],
-    input_vars: typing.List[str] = [],
-    output_vars: typing.List[str] = [],
-    endpoint: bool = False,
-    staleness_threshold: int = (60 * 60 * 24 * 30),
+        component_name: str,
+        inputs: typing.List[str] = [],
+        outputs: typing.List[str] = [],
+        input_vars: typing.List[str] = [],
+        output_vars: typing.List[str] = [],
+        endpoint: bool = False,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -322,14 +323,19 @@ def unflag_output_id(output_id: str) -> bool:
     return store.set_io_pointer_flag(output_id, False)
 
 
+def unflag_all():
+    store = Store(_db_uri)
+    store.unflag_all()
+
+
 # ----------------- Basic retrieval functions ------------------- #
 
 
 def get_history(
-    component_name: str,
-    limit: int = 10,
-    date_lower: typing.Union[datetime, str] = datetime.min,
-    date_upper: typing.Union[datetime, str] = datetime.max,
+        component_name: str,
+        limit: int = 10,
+        date_lower: typing.Union[datetime, str] = datetime.min,
+        date_upper: typing.Union[datetime, str] = datetime.max,
 ) -> typing.List[ComponentRun]:
     """Returns a list of ComponentRuns that are part of the component's
     history."""
@@ -368,23 +374,6 @@ def get_history(
     return component_runs
 
 
-def get_components_with_owner(owner: str) -> typing.List[Component]:
-    """Returns a list of all the components associated with the specified
-    order."""
-    store = Store(_db_uri)
-    res = store.get_components_with_owner(owner)
-
-    # Convert to client-facing Components
-    components = []
-    for c in res:
-        tags = [tag.name for tag in c.tags]
-        d = copy.deepcopy(c.__dict__)
-        d.update({"tags": tags})
-        components.append(Component.from_dictionary(d))
-
-    return components
-
-
 def get_component_information(component_name: str) -> Component:
     """Returns a Component with the name, info, owner, and tags."""
     store = Store(_db_uri)
@@ -421,10 +410,11 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     return ComponentRun.from_dictionary(d)
 
 
-def get_components_with_tag(tag: str) -> typing.List[Component]:
-    """Returns a list of components with the specified tag."""
+def get_components(tag="", owner="") -> typing.List[Component]:
+    """Returns all components with the specified owner and/or tag.
+    Else, returns all components."""
     store = Store(_db_uri)
-    res = store.get_components_with_tag(tag)
+    res = store.get_components(tag=tag, owner=owner)
 
     # Convert to client-facing Components
     components = []
@@ -443,10 +433,11 @@ def get_recent_run_ids(limit: int = 5, last_run_id=None):
     return store.get_recent_run_ids(limit, last_run_id)
 
 
-def get_all_run_ids(last_run_id=None):
+def get_all_run_ids():
     """Returns most all component run ids."""
     store = Store(_db_uri)
-    return store.get_recent_run_ids(last_run_id)
+    res = store.get_all_run_ids()
+    return [str(x[0]) for x in res]
 
 
 def get_io_pointer(io_pointer_id: str, create=True):
@@ -454,6 +445,16 @@ def get_io_pointer(io_pointer_id: str, create=True):
     store = Store(_db_uri)
     iop = store.get_io_pointer(io_pointer_id, create)
     return IOPointer.from_dictionary(iop.__dict__)
+
+
+def get_all_tags() -> typing.List[str]:
+    store = Store(_db_uri)
+    res = store.get_all_tags()
+    tags = set()
+    for t in res:
+        tags.add(str(t[0]))
+
+    return list(tags)
 
 
 # --------------- Complex retrieval functions ------------------ #
