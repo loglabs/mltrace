@@ -358,8 +358,8 @@ def components(owner: str = "", tag: str = "", address: str = ""):
     try:
         result = get_components(tag, owner)
     except RuntimeError:
-        click.ClickException("No components could be found with the "
-                             "flags passed.")
+        raise click.ClickException("No components could be found with the "
+                                   "flags passed.")
 
     # Display components, one per line
     for comp in result:
