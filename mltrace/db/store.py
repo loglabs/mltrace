@@ -513,8 +513,8 @@ class Store(object):
                             ComponentRun.id != last_run_id,
                         )
                     )
-                        .limit(limit)
-                        .all(),
+                    .limit(limit)
+                    .all(),
                 )
             )
 
