@@ -303,20 +303,20 @@ class Store(object):
             self.session.query(
                 func.max(component_run_output_association.c.component_run_id),
             )
-                .group_by(component_run_output_association.c.output_path_name)
-                .filter(
+            .group_by(component_run_output_association.c.output_path_name)
+            .filter(
                 component_run_output_association.c.output_path_name.in_(
                     input_ids
                 )
             )
-                .all()
+            .all()
         )
         match_ids = [m[0] for m in match_ids]
 
         matches = (
             self.session.query(ComponentRun)
-                .filter(ComponentRun.id.in_(match_ids))
-                .all()
+            .filter(ComponentRun.id.in_(match_ids))
+            .all()
         )
 
         # If there are no matches, return
@@ -431,16 +431,16 @@ class Store(object):
         """Gets lineage for the component, or a history of all its runs."""
         history = (
             self.session.query(ComponentRun)
-                .filter(ComponentRun.component_name == component_name)
-                .filter(
+            .filter(ComponentRun.component_name == component_name)
+            .filter(
                 and_(
                     ComponentRun.start_timestamp >= date_lower,
                     ComponentRun.start_timestamp <= date_upper,
                 )
             )
-                .order_by(ComponentRun.start_timestamp.desc())
-                .limit(limit)
-                .all()
+            .order_by(ComponentRun.start_timestamp.desc())
+            .limit(limit)
+            .all()
         )
 
         return history
@@ -456,9 +456,9 @@ class Store(object):
                     and_(
                         Tag.name == tag,
                         Component.owner == owner,
-                        )
+                    )
                 )
-                    .all()
+                .all()
             )
         elif tag:
             components = (
