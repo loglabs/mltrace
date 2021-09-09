@@ -602,9 +602,4 @@ class Store(object):
         return flagged_output_ids, trace_nodes_counts
 
     def get_all_tags(self) -> typing.List[Tag]:
-        return self.session.query(Tag.name).all()
-
-    # write function to do the unglafgging
-    # remember to commit the transaction
-
-    # combine all components getting stuff into one function.
+        pass

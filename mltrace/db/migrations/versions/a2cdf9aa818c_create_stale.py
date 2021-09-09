@@ -1,7 +1,11 @@
 """create stale
 
 Revision ID: a2cdf9aa818c
+<<<<<<< HEAD
 Revises: None
+=======
+Revises: 0a8485e5ba50
+>>>>>>> 0d56fd3a1e0ec8dba13219049e62a1df7a9e04ea
 Create Date: 2021-05-18 14:05:25.540236
 
 """
@@ -21,4 +25,8 @@ def upgrade():
 
 
 def downgrade():
+<<<<<<< HEAD
     op.drop_column("component_runs", "stale")
+=======
+    pass
+>>>>>>> 0d56fd3a1e0ec8dba13219049e62a1df7a9e04ea
