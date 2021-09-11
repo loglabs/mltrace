@@ -450,11 +450,8 @@ def get_io_pointer(io_pointer_id: str, create=True):
 def get_all_tags() -> typing.List[str]:
     store = Store(_db_uri)
     res = store.get_all_tags()
-    tags = set()
-    for t in res:
-        tags.add(str(t[0]))
-
-    return list(tags)
+    tags = [t.name for t in res]
+    return tags
 
 
 # --------------- Complex retrieval functions ------------------ #

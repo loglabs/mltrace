@@ -602,4 +602,4 @@ class Store(object):
         return flagged_output_ids, trace_nodes_counts
 
     def get_all_tags(self) -> typing.List[Tag]:
-        pass
+        return self.session.query(Tag).all()

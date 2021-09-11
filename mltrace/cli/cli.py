@@ -363,12 +363,7 @@ def components(owner: str = "", tag: str = "", address: str = ""):
 
     # Display components, one per line
     for comp in result:
-        # print("accessing: ", 1)
         click.echo(f"Name: {comp.name}")
-        click.echo(f"└─Description: {comp.description}")
-        click.echo(f"└─Owner: {comp.owner}")
-        click.echo(f"└─Tags: {comp.tags}")
-        # print("fin")
         click.echo()
 
 
