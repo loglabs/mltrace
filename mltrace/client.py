@@ -433,13 +433,6 @@ def get_recent_run_ids(limit: int = 5, last_run_id=None):
     return store.get_recent_run_ids(limit, last_run_id)
 
 
-def get_all_run_ids():
-    """Returns most all component run ids."""
-    store = Store(_db_uri)
-    res = store.get_all_run_ids()
-    return [str(x[0]) for x in res]
-
-
 def get_io_pointer(io_pointer_id: str, create=True):
     """Returns IO Pointer metadata."""
     store = Store(_db_uri)
