@@ -60,11 +60,11 @@ class Store(object):
         self.session.close()
 
     def create_component(
-        self,
-        name: str,
-        description: str,
-        owner: str,
-        tags: typing.List[str] = [],
+            self,
+            name: str,
+            description: str,
+            owner: str,
+            tags: typing.List[str] = [],
     ):
         """Creates a component entity in the database if it does
         not already exist."""
@@ -90,9 +90,9 @@ class Store(object):
         """Retrieves component if exists."""
         component = (
             self.session.query(Component)
-            .outerjoin(Tag, Component.tags)
-            .filter(Component.name == name)
-            .first()
+                .outerjoin(Tag, Component.tags)
+                .filter(Component.name == name)
+                .first()
         )
 
         return component
@@ -101,17 +101,14 @@ class Store(object):
         """Retrieves component run if exists."""
         component_run = (
             self.session.query(ComponentRun)
-            .filter(ComponentRun.id == id)
-            .first()
+                .filter(ComponentRun.id == id)
+                .first()
         )
-
-        # print(self.session.query(ComponentRun).subquery())
-        print(component_run.outputs)
 
         return component_run
 
     def add_tags_to_component(
-        self, component_name: str, tags: typing.List[str]
+            self, component_name: str, tags: typing.List[str]
     ):
         """Retreives existing component and adds tags."""
         component = self.get_component(component_name)
@@ -125,8 +122,21 @@ class Store(object):
         component.add_tags(tag_objects)
         self.session.commit()
 
+    def unflag_all(self):
+        """Unflags all IO Pointers and commits."""
+        flagged_iop = (
+            self.session.query(IOPointer)
+                .filter(IOPointer.flag.is_(True))
+                .all()
+        )
+
+        for iop in flagged_iop:
+            iop.clear_flag()
+
+        self.session.commit()
+
     def initialize_empty_component_run(
-        self, component_name: str
+            self, component_name: str
     ) -> ComponentRun:
         """Initializes an empty run for the specified component. Does not
         commit to the database."""
@@ -149,15 +159,15 @@ class Store(object):
         return res[0]
 
     def get_io_pointers(
-        self, names: typing.List[str], pointer_type: PointerTypeEnum = None
+            self, names: typing.List[str], pointer_type: PointerTypeEnum = None
     ) -> typing.List[IOPointer]:
         """Creates io pointers around the specified path names. Retrieves
         existing io pointer if exists in DB, otherwise creates a new one with
         inferred pointer type."""
         res = (
             self.session.query(IOPointer)
-            .filter(IOPointer.name.in_(names))
-            .all()
+                .filter(IOPointer.name.in_(names))
+                .all()
         )
         res_names = set([r.name for r in res])
         need_to_add = set(names) - res_names
@@ -177,7 +187,7 @@ class Store(object):
         return res
 
     def get_io_pointer(
-        self, name: str, pointer_type: PointerTypeEnum = None, create=True
+            self, name: str, pointer_type: PointerTypeEnum = None, create=True
     ) -> IOPointer:
         """Creates an io pointer around the specified path.
         Retrieves existing io pointer if exists in DB,
@@ -226,9 +236,9 @@ class Store(object):
         )
 
     def commit_component_run(
-        self,
-        component_run: ComponentRun,
-        staleness_threshold: int = (60 * 60 * 24 * 30),
+            self,
+            component_run: ComponentRun,
+            staleness_threshold: int = (60 * 60 * 24 * 30),
     ):
         """Commits a fully initialized component run to the DB."""
         status_dict = component_run.check_completeness()
@@ -242,7 +252,7 @@ class Store(object):
         for dep in component_run.dependencies:
             # First case: there is over a month between component runs
             time_diff = (
-                component_run.start_timestamp - dep.start_timestamp
+                    component_run.start_timestamp - dep.start_timestamp
             ).total_seconds()
             if time_diff > staleness_threshold:
                 days_diff = int(time_diff // (60 * 60 * 24))
@@ -317,10 +327,10 @@ class Store(object):
         component_run.set_upstream(matches)
 
     def _traverse(
-        self,
-        node: ComponentRun,
-        depth: int,
-        node_list: typing.List[ComponentRun],
+            self,
+            node: ComponentRun,
+            depth: int,
+            node_list: typing.List[ComponentRun],
     ):
         # Add node to node_list as the step
         node_list.append((depth, node))
@@ -363,7 +373,7 @@ class Store(object):
             res["childNodes"].append(out_dict)
 
         for dep in sorted(
-            component_run_object.dependencies, key=lambda x: x.id
+                component_run_object.dependencies, key=lambda x: x.id
         ):
             child_res = self._web_trace_helper(dep)
             res["childNodes"].append(child_res)
@@ -374,10 +384,10 @@ class Store(object):
         """Prints list of ComponentRuns to display in the UI."""
         component_run_objects = (
             self.session.query(ComponentRun)
-            .outerjoin(IOPointer, ComponentRun.outputs)
-            .order_by(ComponentRun.start_timestamp.desc())
-            .filter(IOPointer.name == output_id)
-            .all()
+                .outerjoin(IOPointer, ComponentRun.outputs)
+                .order_by(ComponentRun.start_timestamp.desc())
+                .filter(IOPointer.name == output_id)
+                .all()
         )
 
         if len(component_run_objects) == 0:
@@ -395,10 +405,10 @@ class Store(object):
 
         component_run_object = (
             self.session.query(ComponentRun)
-            .outerjoin(IOPointer, ComponentRun.outputs)
-            .order_by(ComponentRun.start_timestamp.desc())
-            .filter(IOPointer.name == output_id)
-            .first()
+                .outerjoin(IOPointer, ComponentRun.outputs)
+                .order_by(ComponentRun.start_timestamp.desc())
+                .filter(IOPointer.name == output_id)
+                .first()
         )
 
         if component_run_object is None:
@@ -412,11 +422,11 @@ class Store(object):
         pass
 
     def get_history(
-        self,
-        component_name: str,
-        limit: int = 10,
-        date_lower: typing.Union[datetime, str] = datetime.min,
-        date_upper: typing.Union[datetime, str] = datetime.max,
+            self,
+            component_name: str,
+            limit: int = 10,
+            date_lower: typing.Union[datetime, str] = datetime.min,
+            date_upper: typing.Union[datetime, str] = datetime.max,
     ) -> typing.List[ComponentRun]:
         """Gets lineage for the component, or a history of all its runs."""
         history = (
@@ -435,37 +445,47 @@ class Store(object):
 
         return history
 
-    def get_components_with_owner(self, owner: str) -> typing.List[Component]:
+    def get_components(self, tag: str = "", owner: str = ""):
         """Returns a list of all the components associated with the specified
-        order."""
-        components = (
-            self.session.query(Component)
-            .filter(Component.owner == owner)
-            .options(joinedload("tags"))
-            .all()
-        )
+        owner and/or tags."""
+        if tag and owner:
+            components = (
+                self.session.query(Component)
+                    .join(Tag, Component.tags)
+                    .filter(
+                    and_(
+                        Tag.name == tag,
+                        Component.owner == owner,
+                    )
+                )
+                .all()
+            )
+        elif tag:
+            components = (
+                self.session.query(Component)
+                    .join(Tag, Component.tags)
+                    .filter(Tag.name == tag)
+                    .all()
+            )
+        elif owner:
+            components = (
+                self.session.query(Component)
+                    .filter(Component.owner == owner)
+                    .options(joinedload("tags"))
+                    .all()
+            )
+        else:
+            components = (
+                self.session.query(Component).all()
+            )
 
         if len(components) == 0:
-            raise RuntimeError(f"Owner {owner} has no components.")
-
-        return components
-
-    def get_components_with_tag(self, tag: str) -> typing.List[Component]:
-        """Returns a list of all the components associated with that tag."""
-        components = (
-            self.session.query(Component)
-            .join(Tag, Component.tags)
-            .filter(Tag.name == tag)
-            .all()
-        )
-
-        if len(components) == 0:
-            raise RuntimeError(f"Tag {tag} has no components associated.")
+            raise RuntimeError(f"Search yielded no components.")
 
         return components
 
     def get_recent_run_ids(
-        self, limit: int = 50, last_run_id=None
+            self, limit: int = 50, last_run_id=None
     ) -> typing.List[str]:
         """Returns a list of recent component run IDs."""
 
@@ -473,8 +493,8 @@ class Store(object):
             # Get start timestamp of last run id
             ts = (
                 self.session.query(ComponentRun)
-                .filter(ComponentRun.id == last_run_id)
-                .first()
+                    .filter(ComponentRun.id == last_run_id)
+                    .first()
             ).start_timestamp
             if not ts:
                 raise RuntimeError(
@@ -486,8 +506,8 @@ class Store(object):
                 map(
                     lambda x: int(x[0]),
                     self.session.query(ComponentRun.id)
-                    .order_by(ComponentRun.start_timestamp.desc())
-                    .filter(
+                        .order_by(ComponentRun.start_timestamp.desc())
+                        .filter(
                         and_(
                             ComponentRun.start_timestamp <= ts,
                             ComponentRun.id != last_run_id,
@@ -504,16 +524,16 @@ class Store(object):
             map(
                 lambda x: int(x[0]),
                 self.session.query(ComponentRun.id)
-                .order_by(ComponentRun.start_timestamp.desc())
-                .limit(limit)
-                .all(),
+                    .order_by(ComponentRun.start_timestamp.desc())
+                    .limit(limit)
+                    .all(),
             )
         )
 
         return runs
 
     def add_notes_to_component_run(
-        self, component_run_id: str, notes: str
+            self, component_run_id: str, notes: str
     ) -> str:
         """Retreives existing component and adds tags."""
         component_run = self.get_component_run(component_run_id)
@@ -548,7 +568,7 @@ class Store(object):
             )
 
     def review_flagged_outputs(
-        self,
+            self,
     ) -> typing.Tuple[
         typing.List[str], typing.List[typing.Tuple[ComponentRun, int]]
     ]:
@@ -556,8 +576,8 @@ class Store(object):
         # Collate flagged outputs
         flagged_iops = (
             self.session.query(IOPointer)
-            .filter(IOPointer.flag.is_(True))
-            .all()
+                .filter(IOPointer.flag.is_(True))
+                .all()
         )
         flagged_output_ids = [iop.name for iop in flagged_iops]
 
@@ -580,3 +600,6 @@ class Store(object):
 
         # Return a list of the ComponentRuns in the order
         return flagged_output_ids, trace_nodes_counts
+
+    def get_all_tags(self) -> typing.List[Tag]:
+        return self.session.query(Tag).all()

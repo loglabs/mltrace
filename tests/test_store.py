@@ -16,7 +16,7 @@ class TestStore(unittest.TestCase):
         self.assertEqual(component.name, "test_component")
 
         # Retrieve components with owner
-        components = self.store.get_components_with_owner("shreya")
+        components = self.store.get_components(owner="shreya")
         self.assertEqual(1, len(components))
 
     def testCompleteComponentRun(self):

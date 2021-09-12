@@ -4,9 +4,7 @@ from mltrace.client import (
     register,
     backtrace,
     get_history,
-    get_components_with_owner,
     tag_component,
-    get_components_with_tag,
     log_component_run,
     create_random_ids,
     get_component_information,
@@ -23,6 +21,9 @@ from mltrace.client import (
     flag_output_id,
     unflag_output_id,
     review_flagged_outputs,
+    get_all_tags,
+    get_components,
+    unflag_all,
 )
 
 __all__ = [
@@ -31,9 +32,7 @@ __all__ = [
     "register",
     "backtrace",
     "get_history",
-    "get_components_with_owner",
     "tag_component",
-    "get_components_with_tag",
     "log_component_run",
     "create_random_ids",
     "get_component_information",
@@ -50,4 +49,7 @@ __all__ = [
     "flag_output_id",
     "unflag_output_id",
     "review_flagged_outputs",
+    "get_all_tags",
+    "get_components",
+    "unflag_all",
 ]

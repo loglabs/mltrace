@@ -1,7 +1,7 @@
 """create stale
 
 Revision ID: a2cdf9aa818c
-Revises: 0a8485e5ba50
+Revises: None
 Create Date: 2021-05-18 14:05:25.540236
 
 """

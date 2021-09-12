@@ -2,6 +2,7 @@
 
 
 import click
+
 from mltrace import (
     set_address,
     get_recent_run_ids,
@@ -12,6 +13,9 @@ from mltrace import (
     flag_output_id,
     unflag_output_id,
     review_flagged_outputs,
+    get_all_tags,
+    get_components,
+    unflag_all,
 )
 import textwrap
 
@@ -204,6 +208,7 @@ def show_res(res, indent, count, pos, need_stick):
 
 @click.group()
 def mltrace():
+    # Pass
     pass
 
 
@@ -221,6 +226,20 @@ def recent(limit: int, address: str = ""):
     component_run_ids = get_recent_run_ids()
     for id in component_run_ids[:limit]:
         show_info_card(id)
+
+
+@mltrace.command("inspect")
+@click.option("--address", help="Database server address")
+@click.argument("component_run_id")
+def inspect(component_run_id, address: str = ""):
+    """
+    CLI to inspect a specific component run id.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    show_info_card(component_run_id)
 
 
 @mltrace.command("history")
@@ -274,16 +293,31 @@ def flag(output_id: str, address: str = ""):
 
 
 @mltrace.command("unflag")
-@click.argument("output_id")
+@click.option("--output_id", help="Output ID to unflag")
+@click.option("--all", is_flag=True, help="Add flag to unflag all")
 @click.option("--address", help="Database server address")
-def unflag(output_id: str, address: str = ""):
+def unflag(output_id: str = "", all: bool = False, address: str = ""):
     """
-    Command to set the flag property of an output_id to false.
+    Command to set flag property of an output_id or all output_ids to false.
     """
+    # Check if set --all and --output_id
+    if all and output_id:
+        raise click.ClickException("Can set either --all=True or specify an "
+                                   "--output_id. Cannot set both.")
+
+    if not all and not output_id:
+        raise click.ClickException("Need to either set --all=True or specify "
+                                   "an --output_id to unflag.")
+
     # Set address
     if address and len(address) > 0:
         set_address(address)
-    unflag_output_id(output_id)
+
+    if all:
+        unflag_all()
+
+    elif not all and output_id:
+        unflag_output_id(output_id)
 
 
 @mltrace.command("review")
@@ -307,3 +341,44 @@ def review(limit: int = 5, address: str = ""):
     # Print component runs
     for component, count in component_counts[:limit]:
         show_info_card(component.id, count, len(outputs))
+
+
+@mltrace.command("components")
+@click.option("--owner", help="Owner of components")
+@click.option("--tag", help="Tag of components")
+@click.option("--address", help="Database server address")
+def components(owner: str = "", tag: str = "", address: str = ""):
+    """
+    Command to list the components with options to filter by tag or owner.
+    """
+    if address and len(address) > 0:
+        set_address(address)
+
+    # Make return result
+    try:
+        result = get_components(tag, owner)
+    except RuntimeError:
+        raise click.ClickException("No components could be found with the "
+                                   "flags passed.")
+
+    # Display components, one per line
+    for comp in result:
+        click.echo(f"Name: {comp.name}")
+        click.echo()
+
+
+@mltrace.command("tags")
+@click.option("--address", help="Database server address")
+def tags(address: str = ""):
+    """
+    Command to list all the tags currently used.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    # Get all tags, automatically unique
+    all_tags = get_all_tags()
+
+    click.echo(all_tags)
+    click.echo()
