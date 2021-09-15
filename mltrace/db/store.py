@@ -4,6 +4,7 @@ from mltrace.db.utils import (
     _initialize_db_tables,
     _drop_everything,
     _map_extension_to_enum,
+    _hash_value,
 )
 from mltrace.db import (
     Component,
@@ -159,28 +160,34 @@ class Store(object):
         # Return existing Tag
         return res[0]
 
-    # TODO(shreyashankar): modify this to accept values
     def get_io_pointers(
-        self, names: typing.List[str], pointer_type: PointerTypeEnum = None
+        self,
+        names: typing.List[str],
+        values: typing.List[typing.Any] = None,
+        pointer_type: PointerTypeEnum = None,
     ) -> typing.List[IOPointer]:
         """Creates io pointers around the specified path names. Retrieves
         existing io pointer if exists in DB, otherwise creates a new one with
         inferred pointer type."""
         res = (
             self.session.query(IOPointer)
-            .filter(IOPointer.name.in_(names))
+            .filter((IOPointer.name, IOPointer.value).in_(zip(names, values)))
             .all()
         )
-        res_names = set([r.name for r in res])
-        need_to_add = set(names) - res_names
+        res_names_values = set([(r.name, r.value) for r in res])
+        need_to_add = set(zip(names, values)) - res_names_values
 
         if len(need_to_add) != 0:
             # Create new IOPointers
             if pointer_type is None:
                 pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
             iops = [
-                IOPointer(name=name, pointer_type=pointer_type)
-                for name in need_to_add
+                IOPointer(
+                    name=name,
+                    value=_hash_value(value),
+                    pointer_type=pointer_type,
+                )
+                for name, value in need_to_add
             ]
             self.session.add_all(iops)
             self.session.commit()
@@ -209,7 +216,7 @@ class Store(object):
             .all()
         )
 
-        hval = hashlib.sha256(repr(value).encode()).digest() if value else b""
+        hval = _hash_value(value)
 
         # Must create new IOPointer
         if len(res) == 0 or res[0].value != hval:
