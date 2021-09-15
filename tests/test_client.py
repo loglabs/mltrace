@@ -11,7 +11,7 @@ from mltrace import (
     get_history,
     get_recent_run_ids,
 )
-from mltrace.entities import ComponentRun
+from mltrace.entities import ComponentRun, IOPointer
 
 
 class TestClient(unittest.TestCase):
@@ -41,6 +41,28 @@ class TestClient(unittest.TestCase):
         cr.set_end_timestamp()
 
         # Log component run
+        log_component_run(cr)
+
+    def testLogKVComponentRun(self):
+        # Tests implementation of values in iopointer
+        create_component(
+            name="valtest",
+            description="Tests implementation of values in iopointer.",
+            owner="me",
+        )
+
+        iop1 = ["this", "is", "the", "first"]
+        iop2 = ["this", "is", "the", "second"]
+
+        # Create iopointers and CR
+        iop1 = IOPointer(name="iop1", value=iop1)
+        iop2 = IOPointer(name="iop2", value=iop2)
+
+        cr = ComponentRun("valtest")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(iop1)
+        cr.add_output(iop2)
         log_component_run(cr)
 
     def testRegister(self):

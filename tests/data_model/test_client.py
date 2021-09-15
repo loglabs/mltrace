@@ -43,7 +43,7 @@ class TestComponentRun(unittest.TestCase):
             "inputs": [],
             "outputs": [],
             "git_hash": None,
-            "git_tags": [],
+            "git_tags": None,
             "code_snapshot": None,
             "start_timestamp": None,
             "end_timestamp": None,
