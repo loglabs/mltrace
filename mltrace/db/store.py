@@ -221,7 +221,8 @@ class Store(object):
 
             if len(res) != 0 and res[0].value != hval:
                 logging.warning(
-                    f'IOPointer with name "{name}" has a different value from the last write.'
+                    f'IOPointer with name "{name}" has a different value '
+                    + "from the last write."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')
