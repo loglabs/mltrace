@@ -26,7 +26,7 @@ class ComponentRun(Base):
         inputs: typing.List[IOPointer] = [],
         outputs: typing.List[IOPointer] = [],
         git_hash: str = None,
-        git_tags: typing.List[str] = [],
+        git_tags: typing.List[str] = None,
         code_snapshot: str = None,
         id: str = None,
         stale: typing.List[str] = [],

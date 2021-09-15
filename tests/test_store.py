@@ -98,6 +98,15 @@ class TestStore(unittest.TestCase):
 
         self.assertEqual(set(iops), set(iops2))
 
+    def testKVIOPointer(self):
+        iop_name = "name"
+        iop_value = "value"
+
+        iop = self.store.get_io_pointer(iop_name, iop_value)
+        iop2 = self.store.get_io_pointer(iop_name, iop_value)
+
+        self.assertEqual(iop, iop2)
+
     def testSetDependenciesFromInputs(self):
         # Create IO pointers
         inp = self.store.get_io_pointer("inp")
