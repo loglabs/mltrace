@@ -1,5 +1,4 @@
 import copy
-import pandas as pd
 import unittest
 import warnings
 
@@ -140,11 +139,11 @@ class TestClient(unittest.TestCase):
         )
         def some_func(inp_key, inp_val):
             out_key = "another_filename.pkl"
-            out_val = pd.DataFrame({"a": [1, 2], "b": [2, 3]})
+            out_val = [1, 2, 3, 4, 5]
 
         some_func(
             inp_key="some_filename.pkl",
-            inp_val=pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}),
+            inp_val=[1, 2, 3, 4, 5],
         )
 
     def testRegisterKWargsList(self):
