@@ -122,10 +122,10 @@ class TestClient(unittest.TestCase):
             foo = x + 1
             bar = x + 2
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             test_func()
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             test_func2()
 
     def testRegisterKWargs(self):
