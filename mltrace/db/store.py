@@ -637,7 +637,10 @@ class Store(object):
         flagged_output_ids = [iop.name for iop in flagged_iops]
 
         # Perform traces for each output id
-        traces = [self.trace(output_id) for output_id in flagged_output_ids]
+        traces = [
+            self.trace(output_id, last_only=True)
+            for output_id in flagged_output_ids
+        ]
         traces = [list(set([node for _, node in trace])) for trace in traces]
 
         # Sort traces by ComponentRun count & id, descending
