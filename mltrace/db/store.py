@@ -172,7 +172,7 @@ class Store(object):
         existing io pointer if exists in DB, otherwise creates a new one with
         inferred pointer type."""
         values = (
-            [_hash_value(v) for v in values] if values else [""] * len(names)
+            [_hash_value(v) for v in values] if values else [b""] * len(names)
         )
         res = (
             self.session.query(IOPointer)
