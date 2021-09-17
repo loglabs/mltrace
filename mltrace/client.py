@@ -253,7 +253,8 @@ def register(
                         local_vars[key]
                     ) != len(local_vars[val]):
                         raise ValueError(
-                            f'Value "{val}" does not have the same length as the key "{key}."'
+                            f'Value "{val}" does not have the same length as'
+                            + f' the key "{key}."'
                         )
                     input_pointers += store.get_io_pointers(
                         local_vars[key], values=local_vars[val]
@@ -279,7 +280,8 @@ def register(
                         local_vars[key]
                     ) != len(local_vars[val]):
                         raise ValueError(
-                            f'Value "{val}" does not have the same length as the key "{key}."'
+                            f'Value "{val}" does not have the same length as'
+                            + f' the key "{key}."'
                         )
                     output_pointers += (
                         store.get_io_pointers(
