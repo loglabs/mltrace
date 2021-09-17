@@ -1,4 +1,5 @@
 import copy
+import pandas as pd
 import unittest
 import warnings
 
@@ -96,6 +97,123 @@ class TestClient(unittest.TestCase):
             bar = x + 2
 
         test_func()
+
+    def testRegisterWrongVar(self):
+        # Have a var not exist in the function and assert there is
+        # an error
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_vars=["foory"],  # Not valid
+            output_vars=["bar"],
+        )
+        def test_func():
+            x = 0
+            foo = x + 1
+            bar = x + 2
+
+        @register(
+            component_name="test_component",
+            input_vars=["foo"],
+            output_vars=["barry"],  # Not valid
+        )
+        def test_func2():
+            x = 0
+            foo = x + 1
+            bar = x + 2
+
+        with self.assertRaises(RuntimeError):
+            test_func()
+
+        with self.assertRaises(RuntimeError):
+            test_func2()
+
+    def testRegisterKWargs(self):
+        # Test that logs are successful with kwargs
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func(inp_key, inp_val):
+            out_key = "another_filename.pkl"
+            out_val = pd.DataFrame({"a": [1, 2], "b": [2, 3]})
+
+        some_func(
+            inp_key="some_filename.pkl",
+            inp_val=pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}),
+        )
+
+    def testRegisterKWargsList(self):
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func(inp_key, inp_val):
+            out_key = ["another_filename1.pkl", "another_filename2.pkl"]
+            out_val = [1, 2]
+
+        some_func(
+            inp_key=["some_filename1.pkl", "some_filename2.pkl"],
+            inp_val=[11, 22],
+        )
+
+    def testRegisterKWargsListWrongLengths(self):
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func(inp_key, inp_val):
+            out_key = ["another_filename1.pkl", "another_filename2.pkl"]
+            out_val = 1
+
+        with self.assertRaises(ValueError):
+            some_func(
+                inp_key=["some_filename1.pkl", "some_filename2.pkl"],
+                inp_val=1,
+            )
+
+    def testRegisterKWargsListWrongNames(self):
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_keyeyey": "inp_valalalal"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func_wrong_input(inp_key, inp_val):
+            out_key = "another_filename.pkl"
+            out_val = 1
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_keyeyeyey": "out_valalalal"},
+        )
+        def some_func_wrong_output(inp_key, inp_val):
+            out_key = "another_filename.pkl"
+            out_val = 1
+
+        with self.assertRaises(ValueError):
+            some_func_wrong_input(
+                inp_key="some_filename.pkl",
+                inp_val=pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}),
+            )
+
+        with self.assertRaises(ValueError):
+            some_func_wrong_output(
+                inp_key="some_filename.pkl",
+                inp_val=pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}),
+            )
 
 
 if __name__ == "__main__":

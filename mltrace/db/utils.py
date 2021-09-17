@@ -117,4 +117,6 @@ def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
 
 def _hash_value(value: typing.Any = "") -> bytes:
     """Hashes a value using the sqlalchemy API."""
-    return hashlib.sha256(repr(value).encode()).digest() if value else b""
+    if isinstance(value, str) and value == "":
+        return b""
+    return hashlib.sha256(repr(value).encode()).digest()

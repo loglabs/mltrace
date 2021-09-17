@@ -146,13 +146,15 @@ def create_random_ids(num_outputs=1) -> typing.List[str]:
 # Log input strings
 # function to apply to outputs to log those
 
-
+# TODO(shreyashankar): change logging.debug to thrown errors
 def register(
     component_name: str,
     inputs: typing.List[str] = [],
     outputs: typing.List[str] = [],
     input_vars: typing.List[str] = [],
     output_vars: typing.List[str] = [],
+    input_kwargs: typing.Dict[str, str] = {},
+    output_kwargs: typing.Dict[str, str] = {},
     endpoint: bool = False,
     staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
@@ -193,13 +195,13 @@ def register(
             input_pointers = []
             output_pointers = []
             local_vars = frame.f_locals
+
             # Add input_vars and output_vars as pointers
             for var in input_vars:
                 if var not in local_vars:
-                    logging.debug(
+                    raise ValueError(
                         f"Variable {var} not in current stack frame."
                     )
-                    continue
                 val = local_vars[var]
                 if val is None:
                     logging.debug(f"Variable {var} has value {val}.")
@@ -210,10 +212,9 @@ def register(
                     input_pointers.append(store.get_io_pointer(str(val)))
             for var in output_vars:
                 if var not in local_vars:
-                    logging.debug(
+                    raise ValueError(
                         f"Variable {var} not in current stack frame."
                     )
-                    continue
                 val = local_vars[var]
                 if val is None:
                     logging.debug(f"Variable {var} has value {val}.")
@@ -236,6 +237,78 @@ def register(
                         if endpoint
                         else [store.get_io_pointer(str(val))]
                     )
+            # Add input_kwargs and output_kwargs as pointers
+            for key, val in input_kwargs.items():
+                if key not in local_vars or val not in local_vars:
+                    raise ValueError(
+                        f"Variables ({key}, {val}) not in current stack frame."
+                    )
+                if local_vars[key] is None:
+                    logging.debug(
+                        f"Variable {key} has value {local_vars[key]}."
+                    )
+                    continue
+                if isinstance(local_vars[key], list):
+                    if not isinstance(local_vars[val], list) or len(
+                        local_vars[key]
+                    ) != len(local_vars[val]):
+                        raise ValueError(
+                            f'Value "{val}" does not have the same length as the key "{key}."'
+                        )
+                    input_pointers += store.get_io_pointers(
+                        local_vars[key], values=local_vars[val]
+                    )
+                else:
+                    input_pointers.append(
+                        store.get_io_pointer(
+                            str(local_vars[key]), local_vars[val]
+                        )
+                    )
+            for key, val in output_kwargs.items():
+                if key not in local_vars or val not in local_vars:
+                    raise ValueError(
+                        f"Variables ({key}, {val}) not in current stack frame."
+                    )
+                if local_vars[key] is None:
+                    logging.debug(
+                        f"Variable {key} has value {local_vars[key]}."
+                    )
+                    continue
+                if isinstance(local_vars[key], list):
+                    if not isinstance(local_vars[val], list) or len(
+                        local_vars[key]
+                    ) != len(local_vars[val]):
+                        raise ValueError(
+                            f'Value "{val}" does not have the same length as the key "{key}."'
+                        )
+                    output_pointers += (
+                        store.get_io_pointers(
+                            local_vars[key],
+                            local_vars[val],
+                            pointer_type=PointerTypeEnum.ENDPOINT,
+                        )
+                        if endpoint
+                        else store.get_io_pointers(
+                            local_vars[key], local_vars[val]
+                        )
+                    )
+                else:
+                    output_pointers += (
+                        [
+                            store.get_io_pointer(
+                                str(local_vars[key]),
+                                local_vars[val],
+                                pointer_type=PointerTypeEnum.ENDPOINT,
+                            )
+                        ]
+                        if endpoint
+                        else [
+                            store.get_io_pointer(
+                                str(local_vars[key]), local_vars[val]
+                            )
+                        ]
+                    )
+
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
 
