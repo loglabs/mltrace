@@ -195,7 +195,7 @@ class TestStore(unittest.TestCase):
         self._set_up_computation()
 
         # Call trace functionality
-        trace = self.store.trace("iop_4")[0]
+        trace = self.store.trace("iop_4")
         level_id = [(level, cr.id) for level, cr in trace]
 
         self.assertEqual(level_id, [(0, 4), (1, 3), (2, 2)])

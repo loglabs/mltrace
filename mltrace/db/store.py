@@ -446,7 +446,7 @@ class Store(object):
 
         return [self._web_trace_helper(cr) for cr in component_run_objects]
 
-    def trace(self, output_id: str, last_only: bool = False):
+    def trace(self, output_id: str):
         """Prints trace for an output id.
         Returns list of tuples (level, ComponentRun) where level is how
         many hops away the node is from the node that produced the
@@ -454,25 +454,19 @@ class Store(object):
         if not isinstance(output_id, str):
             raise RuntimeError("Please specify an output id of string type.")
 
-        component_run_objects = (
+        component_run_object = (
             self.session.query(ComponentRun)
             .outerjoin(IOPointer, ComponentRun.outputs)
             .order_by(ComponentRun.start_timestamp.desc())
             .filter(IOPointer.name == output_id)
-            .all()
+            .first()
         )
 
-        if len(component_run_objects) == 0:
+        if component_run_object is None:
             raise RuntimeError(f"ID {output_id} does not exist.")
 
-        if last_only:
-            component_run_objects = [component_run_objects[0]]
-
         node_list = []
-        for component_run_object in component_run_objects:
-            node_list.append(
-                self._traverse(component_run_object, 0, node_list)
-            )
+        self._traverse(component_run_object, 0, node_list)
         return node_list
 
     def trace_batch(self, output_ids: typing.List[str]):
@@ -637,10 +631,7 @@ class Store(object):
         flagged_output_ids = [iop.name for iop in flagged_iops]
 
         # Perform traces for each output id
-        traces = [
-            self.trace(output_id, last_only=True)
-            for output_id in flagged_output_ids
-        ]
+        traces = [self.trace(output_id) for output_id in flagged_output_ids]
         traces = [list(set([node for _, node in trace])) for trace in traces]
 
         # Sort traces by ComponentRun count & id, descending
