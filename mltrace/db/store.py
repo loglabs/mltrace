@@ -428,7 +428,7 @@ class Store(object):
 
         return res
 
-    def web_trace(self, output_id: str):
+    def web_trace(self, output_id: str, last_only: bool = False):
         """Prints list of ComponentRuns to display in the UI."""
         component_run_objects = (
             self.session.query(ComponentRun)
@@ -440,6 +440,9 @@ class Store(object):
 
         if len(component_run_objects) == 0:
             raise RuntimeError(f"ID {output_id} does not exist.")
+
+        if last_only:
+            component_run_objects = [component_run_objects[0]]
 
         return [self._web_trace_helper(cr) for cr in component_run_objects]
 
