@@ -4,6 +4,7 @@ from mltrace.db.utils import (
     _initialize_db_tables,
     _drop_everything,
     _map_extension_to_enum,
+    _hash_value,
 )
 from mltrace.db import (
     Component,
@@ -16,7 +17,9 @@ from mltrace.db import (
 from mltrace.db.models import component_run_output_association
 from sqlalchemy import func, and_
 from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.sql.expression import Tuple
 
+import ctypes
 import hashlib
 import logging
 import typing
@@ -159,28 +162,43 @@ class Store(object):
         # Return existing Tag
         return res[0]
 
-    # TODO(shreyashankar): modify this to accept values
     def get_io_pointers(
-        self, names: typing.List[str], pointer_type: PointerTypeEnum = None
+        self,
+        names: typing.List[str],
+        values: typing.List[typing.Any] = None,
+        pointer_type: PointerTypeEnum = None,
     ) -> typing.List[IOPointer]:
         """Creates io pointers around the specified path names. Retrieves
         existing io pointer if exists in DB, otherwise creates a new one with
         inferred pointer type."""
+        values = (
+            [_hash_value(v) for v in values] if values else [b""] * len(names)
+        )
         res = (
             self.session.query(IOPointer)
-            .filter(IOPointer.name.in_(names))
+            .filter(
+                Tuple(IOPointer.name, IOPointer.value).in_(
+                    list(zip(names, values))
+                )
+            )
             .all()
         )
-        res_names = set([r.name for r in res])
-        need_to_add = set(names) - res_names
+        res_names_values = set([(r.name, r.value) for r in res])
+        need_to_add = set(zip(names, values)) - res_names_values
 
         if len(need_to_add) != 0:
             # Create new IOPointers
             if pointer_type is None:
-                pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
+                pointer_type = _map_extension_to_enum(
+                    next(iter(need_to_add))[0]
+                )
             iops = [
-                IOPointer(name=name, pointer_type=pointer_type)
-                for name in need_to_add
+                IOPointer(
+                    name=name,
+                    value=value,
+                    pointer_type=pointer_type,
+                )
+                for name, value in need_to_add
             ]
             self.session.add_all(iops)
             self.session.commit()
@@ -199,30 +217,39 @@ class Store(object):
         Retrieves existing io pointer if exists in DB,
         otherwise creates a new one if create flag is set."""
 
-        res = (
-            self.session.query(IOPointer)
-            .outerjoin(component_run_output_association)
-            .filter(IOPointer.name == name)
+        hval = _hash_value(value)
+        same_name_res = (
+            self.session.query(
+                component_run_output_association.c.output_path_value
+            )
+            .filter(
+                component_run_output_association.c.output_path_name == name
+            )
             .order_by(
                 component_run_output_association.c.component_run_id.desc()
             )
             .all()
         )
+        same_name_res = [r[0] for r in same_name_res]
 
-        hval = hashlib.sha256(repr(value).encode()).digest() if value else b""
+        if len(same_name_res) > 0 and bytes(same_name_res[0]) != hval:
+            logging.warning(
+                f'IOPointer with name "{name}" has a different value '
+                + "from the last write."
+            )
+
+        res = (
+            self.session.query(IOPointer)
+            .filter(and_(IOPointer.name == name, IOPointer.value == hval))
+            .all()
+        )
 
         # Must create new IOPointer
-        if len(res) == 0 or res[0].value != hval:
+        if len(res) == 0:
             if create is False:
                 raise RuntimeError(
                     f"IOPointer with name {name} noes not exist. Set create"
                     + f" flag to True if you would like to create it."
-                )
-
-            if len(res) != 0 and res[0].value != hval:
-                logging.warning(
-                    f'IOPointer with name "{name}" has a different value '
-                    + "from the last write."
                 )
 
             logging.info(f'Creating new IOPointer with name "{name}".')

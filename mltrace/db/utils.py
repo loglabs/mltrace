@@ -10,8 +10,10 @@ from sqlalchemy.schema import (
     ForeignKeyConstraint,
 )
 
+import hashlib
 import pprint
 import sqlalchemy
+import typing
 
 
 def _create_engine_wrapper(
@@ -111,3 +113,10 @@ def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
 
     # TODO(shreyashankar): figure out how to handle output id
     return PointerTypeEnum.UNKNOWN
+
+
+def _hash_value(value: typing.Any = "") -> bytes:
+    """Hashes a value using the sqlalchemy API."""
+    if isinstance(value, str) and value == "":
+        return b""
+    return hashlib.sha256(repr(value).encode()).digest()
