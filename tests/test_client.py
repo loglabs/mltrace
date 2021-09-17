@@ -205,13 +205,13 @@ class TestClient(unittest.TestCase):
         with self.assertRaises(ValueError):
             some_func_wrong_input(
                 inp_key="some_filename.pkl",
-                inp_val=pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}),
+                inp_val=[1],
             )
 
         with self.assertRaises(ValueError):
             some_func_wrong_output(
                 inp_key="some_filename.pkl",
-                inp_val=pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}),
+                inp_val=[1],
             )
 
 
