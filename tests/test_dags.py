@@ -32,7 +32,7 @@ class TestDags(unittest.TestCase):
         expected_result.reverse()
 
         # Trace the final output
-        trace = self.store.trace("iop_11")
+        trace = self.store.trace("iop_11")[0]
         level_id = [(level, cr.id) for level, cr in trace]
         self.assertEqual(expected_result, level_id)
 
@@ -52,7 +52,7 @@ class TestDags(unittest.TestCase):
             self.store.commit_component_run(cr)
 
         # Trace the out pointer. Only most recent run ID should show.
-        trace = self.store.trace("out")
+        trace = self.store.trace("out")[0]
         self.assertEqual(len(trace), 1)
         self.assertEqual(trace[0][0], 0)
         self.assertEqual(trace[0][1].id, num_runs)
@@ -103,7 +103,7 @@ class TestDags(unittest.TestCase):
 
         # Grab last iop id and trace it
         last_iop_id = f"iop_{iop_counter - 1}"
-        trace = self.store.trace(last_iop_id)
+        trace = self.store.trace(last_iop_id)[0]
         level_id = [(level, cr.id) for level, cr in trace]
         self.assertEqual(level_id, [(0, 3), (1, 1)])
 
@@ -134,8 +134,8 @@ class TestDags(unittest.TestCase):
         self.store.commit_component_run(cr)
 
         # Trace iop1
-        trace_1 = [(level, cr.id) for level, cr in self.store.trace("iop1")]
-        trace_2 = [(level, cr.id) for level, cr in self.store.trace("iop2")]
+        trace_1 = [(level, cr.id) for level, cr in self.store.trace("iop1")[0]]
+        trace_2 = [(level, cr.id) for level, cr in self.store.trace("iop2")[0]]
         self.assertEqual(trace_1, [(0, 2), (1, 1)])
         self.assertEqual(trace_2, [(0, 1)])
 
@@ -177,7 +177,8 @@ class TestDags(unittest.TestCase):
 
         # Trace iop4
         trace = [
-            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop4")
+            (level, cr.id, cr.stale)
+            for level, cr in self.store.trace("iop4")[0]
         ]
         res = [
             (
@@ -221,7 +222,8 @@ class TestDags(unittest.TestCase):
 
         # Trace
         trace = [
-            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop3")
+            (level, cr.id, cr.stale)
+            for level, cr in self.store.trace("iop3")[0]
         ]
         res = [(0, 2, ["component_1 (ID 1) was run 62 days ago."]), (1, 1, [])]
         self.assertEqual(trace, res)
