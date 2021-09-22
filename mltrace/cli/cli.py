@@ -302,12 +302,16 @@ def unflag(output_id: str = "", all: bool = False, address: str = ""):
     """
     # Check if set --all and --output_id
     if all and output_id:
-        raise click.ClickException("Can set either --all=True or specify an "
-                                   "--output_id. Cannot set both.")
+        raise click.ClickException(
+            "Can set either --all=True or specify an "
+            "--output_id. Cannot set both."
+        )
 
     if not all and not output_id:
-        raise click.ClickException("Need to either set --all=True or specify "
-                                   "an --output_id to unflag.")
+        raise click.ClickException(
+            "Need to either set --all=True or specify "
+            "an --output_id to unflag."
+        )
 
     # Set address
     if address and len(address) > 0:
@@ -358,8 +362,9 @@ def components(owner: str = "", tag: str = "", address: str = ""):
     try:
         result = get_components(tag, owner)
     except RuntimeError:
-        raise click.ClickException("No components could be found with the "
-                                   "flags passed.")
+        raise click.ClickException(
+            "No components could be found with the " "flags passed."
+        )
 
     # Display components, one per line
     for comp in result:
