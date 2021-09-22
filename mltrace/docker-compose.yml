@@ -1,0 +1,49 @@
+version: '3'
+services:
+
+  
+
+  database:
+    image: postgres
+    volumes:      
+       - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: sqlalchemy
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      services-network:
+        aliases:
+          - database
+
+  api:
+    build:
+      context: .
+      dockerfile: ./mltrace/server/Dockerfile
+    environment:
+      PYTHONPATH: /src
+      DB_URI: "postgresql://admin:admin@database:5432/sqlalchemy"
+    volumes:
+      - .:/src
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../.flaskenv
+    restart: always
+    depends_on:
+      - database
+    networks:
+      services-network:
+        aliases:
+          - api
+  
+volumes:  
+  postgres_data:
+
+networks:
+  services-network:
+    name: services-network
+    driver: bridge
