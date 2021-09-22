@@ -239,4 +239,8 @@ class ComponentRun(Base):
             params["end_timestamp"] = params["end_timestamp"].strftime(
                 "%Y-%m-%d %l:%M:%S%z"
             )
+        for inp in params["inputs"]:
+            del inp["value"]
+        for out in params["outputs"]:
+            del out["value"]
         return json.dumps(params)
