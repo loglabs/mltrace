@@ -85,7 +85,7 @@ def tag():
 
     tag_name = request.args["id"]
     try:
-        components = get_components(tag = tag_name)
+        components = get_components(tag=tag_name)
         return str(components)
     except RuntimeError:
         return error(f"Tag {tag_name} not found", HTTPStatus.NOT_FOUND)
