@@ -109,7 +109,7 @@ component_run_input_association = Table(
     "component_runs_inputs",
     Base.metadata,
     Column("input_path_name", String),
-    Column("input_path_value", String),
+    Column("input_path_value", LargeBinary),
     Column("component_run_id", Integer, ForeignKey("component_runs.id")),
     # UniqueConstraint(
     #     "input_path_name", "input_path_value", name="inp_nameval"
@@ -124,7 +124,7 @@ component_run_output_association = Table(
     "component_runs_outputs",
     Base.metadata,
     Column("output_path_name", String),
-    Column("output_path_value", String),
+    Column("output_path_value", LargeBinary),
     Column("component_run_id", Integer, ForeignKey("component_runs.id")),
     # UniqueConstraint(
     #     "output_path_name", "output_path_value", name="out_nameval"
