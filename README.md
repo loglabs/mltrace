@@ -77,6 +77,9 @@ If you ran `docker-compose up` from the root directory, you can just navigate to
 
 ![screenshot](./res/trace.png)
 
+### Launch without UI (client-side)
+If you ran `docker-compose docker-compose-not-ui.yml up` from the root directory, you successfully launched database and api containers without the UI so nothing will be displayed in localhost:8080
+
 #### Commands supported in the UI
 
 | Command | Description |
