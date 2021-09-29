@@ -1,8 +1,6 @@
 version: '3'
 services:
 
-  
-
   database:
     image: postgres
     volumes:      
@@ -23,6 +21,8 @@ services:
     build:
       context: .
       dockerfile: ./mltrace/server/Dockerfile
+      # dockerfile: ./mltrace/server/Dockerfile
+      # dockerfile: ./mltrace/server/Dockerfile
     environment:
       PYTHONPATH: /src
       DB_URI: "postgresql://admin:admin@database:5432/sqlalchemy"
@@ -31,7 +31,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ../.flaskenv
+      - ./.flaskenv
     restart: always
     depends_on:
       - database
@@ -39,7 +39,7 @@ services:
       services-network:
         aliases:
           - api
-  
+
 volumes:  
   postgres_data:
 
