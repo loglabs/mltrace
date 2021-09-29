@@ -6,12 +6,11 @@ from mltrace.base_test import Test
 
 class Outliers(Test):
     def __init__(self):
-        super().__init__("Outliers", )
-    def zscore(self):
+        super().__init__("Outliers")
+    def testZscore(self, df ): # pass in arguments directly in to here
         """
         Checks to make sure there are no outliers using z score cutoff.
         """
-        df = self.args[0]
         z_scores = (
                 (df - df.mean(axis=0, skipna=True)) / df.std(axis=0, skipna=True)
         ).abs()
@@ -20,5 +19,5 @@ class Outliers(Test):
         if (z_scores > stdev_cutoff).to_numpy().sum() > 0:
             raise Exception("There are outlier values!")
 
-    def distributionCheck(self):
+    def testDistributionCheck(self):
         pass

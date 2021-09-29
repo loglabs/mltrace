@@ -3,7 +3,6 @@ This file defines different kinds of components and the corresponding tests for 
 """
 from mltrace.base_component import Component
 from mltrace.tests import Outliers
-from artisan.utils import asynchronous
 
 import pandas as pd
 
@@ -12,22 +11,8 @@ class PreprocessingComponent(Component):
 
     def __init__(self, username: str, beforeTests: list = [], afterTests: list = []):
         afterTests = afterTests.append(Outliers)
+
         super().__init__("PreprocessingComponents", username, beforeTests, afterTests)
-
-    def beforeRun(self):
-        pass
-
-    def afterRun(self, df: pd.DataFrame, stdev_cutoff: float = 5.0):
-        """
-        Checks to make sure there are no outliers using z score cutoff.
-        """
-
-        z_scores = (
-                (df - df.mean(axis=0, skipna=True)) / df.std(axis=0, skipna=True)
-        ).abs()
-
-        if (z_scores > stdev_cutoff).to_numpy().sum() > 0:
-            raise Exception("There are outlier values!")
 
 
 class TrainingComponent(Component):
