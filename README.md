@@ -77,9 +77,6 @@ If you ran `docker-compose up` from the root directory, you can just navigate to
 
 ![screenshot](./res/trace.png)
 
-### Launch without UI (client-side)
-If you ran `docker-compose docker-compose-not-ui.yml up` from the root directory, you successfully launched database and api containers without the UI so nothing will be displayed in localhost:8080
-
 #### Commands supported in the UI
 
 | Command | Description |
@@ -92,6 +89,13 @@ If you ran `docker-compose docker-compose-not-ui.yml up` from the root directory
 | `flag OUTPUT_ID` | Flags an output ID for further review. Necessary to see any results from the `review` command. |
 | `unflag OUTPUT_ID` | Unflags an output ID. Removes this output ID from any results from the `review` command. |
 | `review` | Shows a list of output IDs flagged for review and the common component runs involved in producing the output IDs. The component runs are sorted from most frequently occurring to least frequently occurring. |
+
+### Launch without UI (client-side)
+If you want to launch database and api containers without the UI, you will run `docker-compose docker-compose-not-ui.yml up` from the root directory. If running correctly, you should see nothing displayed in the server's IP address at port 8080 (or `localhost:8080`) but the database and API service should work unaffectedly:
+
+1. change directory to the level where docker-compose-not-ui.yml exist (root directory)
+2. run `docker-compose -f docker-compose-not-ui.yml build` to build the image (skip this step if image already exist)
+3. run `docker-compose -f docker-compose-not-ui.yml up` to bring up the service
 
 ### Using the CLI for querying
 
