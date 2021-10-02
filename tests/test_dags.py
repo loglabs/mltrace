@@ -228,7 +228,9 @@ class TestDags(unittest.TestCase):
                 0,
                 2,
                 [
-                    f"component_1 (ID 1) was run {(now - now.replace(month=now.month - 2)).days} days ago."
+                    "component_1 (ID 1) was run "
+                    + f"{(now - now.replace(month=now.month - 2)).days} days"
+                    + " ago."
                 ],
             ),
             (1, 1, []),
