@@ -1,24 +1,37 @@
 """
 Base Component class. Other components should inherit from this class.
 """
-from abc import ABC, abstractmethod
+import json
+from typing import Type
+
+from mltrace.entities.base import Base
 
 import functools
 import inspect
 
-class Component(ABC):
-    def __init__(self, name: str = "", username: str = "", beforeTests = list, afterTests = list):
-        """Default constructor. User can override."""
-        self.name = name
-        self.username = username
-        self.beforeTests = beforeTests
-        self.afterTests = afterTests
+
+class Component(Base):
+    def __init__(
+            self,
+            name: str = "",
+            owner: str = "",
+            description: str = "",
+            beforeTests=list,
+            afterTests=list
+    ):
+        """Components abstraction.
+        Components should have a name, owner, and lists of before and after tests to run.
+        Optionally they will have tags."""
+        self._name = name
+        self._owner = owner
+        self._description = description
+        self._beforeTests = beforeTests
+        self._afterTests = afterTests
 
     def beforeRun(self, **kwargs):
         """Computation to execute before running a component. Will run each test object listed in beforeTests."""
-        #execte the listed tests
-        for test in self.beforeTests:
-            #get all methods of the test:
+        for test in self._beforeTests:
+            # get all methods of the test:
             testFunctions = inspect.getmembers(test)
 
             # for each function in the test
@@ -31,15 +44,12 @@ class Component(ABC):
                     }
                     function(**test_args)
 
-
-        # pass all args to beforeRun, in beforRun parse through teh pargs to pass in teh values needd to the correct tests
+        # pass all args to beforeRun,in beforRun parse through the pargs to pass in the values need to the correct tests
 
     def afterRun(self, **local_vars):
         """Computation to execute after running a component. Will run all test objects listed in afterTests."""
-        #execute tets with for loop
-        #execte the listed tests
-        for test in self.afterTests:
-            #get all methods of the test:
+        for test in self._afterTests:
+            # get all methods of the test:
             testFunctions = inspect.getmembers(test)
 
             # for each function in the test
@@ -93,7 +103,7 @@ class Component(ABC):
                         for k, v in all_args.items()
                     }
                     all_args = {**all_args, **kwargs}
-                self.beforeRun(**all_args)
+                self._beforeRun(**all_args)
 
                 # Run function
                 f_locals, value = utils.run_func_capture_locals(
@@ -108,7 +118,7 @@ class Component(ABC):
                         else inv_user_kwargs[k]: v
                         for k, v in f_locals.items()
                     }
-                    self.afterRun(**f_locals.items())
+                self._afterRun(**f_locals.items())
 
                 return value
 
@@ -127,3 +137,27 @@ class Component(ABC):
         else:
             # User passed in some kwargs
             return actual_decorator
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def owner(self) -> str:
+        return self._owner
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @property
+    def beforeTests(self) -> Type[list]:
+        return self._beforeTests
+
+    @property
+    def afterTests(self) -> Type[list]:
+        return self._afterTests
+
+    def __repr__(self):
+        params = self.to_dictionary()
+        return json.dumps(params)

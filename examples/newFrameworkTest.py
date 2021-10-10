@@ -8,15 +8,15 @@ run. Thus if you trace the last output in the UI, you should
 see that it depends on 9 things.
 """
 
-
-from mltrace import components, tests
+from mltrace.entities import components
 
 import random
 import string
 
 _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
-c = components.PreprocessingComponent("PreprocessingComponent", "aditi",)
+c = components.PreprocessingComponent("aditi")
+
 
 @c.run
 def increment(inp: int) -> int:
@@ -26,14 +26,6 @@ def increment(inp: int) -> int:
 
 
 if __name__ == "__main__":
-    # # Create component
-    # create_component(
-    #     name="tiny",
-    #     description="Example of a tiny component",
-    #     owner="groot",
-    #     tags=["example"],
-    # )
-
     # Run the tiny function with some fake inputs and outputs
     i = 0
     while i < 10:
