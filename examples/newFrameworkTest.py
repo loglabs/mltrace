@@ -10,23 +10,29 @@ see that it depends on 9 things.
 
 from mltrace.entities import components
 
+import pandas as pd
+import numpy as np
 import random
 import string
 
 _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
-c = components.PreprocessingComponent("aditi")
-
+c = components.PreprocessingComponent("aditi", "tests output for outliers")
 
 @c.run
-def increment(inp: int) -> int:
-    inp_str = f"{_identifier}_{str(inp)}"
-    out_str = f"{_identifier}_{str(inp + 1)}"
-    return inp + 1
+def gen_fake_data(
+        type: str,
+        n: int = 1000,
+):
+    df = pd.DataFrame(
+        np.random.normal(1.0, 1.0, n)
+        if type == "normal"
+        else np.random.wald(1.0, 1.0, n),
+        columns=["rando"],
+    )
+    return "Hello world!"
 
 
 if __name__ == "__main__":
     # Run the tiny function with some fake inputs and outputs
-    i = 0
-    while i < 10:
-        i = increment(i)
+    gen_fake_data("int")
