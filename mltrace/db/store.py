@@ -342,6 +342,7 @@ class Store(object):
         """Gets IOPointers associated with component_run's inputs, checks
         against any ComponentRun's outputs, and if there are any matches,
         sets the ComponentRun's dependency on the most recent match."""
+
         input_ids = [inp.name for inp in component_run.inputs]
 
         if len(input_ids) == 0:
