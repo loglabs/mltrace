@@ -19,7 +19,8 @@ _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
 c = components.PreprocessingComponent("aditi", "tests output for outliers")
 
-@c.run
+
+@c.run(input_vars=["type", "n"], output_vars=["testOutput"])
 def gen_fake_data(
         type: str,
         n: int = 1000,
@@ -30,9 +31,10 @@ def gen_fake_data(
         else np.random.wald(1.0, 1.0, n),
         columns=["rando"],
     )
-    return "Hello world!"
+    testOutput = "hello world!"
+    return testOutput
 
 
 if __name__ == "__main__":
     # Run the tiny function with some fake inputs and outputs
-    gen_fake_data("int")
+    gen_fake_data("wald")

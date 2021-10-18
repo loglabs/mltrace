@@ -9,10 +9,13 @@ class PreprocessingComponent(Component):
     def __init__(
             self,
             owner: str,
-            beforeTests: list = [],
-            afterTests: list = []
+            description: str,
+            beforeTests: list=[],
+            afterTests: list=[]
     ):
+        print(afterTests)
         # default test for Preprocessing component
-        afterTests = afterTests.append(Outliers)
+        afterTests = [Outliers]
+        print("after test:", afterTests)
 
-        super().__init__("PreprocessingComponents", owner, beforeTests, afterTests)
+        super().__init__("PreprocessingComponents", owner, description, beforeTests, afterTests)

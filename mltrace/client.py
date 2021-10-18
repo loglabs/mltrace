@@ -1,4 +1,5 @@
 from datetime import datetime
+from mltrace import utils
 from mltrace.db import Store, PointerTypeEnum
 from mltrace.entities import Component, ComponentRun, IOPointer
 
@@ -13,40 +14,21 @@ import typing
 import uuid
 
 
-def _set_address_helper(old_uri: str, address: str):
-    first = old_uri.split("@")[0]
-    last = old_uri.split("@")[1].split(":")[1]
-    return first + "@" + address + ":" + last
-
-
-_db_uri = os.environ.get("DB_URI")
-if _db_uri is None:
-    _db_uri = "postgresql://admin:admin@localhost:5432/sqlalchemy"
-    if os.environ.get("DB_SERVER"):
-        _db_uri = _set_address_helper(_db_uri, os.environ.get("DB_SERVER"))
-    else:
-        logging.warning(
-            f"Please set DB_URI or DB_SERVER as an environment variable. \
-            Otherwise, DB_URI is set to {_db_uri}."
-        )
-
+_db_uri = utils.get_db_uri()
 
 # --------------------- Database management functions ------------------- #
 
 
 def set_db_uri(uri: str):
-    global _db_uri
-    _db_uri = uri
+    utils.set_db_uri(uri)
 
 
 def get_db_uri() -> str:
-    global _db_uri
-    return _db_uri
+    return utils.get_db_uri()
 
 
 def set_address(address: str):
-    global _db_uri
-    _db_uri = _set_address_helper(_db_uri, address)
+    utils.set_address(address)
 
 
 def clean_db():
@@ -186,6 +168,7 @@ def register(
             # Run function under the tracer
             sys.settrace(trace_helper)
             try:
+                #merge with existing run
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
@@ -372,7 +355,7 @@ def get_git_hash() -> str:
     return None
 
 
-def get_git_tags() -> str:
+def get_git_tags() -> typing.List[str]:
     """
     Gets tags associated with commit of parent git repo, if exists
     ref:https://stackoverflow.com/questions/34932306/get-tags-of-a-commit

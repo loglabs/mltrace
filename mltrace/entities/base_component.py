@@ -2,12 +2,18 @@
 Base Component class. Other components should inherit from this class.
 """
 import json
-from typing import Type
+import logging
+import typing
 
+from mltrace import client
+from mltrace import utils as clientUtils
+from mltrace.db import Store, PointerTypeEnum
+from mltrace.entities import utils
 from mltrace.entities.base import Base
 
 import functools
 import inspect
+import git
 
 
 class Component(Base):
@@ -16,12 +22,13 @@ class Component(Base):
             name: str = "",
             owner: str = "",
             description: str = "",
-            beforeTests=list,
-            afterTests=list
+            beforeTests: list = [],
+            afterTests: list = []
     ):
         """Components abstraction.
         Components should have a name, owner, and lists of before and after tests to run.
         Optionally they will have tags."""
+        print("afterrun, basecomp", afterTests)
         self._name = name
         self._owner = owner
         self._description = description
@@ -34,6 +41,9 @@ class Component(Base):
             # get all methods of the test:
             testFunctions = inspect.getmembers(test)
 
+            # make test oject
+            testObj = test()
+
             # for each function in the test
             for name, function in testFunctions:
                 if name[0:4] == 'test':
@@ -42,7 +52,8 @@ class Component(Base):
                         for k, v in kwargs.items()
                         if k in inspect.signature(function).parameters
                     }
-                    function(**test_args)
+
+                    getattr(testObj, function.__name__)(**test_args)
 
         # pass all args to beforeRun,in beforRun parse through the pargs to pass in the values need to the correct tests
 
@@ -52,6 +63,8 @@ class Component(Base):
             # get all methods of the test:
             testFunctions = inspect.getmembers(test)
 
+            testObj = test()
+
             # for each function in the test
             for name, function in testFunctions:
                 if name[0:4] == 'test':
@@ -60,9 +73,21 @@ class Component(Base):
                         for k, v in local_vars.items()
                         if k in inspect.signature(function).parameters
                     }
-                    function(**test_args)
 
-    def run(self, *user_args, **user_kwargs):
+                    getattr(testObj, function.__name__)(**test_args)
+
+    def run(self,
+            inputs: typing.List[str] = [],
+            outputs: typing.List[str] = [],
+            input_vars: typing.List[str] = [],
+            output_vars: typing.List[str] = [],
+            input_kwargs: typing.Dict[str, str] = {},
+            output_kwargs: typing.Dict[str, str] = {},
+            endpoint: bool = False,
+            staleness_threshold: int = (60 * 60 * 24 * 30),
+            *user_args,
+            **user_kwargs
+            ):
         """
         Decorator around the function executed:
         c = Component()
@@ -75,6 +100,8 @@ class Component(Base):
             We first execute the beforeRun method, then the function itself,
             then the afterRun method with the values of the args at the end of the
             function.
+
+        ADD DESCRITION HERE ABOUT INPUT VARIABLEs and what they are
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before_run", "skip_after_run"]
@@ -82,8 +109,18 @@ class Component(Base):
         def actual_decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                # Assert key names are not in args or kwargs
+                # Get function information
+                filename = inspect.getfile(func)
+                function_name = func.__name__
 
+                # Construct component run object
+                store = Store(clientUtils.get_db_uri())
+                component_run = store.initialize_empty_component_run(
+                    self.name
+                )
+                component_run.set_start_timestamp()
+
+                # Assert key names are not in args or kwargs
                 if (
                         set(key_names) & set(inspect.getfullargspec(func).args)
                 ) or (set(key_names) & set(kwargs.keys())):
@@ -103,7 +140,7 @@ class Component(Base):
                         for k, v in all_args.items()
                     }
                     all_args = {**all_args, **kwargs}
-                self._beforeRun(**all_args)
+                    self.beforeRun(**all_args)
 
                 # Run function
                 f_locals, value = utils.run_func_capture_locals(
@@ -118,9 +155,173 @@ class Component(Base):
                         else inv_user_kwargs[k]: v
                         for k, v in f_locals.items()
                     }
-                self._afterRun(**f_locals.items())
+                self.afterRun(**f_locals)
 
-                return value
+                # add logging stuff from register here
+                logging.info(f"Inspecting {filename}, function {function_name}")
+                input_pointers = []
+                output_pointers = []
+                local_vars = f_locals
+
+                # Add input_vars and output_vars as pointers
+                for var in input_vars:
+                    if var not in local_vars:
+                        raise ValueError(
+                            f"Variable {var} not in current stack frame."
+                        )
+                    val = local_vars[var]
+                    if val is None:
+                        logging.debug(f"Variable {var} has value {val}.")
+                        continue
+                    if isinstance(val, list):
+                        input_pointers += store.get_io_pointers(val)
+                    else:
+                        input_pointers.append(store.get_io_pointer(str(val)))
+                for var in output_vars:
+                    if var not in local_vars:
+                        raise ValueError(
+                            f"Variable {var} not in current stack frame."
+                        )
+                    val = local_vars[var]
+                    if val is None:
+                        logging.debug(f"Variable {var} has value {val}.")
+                        continue
+                    if isinstance(val, list):
+                        output_pointers += (
+                            store.get_io_pointers(
+                                val, pointer_type=PointerTypeEnum.ENDPOINT
+                            )
+                            if endpoint
+                            else store.get_io_pointers(val)
+                        )
+                    else:
+                        output_pointers += (
+                            [
+                                store.get_io_pointer(
+                                    str(val), pointer_type=PointerTypeEnum.ENDPOINT
+                                )
+                            ]
+                            if endpoint
+                            else [store.get_io_pointer(str(val))]
+                        )
+                # Add input_kwargs and output_kwargs as pointers
+                for key, val in input_kwargs.items():
+                    if key not in local_vars or val not in local_vars:
+                        raise ValueError(
+                            f"Variables ({key}, {val}) not in current stack frame."
+                        )
+                    if local_vars[key] is None:
+                        logging.debug(
+                            f"Variable {key} has value {local_vars[key]}."
+                        )
+                        continue
+                    if isinstance(local_vars[key], list):
+                        if not isinstance(local_vars[val], list) or len(
+                                local_vars[key]
+                        ) != len(local_vars[val]):
+                            raise ValueError(
+                                f'Value "{val}" does not have the same length as'
+                                + f' the key "{key}."'
+                            )
+                        input_pointers += store.get_io_pointers(
+                            local_vars[key], values=local_vars[val]
+                        )
+                    else:
+                        input_pointers.append(
+                            store.get_io_pointer(
+                                str(local_vars[key]), local_vars[val]
+                            )
+                        )
+                for key, val in output_kwargs.items():
+                    if key not in local_vars or val not in local_vars:
+                        raise ValueError(
+                            f"Variables ({key}, {val}) not in current stack frame."
+                        )
+                    if local_vars[key] is None:
+                        logging.debug(
+                            f"Variable {key} has value {local_vars[key]}."
+                        )
+                        continue
+                    if isinstance(local_vars[key], list):
+                        if not isinstance(local_vars[val], list) or len(
+                                local_vars[key]
+                        ) != len(local_vars[val]):
+                            raise ValueError(
+                                f'Value "{val}" does not have the same length as'
+                                + f' the key "{key}."'
+                            )
+                        output_pointers += (
+                            store.get_io_pointers(
+                                local_vars[key],
+                                local_vars[val],
+                                pointer_type=PointerTypeEnum.ENDPOINT,
+                            )
+                            if endpoint
+                            else store.get_io_pointers(
+                                local_vars[key], local_vars[val]
+                            )
+                        )
+                    else:
+                        output_pointers += (
+                            [
+                                store.get_io_pointer(
+                                    str(local_vars[key]),
+                                    local_vars[val],
+                                    pointer_type=PointerTypeEnum.ENDPOINT,
+                                )
+                            ]
+                            if endpoint
+                            else [
+                                store.get_io_pointer(
+                                    str(local_vars[key]), local_vars[val]
+                                )
+                            ]
+                        )
+
+                    component_run.add_inputs(input_pointers)
+                    component_run.add_outputs(output_pointers)
+
+                    # Log relevant info
+                    component_run.set_end_timestamp()
+                    input_pointers = [store.get_io_pointer(inp) for inp in inputs]
+                    output_pointers = (
+                        [
+                            store.get_io_pointer(
+                                out, pointer_type=PointerTypeEnum.ENDPOINT
+                            )
+                            for out in outputs
+                        ]
+                        if endpoint
+                        else [store.get_io_pointer(out) for out in outputs]
+                    )
+                    component_run.add_inputs(input_pointers)
+                    component_run.add_outputs(output_pointers)
+                    store.set_dependencies_from_inputs(component_run)
+
+                    # Add code versions
+                    try:
+                        repo = git.Repo(search_parent_directories=True)
+                        component_run.set_git_hash(str(repo.head.object.hexsha))
+                    except Exception as e:
+                        logging.info("No git repo found.")
+
+                    # Add git tags
+                    if client.get_git_tags() is not None:
+                        component_run.set_git_tags(client.get_git_tags())
+
+                    # Add source code if less than 2^16
+                    func_source_code = inspect.getsource(func)
+                    if len(func_source_code) < 2 ** 16:
+                        component_run.set_code_snapshot(
+                            bytes(func_source_code, "ascii")
+                        )
+
+                    # Commit component run object to the DB
+                    store.commit_component_run(
+                        component_run, staleness_threshold=staleness_threshold
+                    )
+
+                    return value
 
             return wrapper
 
@@ -151,11 +352,11 @@ class Component(Base):
         return self._description
 
     @property
-    def beforeTests(self) -> Type[list]:
+    def beforeTests(self) -> list:
         return self._beforeTests
 
     @property
-    def afterTests(self) -> Type[list]:
+    def afterTests(self) -> list:
         return self._afterTests
 
     def __repr__(self):
