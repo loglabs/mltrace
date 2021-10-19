@@ -122,6 +122,9 @@ def log_component_run(
         ]
     )
 
+    # Create component if it does not exist
+    create_component(component_run.component_name, "", "")
+
     # Add dependencies if there is flag to automatically set
     if set_dependencies_from_inputs:
         store.set_dependencies_from_inputs(component_run_sql)
@@ -316,20 +319,6 @@ def register(
 
             # Log relevant info
             component_run.set_end_timestamp()
-            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers = (
-                [
-                    store.get_io_pointer(
-                        out, pointer_type=PointerTypeEnum.ENDPOINT
-                    )
-                    for out in outputs
-                ]
-                if endpoint
-                else [store.get_io_pointer(out) for out in outputs]
-            )
-            component_run.add_inputs(input_pointers)
-            component_run.add_outputs(output_pointers)
-            store.set_dependencies_from_inputs(component_run)
 
             # Add code versions
             try:
@@ -348,6 +337,25 @@ def register(
                 component_run.set_code_snapshot(
                     bytes(func_source_code, "ascii")
                 )
+
+            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
+            output_pointers = (
+                [
+                    store.get_io_pointer(
+                        out, pointer_type=PointerTypeEnum.ENDPOINT
+                    )
+                    for out in outputs
+                ]
+                if endpoint
+                else [store.get_io_pointer(out) for out in outputs]
+            )
+            component_run.add_inputs(input_pointers)
+            component_run.add_outputs(output_pointers)
+
+            # Create component if it does not exist
+            create_component(component_run.component_name, "", "")
+
+            store.set_dependencies_from_inputs(component_run)
 
             # Commit component run object to the DB
             store.commit_component_run(

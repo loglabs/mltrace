@@ -38,6 +38,22 @@ class TestStore(unittest.TestCase):
         self.assertEqual(1, len(component_runs))
         self.assertEqual(component_runs[0], cr)
 
+    def testLogComponentRunWithoutComponentCreated(self):
+        # Create a ComponentRun
+        cr = self.store.initialize_empty_component_run("test_component_new")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(IOPointer("inp"))
+        cr.add_output(IOPointer("out"))
+        self.store.commit_component_run(cr)
+
+        # Test retrieval
+        component_runs = self.store.get_history(
+            "test_component_new", limit=None
+        )
+        self.assertEqual(1, len(component_runs))
+        self.assertEqual(component_runs[0], cr)
+
     def testIncompleteComponentRun(self):
         # Create component
         self.store.create_component(
