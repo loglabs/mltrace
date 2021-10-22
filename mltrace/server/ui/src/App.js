@@ -92,11 +92,7 @@ class App extends Component {
 
 
   handleUrl(input) {
-    //     /history/training -> history & trainig
     var args = input.split("/").filter(str => str !== "");
-    // const page = args[0];
-    // const pathparam = args[1];
-    console.log("handleUrl args -> handleCommand: " + args);
     this.handleCommand(args.join(" "));
   }
 
@@ -105,8 +101,10 @@ class App extends Component {
   }
 
   handleCommand(input) {
+
+    console.log("handleCommand get called");
+
     var args = input.split(" ").filter(str => str !== "");
-    console.log("handleCommand args: " + args);
 
     if (args.length === 0) return;
 
@@ -126,7 +124,6 @@ class App extends Component {
       this.setState({ command: 'trace', id: args[0], kwargs: {}, input: input });
     }
     else if (command === "tag") {
-      console.log("handleCommand -> if command === 'tag' is TRUE")
       if (args.length !== 1) {
         CustomToaster.show({
           message: "Please enter a valid tag name to show components for.",
@@ -135,11 +132,9 @@ class App extends Component {
         });
         return;
       }
-      console.log("handleCommand -> if command === 'tag' & args.length !== 1 is TRUE ", args[0]);
+  
       this.setState({ command: 'tag', id: args[0], kwargs: {}, input: input });
     } else if (command === "history") {
-      console.log("arrived history");
-      console.log(args);
       if (args.length === 0 || args.length > 2) {
         CustomToaster.show({
           message: "Please enter a valid component name to show run history for.",
@@ -227,7 +222,9 @@ class App extends Component {
   }
 
   render() {
-    console.log("rendered: " + this.state.command + ", " +  this.state.id);
+
+    console.log("rendered get called");
+
     let darkstr = "";
     if (this.state.useDarkTheme === true) {
       darkstr = "bp3-dark";

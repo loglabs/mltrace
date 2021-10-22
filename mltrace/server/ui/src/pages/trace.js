@@ -90,8 +90,6 @@ export default class Trace extends Component {
 
 
     render() {
-        console.log(this.state);
-        console.log("trace output id: " + this.props.output_id);
 
         if (this.state.output_id === '') return null;
 

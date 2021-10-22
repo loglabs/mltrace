@@ -33,25 +33,10 @@ export default class History extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted")
         this.updateHistoryState();
     }
 
     componentDidUpdate() {
-        console.log("componentDidUpdate get called")
-        // if (
-        //     this.state.componentName === this.props.componentName &&
-        //     (this.props.kwargs.limit === undefined || this.props.kwargs.limit === null || this.props.kwargs.limit === this.state.limit)
-        // ) {
-        //     return null;
-        // }
-
-        // if (this.props.componentName === "") {
-        //     this.setState({ componentName: this.props.componentName, component: {}, limit: this.props.kwargs.limit });
-        //     return null;
-        // }
-
-        console.log("id should be: " + this.props.componentName);
         this.updateHistoryState();
 
     }
@@ -87,10 +72,7 @@ export default class History extends Component {
     }
 
     render() {
-        console.log(this.state);
-        console.log("history rendered: " + this.props.componentName)
         if (this.state.componentName === "") {
-            console.log("history rendered: null")
             return null;
         }
 

@@ -39,8 +39,6 @@ export default class Recent extends Component {
             params.last_run_id = this.state.componentRuns[this.state.componentRuns.length - 1];
         }
 
-
-        console.log("id should be: " + this.props.componentRuns);
         axios.get(RECENT_API_URL, {
             params: params
         }).then(

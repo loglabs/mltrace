@@ -21,7 +21,6 @@ export default class TagView extends Component {
     }
 
     componentDidUpdate() {
-        console.log("componentDidUpDate get called and tagName is: " + this.props.tagName);
         if (this.state.tagName === this.props.tagName) {
             return null;
         }
@@ -37,7 +36,6 @@ export default class TagView extends Component {
             }
         }).then(
             ({ data }) => {
-                console.log("Data returned by Axios: " + data);
                 this.setState({ components: data, tagName: this.props.tagName });
             }
         ).catch(e => {
@@ -52,7 +50,6 @@ export default class TagView extends Component {
     }
 
     render() {
-        console.log(this.props.tagName);
         if (this.state.tagName === '') return null;
 
         let childStyle = {
