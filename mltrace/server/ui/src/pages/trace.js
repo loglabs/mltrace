@@ -9,7 +9,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const TRACE_API_URL = "api/trace";
+const TRACE_API_URL = "/api/trace";
 
 function styleLabels(node) {
     // Set label to monospace style
@@ -52,6 +52,14 @@ export default class Trace extends Component {
     }
 
     componentDidUpdate() {
+        this.updateTraceState();
+    }
+
+    componentDidMount() {
+        this.updateTraceState();
+    }
+
+    updateTraceState() {
         if (this.state.output_id === this.props.output_id) {
             return null;
         }
@@ -80,7 +88,11 @@ export default class Trace extends Component {
         });
     }
 
+
     render() {
+        console.log(this.state);
+        console.log("trace output id: " + this.props.output_id);
+
         if (this.state.output_id === '') return null;
 
         let treeContent = (

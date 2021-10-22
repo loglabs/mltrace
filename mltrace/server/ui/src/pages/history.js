@@ -10,7 +10,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 
-const COMPONENT_API_URL = 'api/component';
+const COMPONENT_API_URL = '/api/component';
 
 export default class History extends Component {
 
@@ -32,7 +32,31 @@ export default class History extends Component {
         this.setState({ dateLower: range[0], dateUpper: range[1] })
     }
 
+    componentDidMount() {
+        console.log("mounted")
+        this.updateHistoryState();
+    }
+
     componentDidUpdate() {
+        console.log("componentDidUpdate get called")
+        // if (
+        //     this.state.componentName === this.props.componentName &&
+        //     (this.props.kwargs.limit === undefined || this.props.kwargs.limit === null || this.props.kwargs.limit === this.state.limit)
+        // ) {
+        //     return null;
+        // }
+
+        // if (this.props.componentName === "") {
+        //     this.setState({ componentName: this.props.componentName, component: {}, limit: this.props.kwargs.limit });
+        //     return null;
+        // }
+
+        console.log("id should be: " + this.props.componentName);
+        this.updateHistoryState();
+
+    }
+
+    updateHistoryState() {
         if (
             this.state.componentName === this.props.componentName &&
             (this.props.kwargs.limit === undefined || this.props.kwargs.limit === null || this.props.kwargs.limit === this.state.limit)
@@ -44,7 +68,6 @@ export default class History extends Component {
             this.setState({ componentName: this.props.componentName, component: {}, limit: this.props.kwargs.limit });
             return null;
         }
-
         axios.get(COMPONENT_API_URL, {
             params: {
                 id: this.props.componentName,
@@ -61,11 +84,15 @@ export default class History extends Component {
             });
             // this.setState({ output_id: this.props.output_id });
         });
-
     }
 
     render() {
-        if (this.state.componentName === '') return null;
+        console.log(this.state);
+        console.log("history rendered: " + this.props.componentName)
+        if (this.state.componentName === "") {
+            console.log("history rendered: null")
+            return null;
+        }
 
         let childStyle = {
             flex: '0',

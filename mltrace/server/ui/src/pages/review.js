@@ -9,7 +9,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 
-const REVIEW_API_URL = 'api/review';
+const REVIEW_API_URL = '/api/review';
 
 export default class Review extends Component {
 

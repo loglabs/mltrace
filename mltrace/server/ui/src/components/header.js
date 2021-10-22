@@ -6,6 +6,7 @@ import { CustomToaster } from "./toaster.js";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
+import { Link } from 'react-router-dom';
 
 export default class Header extends Component {
 
@@ -71,7 +72,7 @@ export default class Header extends Component {
                 <Navbar.Group align={Alignment.LEFT}>
                     <Navbar.Heading>mltrace</Navbar.Heading>
                     <Navbar.Divider />
-                    <Button className="bp3-minimal" icon="home" text="Home" style={{ marginRight: '0.5em' }} onClick={() => this.props.onCommand("recent")} />
+                    <Link to="/"><Button className="bp3-minimal" icon="home" text="Home" style={{ marginRight: '0.5em' }} onClick={() => this.props.onCommand("recent")} /></Link>
                     <InputGroup
                         className="bp3-minimal"
                         leftIcon="chevron-right"

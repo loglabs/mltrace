@@ -34,6 +34,8 @@ class App extends Component {
     this.handleHelp = this.handleHelp.bind(this);
     this.handleFlag = this.handleFlag.bind(this);
     this.handleUnflag = this.handleUnflag.bind(this);
+
+
   }
 
   handleDarkSwitchChange(useDark) {
@@ -88,8 +90,23 @@ class App extends Component {
     });
   }
 
+
+  handleUrl(input) {
+    //     /history/training -> history & trainig
+    var args = input.split("/").filter(str => str !== "");
+    // const page = args[0];
+    // const pathparam = args[1];
+    console.log("handleUrl args -> handleCommand: " + args);
+    this.handleCommand(args.join(" "));
+  }
+
+  componentDidMount() {
+    this.handleUrl(window.location.pathname);
+  }
+
   handleCommand(input) {
     var args = input.split(" ").filter(str => str !== "");
+    console.log("handleCommand args: " + args);
 
     if (args.length === 0) return;
 
@@ -109,6 +126,7 @@ class App extends Component {
       this.setState({ command: 'trace', id: args[0], kwargs: {}, input: input });
     }
     else if (command === "tag") {
+      console.log("handleCommand -> if command === 'tag' is TRUE")
       if (args.length !== 1) {
         CustomToaster.show({
           message: "Please enter a valid tag name to show components for.",
@@ -117,9 +135,11 @@ class App extends Component {
         });
         return;
       }
-
+      console.log("handleCommand -> if command === 'tag' & args.length !== 1 is TRUE ", args[0]);
       this.setState({ command: 'tag', id: args[0], kwargs: {}, input: input });
     } else if (command === "history") {
+      console.log("arrived history");
+      console.log(args);
       if (args.length === 0 || args.length > 2) {
         CustomToaster.show({
           message: "Please enter a valid component name to show run history for.",
@@ -207,6 +227,7 @@ class App extends Component {
   }
 
   render() {
+    console.log("rendered: " + this.state.command + ", " +  this.state.id);
     let darkstr = "";
     if (this.state.useDarkTheme === true) {
       darkstr = "bp3-dark";
@@ -216,7 +237,34 @@ class App extends Component {
       minHeight: '100vh',
     };
 
+    // return (
+    //   <div className={darkstr} style={style}>
+    //     <Header
+    //       useDarkTheme={this.state.useDarkTheme}
+    //       onToggleTheme={this.handleDarkSwitchChange}
+    //       onCommand={this.handleCommand}
+    //       defaultValue={this.state.input}
+    //       showHelp={this.state.showHelp}
+    //       onHandleHelp={this.handleHelp}
+    //     />
+    //     <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
+    //     <BrowserRouter>
+    //       <Switch>
+    //         <Route path="/">
+    //           {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+    //           {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+    //           {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+    //           {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+    //           {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+    //           {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
+    //         </Route>
+    //       </Switch>
+    //     </BrowserRouter>
+    //   </div>
+    // );
+
     return (
+      <BrowserRouter>
       <div className={darkstr} style={style}>
         <Header
           useDarkTheme={this.state.useDarkTheme}
@@ -227,19 +275,36 @@ class App extends Component {
           onHandleHelp={this.handleHelp}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
-        <BrowserRouter>
           <Switch>
-            <Route path="/">
+            <Route exact path="/">
+              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
               {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
               {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
               {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
               {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
               {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
             </Route>
+            <Route path="/history">
+              {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+            </Route>
+            <Route path="/recent">
+              {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+            </Route>
+            <Route path="/review">
+              {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
+            </Route>
+            <Route path="/trace">
+              {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+            </Route>
+            <Route path="/tag">
+              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+            </Route>
+            <Route path="/inspect">
+              {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+            </Route>
           </Switch>
-        </BrowserRouter>
       </div>
+      </BrowserRouter>
     );
   }
 }
