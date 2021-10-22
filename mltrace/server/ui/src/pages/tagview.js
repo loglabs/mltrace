@@ -19,9 +19,17 @@ export default class TagView extends Component {
             components: []
         }
     }
+    
+    componentDidMount() {
+        this.updateTagState();
+    }
 
     componentDidUpdate() {
-        if (this.state.tagName === this.props.tagName) {
+        this.updateTagState();
+    }
+
+    updateTagState() {
+                if (this.state.tagName === this.props.tagName) {
             return null;
         }
 
@@ -46,7 +54,6 @@ export default class TagView extends Component {
             });
             // this.setState({ output_id: this.props.output_id });
         });
-
     }
 
     render() {

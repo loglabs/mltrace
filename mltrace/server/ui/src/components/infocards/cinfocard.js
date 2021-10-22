@@ -5,7 +5,9 @@ import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
+import { Link } from 'react-router-dom';
 // import { INTENT_DANGER } from '@blueprintjs/core/lib/esm/common/classes';
+
 
 const HISTORY_API_URL = '/api/history';
 
@@ -87,7 +89,7 @@ export default class CInfoCard extends Component {
         let description = info.description ? info.description : "no description found";
         let tagElements = info.tags.map((name, index) => {
             return (
-                <Tag
+                <Link to = {`/tag/${name}`}><Tag
                     minimal={true}
                     onClick={() => (this.props.commandHandler("tag " + name))}
                     intent={Intent.PRIMARY}
@@ -95,7 +97,7 @@ export default class CInfoCard extends Component {
                     key={index}
                     interactive={true}>
                     {name}
-                </Tag>)
+                </Tag></Link>)
         });
 
         let runElements = this.state.history.map((cr, index) => {
