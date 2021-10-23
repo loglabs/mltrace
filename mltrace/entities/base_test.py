@@ -18,16 +18,13 @@ class Test:
     def name(self, value):
         self._name = value
 
-    # function utilities, all test functions, other details may want ot knwo about test
     def getTestMethods(self):
         """
         Gets all methods in this class that start with "test"
         """
         methods = inspect.getmembers(self, inspect.ismethod)
         testMethods = [
-            function
-            for name, function in methods
-            if name.startswith("test")
+            function for name, function in methods if name.startswith("test")
         ]
         return testMethods
 

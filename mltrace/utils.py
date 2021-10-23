@@ -3,6 +3,7 @@ from mltrace.db import Store
 import logging
 import os
 
+
 def _set_address_helper(old_uri: str, address: str):
     first = old_uri.split("@")[0]
     last = old_uri.split("@")[1].split(":")[1]
@@ -37,5 +38,3 @@ def get_db_uri() -> str:
 def set_address(address: str):
     global _db_uri
     _db_uri = _set_address_helper(_db_uri, address)
-
-

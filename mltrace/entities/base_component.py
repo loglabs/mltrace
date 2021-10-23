@@ -27,8 +27,8 @@ class Component(Base):
         tags: typing.List[str] = [],
     ):
         """Components abstraction.
-        Components should have a name, owner, and lists of before and after tests to run.
-        Optionally they will have tags."""
+        Components should have a name, owner, and lists
+        of before and after tests to run. Optionally they will have tags."""
         self._name = name
         self._owner = owner
         self._description = description
@@ -37,14 +37,16 @@ class Component(Base):
         self._afterTests = afterTests
 
     def beforeRun(self, **kwargs):
-        """Computation to execute before running a component. Will run each test object listed in beforeTests."""
+        """Computation to execute before running a component.
+        Will run each test object listed in beforeTests."""
         for test in self._beforeTests:
             test().runTests(**kwargs)
 
         # pass all args to beforeRun,in beforRun parse through the pargs to pass in the values need to the correct tests
 
     def afterRun(self, **local_vars):
-        """Computation to execute after running a component. Will run all test objects listed in afterTests."""
+        """Computation to execute after running a component.
+        Will run all test objects listed in afterTests."""
         for test in self._afterTests:
             test().runTests(**local_vars)
 
@@ -71,10 +73,10 @@ class Component(Base):
             arg1 and arg2 are the arguments passed to the
             beforeRun and afterRun methods.
             We first execute the beforeRun method, then the function itself,
-            then the afterRun method with the values of the args at the end of the
-            function.
+            then the afterRun method with the values of the args at the
+            end of the function.
 
-        ADD DESCRITION HERE ABOUT INPUT VARIABLEs and what they are
+        ADD DESCRIPTION HERE ABOUT INPUT VARIABLEs and what they are
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before_run", "skip_after_run"]
