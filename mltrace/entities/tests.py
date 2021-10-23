@@ -2,7 +2,7 @@
 This file specifies different kinds of tests and the
 functions to be run within each test.
 """
-from mltrace.entities.base_component_test import ComponentTest as Test
+from mltrace.entities.base_componenttest import ComponentTest as Test
 from mltrace.entities import utils
 
 import pandas as pd
