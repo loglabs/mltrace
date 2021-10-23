@@ -168,7 +168,7 @@ def register(
             # Run function under the tracer
             sys.settrace(trace_helper)
             try:
-                #merge with existing run
+                # merge with existing run
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
