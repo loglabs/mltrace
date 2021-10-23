@@ -192,6 +192,8 @@ def register(
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
+            
+            component_run.set_end_timestamp()
 
             # Do logging here
             logging.info(f"Inspecting {frame.f_code.co_filename}")
@@ -314,11 +316,20 @@ def register(
                         ]
                     )
 
+            # Directly specified I/O
+            input_pointers += [store.get_io_pointer(inp) for inp in inputs]
+            output_pointers += (
+                [
+                    store.get_io_pointer(
+                        out, pointer_type=PointerTypeEnum.ENDPOINT
+                    )
+                    for out in outputs
+                ]
+                if endpoint
+                else [store.get_io_pointer(out) for out in outputs]
+            )
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
-
-            # Log relevant info
-            component_run.set_end_timestamp()
 
             # Add code versions
             try:
@@ -337,20 +348,6 @@ def register(
                 component_run.set_code_snapshot(
                     bytes(func_source_code, "ascii")
                 )
-
-            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers = (
-                [
-                    store.get_io_pointer(
-                        out, pointer_type=PointerTypeEnum.ENDPOINT
-                    )
-                    for out in outputs
-                ]
-                if endpoint
-                else [store.get_io_pointer(out) for out in outputs]
-            )
-            component_run.add_inputs(input_pointers)
-            component_run.add_outputs(output_pointers)
 
             # Create component if it does not exist
             create_component(component_run.component_name, "", "")
