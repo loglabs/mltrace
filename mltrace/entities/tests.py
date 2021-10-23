@@ -1,5 +1,6 @@
 """
-This file specifies different kinds of tests and the functions to be run within each test.
+This file specifies different kinds of tests and the
+functions to be run within each test.
 """
 from mltrace.entities.base_test import Test
 from mltrace.entities import utils

@@ -1,5 +1,6 @@
 """
-This file defines different kinds of components and the corresponding tests for before and afterRun.
+This file defines different kinds of components and the 
+corresponding tests for before and afterRun.
 """
 from mltrace.entities.base_component import Component
 from mltrace.entities.tests import OutliersTest
