@@ -16,6 +16,7 @@ from mltrace import (
     get_all_tags,
     get_components,
     unflag_all,
+    clean_db,
 )
 import textwrap
 
@@ -387,3 +388,16 @@ def tags(address: str = ""):
 
     click.echo(all_tags)
     click.echo()
+
+
+@mltrace.command("clear")
+@click.option("--address", help="Database server address")
+def clear(address: str = ""):
+    """
+    Command to delete all elements in the db.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    clean_db()
