@@ -6,7 +6,7 @@ Base class for test objects.
 import inspect
 
 
-class Test:
+class Test(object):
     def __init__(self, name: str = ""):  # pass in list as args type?
         self._name = name
 

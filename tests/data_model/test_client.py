@@ -24,7 +24,7 @@ class TestComponent(unittest.TestCase):
         """
         mock_component_dict = repr(self.mock_component)
         self.assertEqual(
-            mock_component_dict, json.dumps(self.mock_component_dict)
+            json.loads(mock_component_dict), self.mock_component_dict
         )
 
     def testChangeProperty(self):
