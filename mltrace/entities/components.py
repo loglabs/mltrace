@@ -1,5 +1,5 @@
 """
-This file defines different kinds of components and the 
+This file defines different kinds of components and the
 corresponding tests for before and afterRun.
 """
 from mltrace.entities.base_component import Component
