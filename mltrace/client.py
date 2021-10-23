@@ -192,7 +192,7 @@ def register(
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
-            
+
             component_run.set_end_timestamp()
 
             # Do logging here
