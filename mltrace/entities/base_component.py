@@ -42,8 +42,6 @@ class Component(Base):
         for test in self._beforeTests:
             test().runTests(**kwargs)
 
-        # pass all args to beforeRun,in beforRun parse through the pargs to pass in the values need to the correct tests
-
     def afterRun(self, **local_vars):
         """Computation to execute after running a component.
         Will run all test objects listed in afterTests."""
@@ -98,7 +96,8 @@ class Component(Base):
                     set(key_names) & set(inspect.getfullargspec(func).args)
                 ) or (set(key_names) & set(kwargs.keys())):
                     raise ValueError(
-                        f"skip_before_run or skip_after_run cannot be in the arguments of the function {func.__name__}"
+                        "skip_before_run or skip_after_run cannot be in "
+                        + f"the arguments of the function {func.__name__}"
                     )
 
                 # Run before test
@@ -171,7 +170,7 @@ class Component(Base):
                 for key, val in input_kwargs.items():
                     if key not in local_vars or val not in local_vars:
                         raise ValueError(
-                            f"Variables ({key}, {val}) not in current stack frame."
+                            f"({key}, {val}) not in current stack frame."
                         )
                     if local_vars[key] is None:
                         logging.debug(
@@ -183,8 +182,8 @@ class Component(Base):
                             local_vars[key]
                         ) != len(local_vars[val]):
                             raise ValueError(
-                                f'Value "{val}" does not have the same length as'
-                                + f' the key "{key}."'
+                                f'Value "{val}" does not have the same '
+                                + f'length as the key "{key}."'
                             )
                         input_pointers += store.get_io_pointers(
                             local_vars[key], values=local_vars[val]
@@ -198,7 +197,7 @@ class Component(Base):
                 for key, val in output_kwargs.items():
                     if key not in local_vars or val not in local_vars:
                         raise ValueError(
-                            f"Variables ({key}, {val}) not in current stack frame."
+                            f"({key}, {val}) not in current stack frame."
                         )
                     if local_vars[key] is None:
                         logging.debug(
@@ -210,8 +209,8 @@ class Component(Base):
                             local_vars[key]
                         ) != len(local_vars[val]):
                             raise ValueError(
-                                f'Value "{val}" does not have the same length as'
-                                + f' the key "{key}."'
+                                f'Value "{val}" does not have the same '
+                                + f'length as the key "{key}."'
                             )
                         output_pointers += (
                             store.get_io_pointers(
