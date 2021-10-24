@@ -10,6 +10,8 @@ from mltrace import (
     register,
     get_history,
     get_recent_run_ids,
+    load,
+    save,
 )
 from mltrace.entities import ComponentRun, IOPointer
 
@@ -213,6 +215,11 @@ class TestClient(unittest.TestCase):
                 inp_key="some_filename.pkl",
                 inp_val=[1],
             )
+
+    def testSaveAndLoad(self):
+        obj = {"foo": "bar"}
+        pathname = save(obj)
+        self.assertEqual(obj, load(pathname))
 
 
 if __name__ == "__main__":

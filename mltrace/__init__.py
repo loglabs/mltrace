@@ -24,6 +24,8 @@ from mltrace.client import (
     get_all_tags,
     get_components,
     unflag_all,
+    load,
+    save,
 )
 from mltrace.entities import (
     Component,
@@ -66,4 +68,6 @@ __all__ = [
     "IOPointer",
     "components",
     "tests",
+    "load",
+    "save",
 ]

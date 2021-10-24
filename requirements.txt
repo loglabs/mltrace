@@ -12,6 +12,7 @@ joblib==1.0.1
 MarkupSafe==1.1.1
 pandas
 packaging==20.9
+pandas
 pluggy==0.13.1
 psycopg2-binary==2.8.6
 py==1.10.0

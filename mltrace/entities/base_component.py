@@ -58,6 +58,7 @@ class Component(Base):
         output_kwargs: typing.Dict[str, str] = {},
         endpoint: bool = False,
         staleness_threshold: int = (60 * 60 * 24 * 30),
+        auto_log: bool = False,
         *user_args,
         **user_kwargs,
     ):
@@ -114,15 +115,26 @@ class Component(Base):
                     all_args = {**all_args, **kwargs}
                     self.beforeRun(**all_args)
 
+                # Create input and output pointers
+                input_pointers = []
+                output_pointers = []
+
+                # Auto log inputs
+                if auto_log:
+                    # Get IOPointers corresponding to args and f_locals
+                    all_input_args = dict(
+                        zip(inspect.getfullargspec(func).args, args)
+                    )
+                    all_input_args = {**all_input_args, **kwargs}
+                    input_pointers += store.get_io_pointers_from_args(
+                        **all_input_args
+                    )
+
                 # Run function
                 local_vars, value = utils.run_func_capture_locals(
                     func, *args, **kwargs
                 )
                 component_run.set_end_timestamp()
-
-                # Add logging stuff from register here
-                input_pointers = []
-                output_pointers = []
 
                 # Add input_vars and output_vars as pointers
                 for var in input_vars:
@@ -241,7 +253,10 @@ class Component(Base):
                         )
 
                 # Directly specified I/O
-                input_pointers += [store.get_io_pointer(inp) for inp in inputs]
+                if not callable(inputs):
+                    input_pointers += [
+                        store.get_io_pointer(inp) for inp in inputs
+                    ]
                 output_pointers += (
                     [
                         store.get_io_pointer(
@@ -252,6 +267,44 @@ class Component(Base):
                     if endpoint
                     else [store.get_io_pointer(out) for out in outputs]
                 )
+
+                # If there were calls to mltrace.load and mltrace.save, log them
+
+                if "_mltrace_loaded_artifacts" in local_vars:
+                    input_pointers += [
+                        store.get_io_pointer(name, val)
+                        for name, val in local_vars[
+                            "_mltrace_loaded_artifacts"
+                        ].items()
+                    ]
+                if "_mltrace_saved_artifacts" in local_vars:
+                    output_pointers += [
+                        store.get_io_pointer(name, val)
+                        for name, val in local_vars[
+                            "_mltrace_saved_artifacts"
+                        ].items()
+                    ]
+
+                func_source_code = inspect.getsource(func)
+                # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
+                if auto_log:
+                    # Get IOPointers corresponding to args and f_locals
+                    # all_input_args = dict(
+                    #     zip(inspect.getfullargspec(func).args, args)
+                    # )
+                    # all_input_args = {**all_input_args, **kwargs}
+                    # input_pointers += store.get_io_pointers_from_args(
+                    #     **all_input_args
+                    # )
+
+                    all_output_args = {
+                        k: v
+                        for k, v in local_vars.items()
+                        if k not in all_input_args
+                    }
+                    output_pointers += store.get_io_pointers_from_args(
+                        **all_output_args
+                    )
 
                 component_run.add_inputs(input_pointers)
                 component_run.add_outputs(output_pointers)
@@ -268,7 +321,6 @@ class Component(Base):
                     component_run.set_git_tags(client.get_git_tags())
 
                 # Add source code if less than 2^16
-                func_source_code = inspect.getsource(func)
                 if len(func_source_code) < 2 ** 16:
                     component_run.set_code_snapshot(
                         bytes(func_source_code, "ascii")
@@ -302,15 +354,9 @@ class Component(Base):
 
             return wrapper
 
-        if (
-            len(user_args) == 1
-            and len(user_kwargs) == 0
-            and callable(user_args[0])
-        ):
+        if callable(inputs):
             # Used decorator without arguments
-            func = user_args[0]
-
-            return actual_decorator(func)
+            return actual_decorator(inputs)
 
         else:
             # User passed in some kwargs
