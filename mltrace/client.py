@@ -3,6 +3,7 @@ from mltrace.db import Store, PointerTypeEnum
 from mltrace.db.utils import _get_data_and_model_args, _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
 
+import ast
 import copy
 import functools
 import git
@@ -10,6 +11,7 @@ import inspect
 import joblib
 import logging
 import os
+import re
 import sys
 import time
 import typing
@@ -177,6 +179,7 @@ def register(
     output_kwargs: typing.Dict[str, str] = {},
     endpoint: bool = False,
     staleness_threshold: int = (60 * 60 * 24 * 30),
+    auto_log: bool = False,
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -346,13 +349,42 @@ def register(
                 else [store.get_io_pointer(out) for out in outputs]
             )
 
-            # Get IOPointers corresponding to args and f_locals
-            all_input_args = dict(zip(inspect.getfullargspec(func).args, args))
-            all_input_args = {**all_input_args, **kwargs}
-            input_pointers += store.get_io_pointers_from_args(**all_input_args)
+            # If there were calls to mltrace.load and mltrace.save, log them
+            if "_mltrace_loaded_artifacts" in local_vars:
+                input_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_loaded_artifacts"
+                    ].items()
+                ]
+            if "_mltrace_saved_artifacts" in local_vars:
+                output_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_saved_artifacts"
+                    ].items()
+                ]
 
-            # TODO(shreyashankar): figure this out
-            # output_pointers +=
+            func_source_code = inspect.getsource(func)
+            # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
+            if auto_log:
+                # Get IOPointers corresponding to args and f_locals
+                all_input_args = dict(
+                    zip(inspect.getfullargspec(func).args, args)
+                )
+                all_input_args = {**all_input_args, **kwargs}
+                input_pointers += store.get_io_pointers_from_args(
+                    **all_input_args
+                )
+
+                all_output_args = {
+                    k: v
+                    for k, v in local_vars.items()
+                    if k not in all_input_args
+                }
+                output_pointers += store.get_io_pointers_from_args(
+                    **all_output_args
+                )
 
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
@@ -369,7 +401,6 @@ def register(
                 component_run.set_git_tags(get_git_tags())
 
             # Add source code if less than 2^16
-            func_source_code = inspect.getsource(func)
             if len(func_source_code) < 2 ** 16:
                 component_run.set_code_snapshot(
                     bytes(func_source_code, "ascii")

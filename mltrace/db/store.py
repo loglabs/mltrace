@@ -321,7 +321,7 @@ class Store(object):
             fresher_runs = [
                 cr for cr in fresher_runs if component_run.id != cr.id
             ]
-            if len(fresher_runs) != 1:
+            if len(fresher_runs) > 1:
                 run_or_runs = "run" if len(fresher_runs) - 1 == 1 else "runs"
                 component_run.add_staleness_message(
                     f"{dep.component_name} (ID {dep.id}) has "
@@ -665,7 +665,6 @@ class Store(object):
         # Hash each arg and see if the corresponding IOPointer exists
         for value in args_filtered:
             hval = _hash_value(value)
-
             same_name_res = (
                 self.session.query(
                     component_run_output_association.c.output_path_name
@@ -696,6 +695,7 @@ class Store(object):
 
             # Save artifact and create new IOPointer
             pathname = _save(value, from_client=False)
-            io_pointers.append(self.get_io_pointer(pathname, hval))
+            iop = self.get_io_pointer(pathname, value)
+            io_pointers.append(iop)
 
         return io_pointers

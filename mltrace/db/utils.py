@@ -15,7 +15,9 @@ import inspect
 import joblib
 import os
 import pandas as pd
+import random
 import sqlalchemy
+import string
 import time
 import typing
 
@@ -141,17 +143,30 @@ def _get_data_and_model_args(**kwargs):
     return data_model_args
 
 
-def _load(pathname: str):
+def _load(pathname: str, from_client=True) -> typing.Any:
     """Loads joblib file at pathname."""
-    return joblib.load(pathname)
+    obj = joblib.load(pathname)
+    # Set frame locals
+    if from_client:
+        client_frame = inspect.currentframe().f_back.f_back
+        if "_mltrace_loaded_artifacts" not in client_frame.f_locals:
+            client_frame.f_locals["_mltrace_loaded_artifacts"] = {}
+        client_frame.f_locals["_mltrace_loaded_artifacts"].update(
+            {pathname: obj}
+        )
+
+    return obj
 
 
-# TODO(shreyashankar): Handle multiple writes at the same second
+# TODO(shreyashankar): add cases for other types (e.g., sklearn model, xgboost model, etc)
 def _save(obj, pathname: str = None, from_client=True) -> str:
     """Saves joblib object to pathname."""
     if pathname is None:
         # If being called with a component context, use the component name
-        pathname = f'{time.strftime("%Y%m%d-%H%M%S")}.mlt'
+        _identifier = "".join(
+            random.choice(string.ascii_lowercase) for i in range(5)
+        )
+        pathname = f'{_identifier}{time.strftime("%Y%m%d%H%M%S")}.mlt'
         old_frame = (
             inspect.currentframe().f_back.f_back.f_back
             if from_client
@@ -165,13 +180,24 @@ def _save(obj, pathname: str = None, from_client=True) -> str:
             )
             pathname = os.path.join(prefix, pathname)
 
-    # Prepend with save directory
-    pathname = os.path.join(
-        os.environ.get(
-            "SAVE_DIR", os.path.join(os.path.expanduser("~"), ".mltrace")
-        ),
-        pathname,
-    )
+        # Prepend with save directory
+        pathname = os.path.join(
+            os.environ.get(
+                "SAVE_DIR", os.path.join(os.path.expanduser("~"), ".mltrace")
+            ),
+            pathname,
+        )
+
     os.makedirs(os.path.dirname(pathname), exist_ok=True)
     joblib.dump(obj, pathname)
+
+    # Set frame locals
+    if from_client:
+        client_frame = inspect.currentframe().f_back.f_back
+        if "_mltrace_saved_artifacts" not in client_frame.f_locals:
+            client_frame.f_locals["_mltrace_saved_artifacts"] = {}
+        client_frame.f_locals["_mltrace_saved_artifacts"].update(
+            {pathname: obj}
+        )
+
     return pathname
