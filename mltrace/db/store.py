@@ -5,6 +5,9 @@ from mltrace.db.utils import (
     _drop_everything,
     _map_extension_to_enum,
     _hash_value,
+    _get_data_and_model_args,
+    _load,
+    _save,
 )
 from mltrace.db import (
     Component,
@@ -653,3 +656,46 @@ class Store(object):
 
     def get_all_tags(self) -> typing.List[Tag]:
         return self.session.query(Tag).all()
+
+    def get_io_pointers_from_args(self, **kwargs):
+        """Filters kwargs to data and model types, then gets corresponding IOPointers."""
+
+        args_filtered = _get_data_and_model_args(**kwargs)
+        io_pointers = []
+        # Hash each arg and see if the corresponding IOPointer exists
+        for value in args_filtered:
+            hval = _hash_value(value)
+
+            same_name_res = (
+                self.session.query(
+                    component_run_output_association.c.output_path_name
+                )
+                .filter(
+                    component_run_output_association.c.output_path_value
+                    == hval
+                )
+                .order_by(
+                    component_run_output_association.c.component_run_id.desc()
+                )
+                .first()
+            )
+
+            if same_name_res:
+                res = (
+                    self.session.query(IOPointer)
+                    .filter(
+                        and_(
+                            IOPointer.name == same_name_res,
+                            IOPointer.value == hval,
+                        )
+                    )
+                    .all()
+                )
+                io_pointers.append(res[0])
+                continue
+
+            # Save artifact and create new IOPointer
+            pathname = _save(value, from_client=False)
+            io_pointers.append(self.get_io_pointer(pathname, hval))
+
+        return io_pointers

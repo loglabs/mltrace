@@ -1,5 +1,6 @@
 from datetime import datetime
 from mltrace.db import Store, PointerTypeEnum
+from mltrace.db.utils import _get_data_and_model_args, _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
 
 import copy
@@ -61,34 +62,13 @@ def clean_db():
 
 def load(pathname: str):
     """Loads joblib file at pathname."""
-    return joblib.load(pathname)
+    return _load(pathname)
 
 
 # TODO(shreyashankar): Handle multiple writes at the same second
 def save(obj, pathname: str = None) -> str:
     """Saves joblib object to pathname."""
-    if pathname is None:
-        # If being called with a component context, use the component name
-        pathname = f'{time.strftime("%Y%m%d-%H%M%S")}.mlt'
-        old_frame = inspect.currentframe().f_back.f_back
-        if "component_run" in old_frame.f_locals:
-            prefix = (
-                old_frame.f_locals["component_run"]
-                .component_name.lower()
-                .replace(" ", "_")
-            )
-            pathname = os.path.join(prefix, pathname)
-
-    # Prepend with save directory
-    pathname = os.path.join(
-        os.environ.get(
-            "SAVE_DIR", os.path.join(os.path.expanduser("~"), ".mltrace")
-        ),
-        pathname,
-    )
-    os.makedirs(os.path.dirname(pathname), exist_ok=True)
-    joblib.dump(obj, pathname)
-    return pathname
+    return _save(obj, pathname)
 
 
 # ----------------------- Creation functions ---------------------------- #
@@ -365,6 +345,15 @@ def register(
                 if endpoint
                 else [store.get_io_pointer(out) for out in outputs]
             )
+
+            # Get IOPointers corresponding to args and f_locals
+            all_input_args = dict(zip(inspect.getfullargspec(func).args, args))
+            all_input_args = {**all_input_args, **kwargs}
+            input_pointers += store.get_io_pointers_from_args(**all_input_args)
+
+            # TODO(shreyashankar): figure this out
+            # output_pointers +=
+
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
 
