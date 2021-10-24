@@ -1,16 +1,15 @@
 from datetime import datetime
 from mltrace.db import Store, PointerTypeEnum
+from mltrace.db.utils import _get_data_and_model_args, _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
 
 import copy
 import functools
 import git
 import inspect
-import joblib
 import logging
 import os
 import sys
-import time
 import typing
 import uuid
 
@@ -61,34 +60,13 @@ def clean_db():
 
 def load(pathname: str):
     """Loads joblib file at pathname."""
-    return joblib.load(pathname)
+    return _load(pathname)
 
 
 # TODO(shreyashankar): Handle multiple writes at the same second
 def save(obj, pathname: str = None) -> str:
     """Saves joblib object to pathname."""
-    if pathname is None:
-        # If being called with a component context, use the component name
-        pathname = f'{time.strftime("%Y%m%d-%H%M%S")}.mlt'
-        old_frame = inspect.currentframe().f_back.f_back
-        if "component_run" in old_frame.f_locals:
-            prefix = (
-                old_frame.f_locals["component_run"]
-                .component_name.lower()
-                .replace(" ", "_")
-            )
-            pathname = os.path.join(prefix, pathname)
-
-    # Prepend with save directory
-    pathname = os.path.join(
-        os.environ.get(
-            "SAVE_DIR", os.path.join(os.path.expanduser("~"), ".mltrace")
-        ),
-        pathname,
-    )
-    os.makedirs(os.path.dirname(pathname), exist_ok=True)
-    joblib.dump(obj, pathname)
-    return pathname
+    return _save(obj, pathname)
 
 
 # ----------------------- Creation functions ---------------------------- #
@@ -197,6 +175,7 @@ def register(
     output_kwargs: typing.Dict[str, str] = {},
     endpoint: bool = False,
     staleness_threshold: int = (60 * 60 * 24 * 30),
+    auto_log: bool = False,
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -365,6 +344,44 @@ def register(
                 if endpoint
                 else [store.get_io_pointer(out) for out in outputs]
             )
+
+            # If there were calls to mltrace.load and mltrace.save, log them
+            if "_mltrace_loaded_artifacts" in local_vars:
+                input_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_loaded_artifacts"
+                    ].items()
+                ]
+            if "_mltrace_saved_artifacts" in local_vars:
+                output_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_saved_artifacts"
+                    ].items()
+                ]
+
+            func_source_code = inspect.getsource(func)
+            # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
+            if auto_log:
+                # Get IOPointers corresponding to args and f_locals
+                all_input_args = dict(
+                    zip(inspect.getfullargspec(func).args, args)
+                )
+                all_input_args = {**all_input_args, **kwargs}
+                input_pointers += store.get_io_pointers_from_args(
+                    **all_input_args
+                )
+
+                all_output_args = {
+                    k: v
+                    for k, v in local_vars.items()
+                    if k not in all_input_args
+                }
+                output_pointers += store.get_io_pointers_from_args(
+                    **all_output_args
+                )
+
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
 
@@ -380,7 +397,6 @@ def register(
                 component_run.set_git_tags(get_git_tags())
 
             # Add source code if less than 2^16
-            func_source_code = inspect.getsource(func)
             if len(func_source_code) < 2 ** 16:
                 component_run.set_code_snapshot(
                     bytes(func_source_code, "ascii")
