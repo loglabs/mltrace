@@ -6,9 +6,11 @@ import copy
 import functools
 import git
 import inspect
+import joblib
 import logging
 import os
 import sys
+import time
 import typing
 import uuid
 
@@ -52,6 +54,41 @@ def set_address(address: str):
 def clean_db():
     """Deletes database and reinitializes tables."""
     store = Store(_db_uri, delete_first=True)
+
+
+# ----------------------- Load and save functions ---------------------------- #
+
+
+def load(pathname: str):
+    """Loads joblib file at pathname."""
+    return joblib.load(pathname)
+
+
+# TODO(shreyashankar): Handle multiple writes at the same second
+def save(obj, pathname: str = None) -> str:
+    """Saves joblib object to pathname."""
+    if pathname is None:
+        # If being called with a component context, use the component name
+        pathname = f'{time.strftime("%Y%m%d-%H%M%S")}.mlt'
+        old_frame = inspect.currentframe().f_back.f_back
+        if "component_run" in old_frame.f_locals:
+            prefix = (
+                old_frame.f_locals["component_run"]
+                .component_name.lower()
+                .replace(" ", "_")
+            )
+            pathname = os.path.join(prefix, pathname)
+
+    # Prepend with save directory
+    pathname = os.path.join(
+        os.environ.get(
+            "SAVE_DIR", os.path.join(os.path.expanduser("~"), ".mltrace")
+        ),
+        pathname,
+    )
+    os.makedirs(os.path.dirname(pathname), exist_ok=True)
+    joblib.dump(obj, pathname)
+    return pathname
 
 
 # ----------------------- Creation functions ---------------------------- #
