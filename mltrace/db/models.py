@@ -315,7 +315,7 @@ class ComponentRun(Base):
             status_dict[
                 "msg"
             ] += f"{self.component_name} ComponentRun has no dependencies. "
-        
+
         # Make sure there are no circular dependencies.
         if self.id in [x.id for x in self.dependencies]:
             status_dict["success"] = False
