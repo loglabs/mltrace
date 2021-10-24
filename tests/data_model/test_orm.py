@@ -33,7 +33,7 @@ class TestComponentRun(unittest.TestCase):
         # Add I/O and dependencies
         cr.add_input(IOPointer("input"))
         cr.add_output(IOPointer("output"))
-        cr.set_upstream(ComponentRun("mock_upstream"))
+        cr.set_upstream(ComponentRun("another_component"))
 
         status = cr.check_completeness()
         self.assertTrue(status["success"])
