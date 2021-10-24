@@ -56,7 +56,7 @@ def clean_db():
     store = Store(_db_uri, delete_first=True)
 
 
-# ----------------------- Load and save functions ---------------------------- #
+# ----------------------- Load and save functions ---------------------- #
 
 
 def load(pathname: str):
