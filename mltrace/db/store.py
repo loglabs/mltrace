@@ -658,7 +658,8 @@ class Store(object):
         return self.session.query(Tag).all()
 
     def get_io_pointers_from_args(self, **kwargs):
-        """Filters kwargs to data and model types, then gets corresponding IOPointers."""
+        """Filters kwargs to data and model types,
+        then gets corresponding IOPointers."""
 
         args_filtered = _get_data_and_model_args(**kwargs)
         io_pointers = []

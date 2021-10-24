@@ -129,7 +129,8 @@ def _hash_value(value: typing.Any = "") -> bytes:
     return hashlib.sha256(repr(value).encode()).digest()
 
 
-# TODO(shreyashankar): add cases for other types (e.g., sklearn model, xgboost model, etc)
+# TODO(shreyashankar): add cases for other types
+# (e.g., sklearn model, xgboost model, etc)
 def _get_data_and_model_args(**kwargs):
     """Returns a subset of args that may correspond to data and models."""
     data_model_args = []
@@ -158,7 +159,8 @@ def _load(pathname: str, from_client=True) -> typing.Any:
     return obj
 
 
-# TODO(shreyashankar): add cases for other types (e.g., sklearn model, xgboost model, etc)
+# TODO(shreyashankar): add cases for other types
+# (e.g., sklearn model, xgboost model, etc)
 def _save(obj, pathname: str = None, from_client=True) -> str:
     """Saves joblib object to pathname."""
     if pathname is None:
