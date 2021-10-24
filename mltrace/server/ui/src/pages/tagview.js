@@ -29,7 +29,7 @@ export default class TagView extends Component {
     }
 
     updateTagState() {
-                if (this.state.tagName === this.props.tagName) {
+        if (this.state.tagName === this.props.tagName) {
             return null;
         }
 

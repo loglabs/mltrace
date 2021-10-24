@@ -213,9 +213,9 @@ export default class CRInfoCard extends Component {
                 id: 'inp' + index,
                 label: (
                     <Tooltip content={inp.pointer_type}>
-                        {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
+                        {(<Link to = {`/trace/${inp.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
                             {inp.name}
-                        </div>)}
+                        </div></Link>)}
                     </Tooltip>
                 ),
                 hasCaret: false,
@@ -231,9 +231,9 @@ export default class CRInfoCard extends Component {
                 id: 'out' + index,
                 label: (
                     <Tooltip content={out.pointer_type}>
-                        {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
+                        {(<Link to = {`/trace/${out.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
                             {out.name}
-                        </div>)}
+                        </div></Link>)}
                     </Tooltip>
                 ),
                 hasCaret: false,

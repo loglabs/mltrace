@@ -7,6 +7,7 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 
 export default class Inspect extends Component {
 
+    
     render() {
         if (this.props.runId === "") return null;
 

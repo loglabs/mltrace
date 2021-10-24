@@ -9,7 +9,7 @@ import Inspect from "./pages/inspect.js"
 import Review from "./pages/review.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 
 import axios from "axios";
 const FLAG_API_URL = "api/flag";
@@ -102,9 +102,13 @@ class App extends Component {
 
   handleCommand(input) {
 
-    console.log("handleCommand get called");
-
     var args = input.split(" ").filter(str => str !== "");
+
+    var urlPath = "/" + args.join("/")
+    console.log(urlPath)
+    this.props.history.push(urlPath)
+
+    console.log("handleCommand get called:" + args);
 
     if (args.length === 0) return;
 
@@ -223,8 +227,6 @@ class App extends Component {
 
   render() {
 
-    console.log("rendered get called");
-
     let darkstr = "";
     if (this.state.useDarkTheme === true) {
       darkstr = "bp3-dark";
@@ -261,7 +263,6 @@ class App extends Component {
     // );
 
     return (
-      <BrowserRouter>
       <div className={darkstr} style={style}>
         <Header
           useDarkTheme={this.state.useDarkTheme}
@@ -301,7 +302,6 @@ class App extends Component {
             </Route>
           </Switch>
       </div>
-      </BrowserRouter>
     );
   }
 }
@@ -321,4 +321,4 @@ export function setTheme(themeName) {
 }
 
 
-export default App;
+export default withRouter(App);

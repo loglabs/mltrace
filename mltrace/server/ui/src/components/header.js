@@ -6,9 +6,9 @@ import { CustomToaster } from "./toaster.js";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
-export default class Header extends Component {
+class Header extends Component {
 
     constructor(props) {
         super(props);
@@ -105,3 +105,5 @@ export default class Header extends Component {
         );
     }
 }
+
+export default withRouter(Header);

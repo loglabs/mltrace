@@ -21,7 +21,15 @@ export default class Review extends Component {
         }
     }
 
+    componentDidMount() {
+        this.updateReviewState();
+    }
+
     componentDidUpdate() {
+        this.updateReviewState();
+    }
+
+    updateReviewState() {
         if (this.props.render === false && this.state.idsAndCrs === null) {
             return;
         }
