@@ -236,32 +236,6 @@ class App extends Component {
       minHeight: '100vh',
     };
 
-    // return (
-    //   <div className={darkstr} style={style}>
-    //     <Header
-    //       useDarkTheme={this.state.useDarkTheme}
-    //       onToggleTheme={this.handleDarkSwitchChange}
-    //       onCommand={this.handleCommand}
-    //       defaultValue={this.state.input}
-    //       showHelp={this.state.showHelp}
-    //       onHandleHelp={this.handleHelp}
-    //     />
-    //     <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
-    //     <BrowserRouter>
-    //       <Switch>
-    //         <Route path="/">
-    //           {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
-    //           {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-    //           {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
-    //           {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
-    //           {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
-    //           {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
-    //         </Route>
-    //       </Switch>
-    //     </BrowserRouter>
-    //   </div>
-    // );
-
     return (
       <div className={darkstr} style={style}>
         <Header
