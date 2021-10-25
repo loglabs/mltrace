@@ -127,7 +127,7 @@ def create_random_ids(num_outputs=1) -> typing.List[str]:
 
 # Log input strings
 # function to apply to outputs to log those
-
+# Register will be deprecated soon. See entities.base_component for the implementation
 # TODO(shreyashankar): change logging.debug to thrown errors
 def register(
     component_name: str,
