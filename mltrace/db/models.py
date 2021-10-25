@@ -317,10 +317,11 @@ class ComponentRun(Base):
             ] += f"{self.component_name} ComponentRun has no dependencies. "
 
         # Make sure there are no circular dependencies.
-        if self.id in [x.id for x in self.dependencies]:
+        if self.id and self.id in [x.id for x in self.dependencies]:
             status_dict["success"] = False
-            status_dict[
-                "msg"
-            ] += f"{self.component_name} ComponentRun has a circular dependency. "
+            status_dict["msg"] += (
+                f"{self.component_name} ComponentRun has a "
+                + "circular dependency. "
+            )
 
         return status_dict

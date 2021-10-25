@@ -78,7 +78,7 @@ class Component(Base):
         ADD DESCRIPTION HERE ABOUT INPUT VARIABLEs and what they are
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
-        key_names = ["skip_before_run", "skip_after_run"]
+        key_names = ["skip_before", "skip_after"]
 
         def actual_decorator(func):
             @functools.wraps(func)
@@ -97,12 +97,12 @@ class Component(Base):
                     set(key_names) & set(inspect.getfullargspec(func).args)
                 ) or (set(key_names) & set(kwargs.keys())):
                     raise ValueError(
-                        "skip_before_run or skip_after_run cannot be in "
+                        "skip_before or skip_after cannot be in "
                         + f"the arguments of the function {func.__name__}"
                     )
 
                 # Run before test
-                if not user_kwargs.get("skip_before_run"):
+                if not user_kwargs.get("skip_before"):
                     all_args = dict(
                         zip(inspect.getfullargspec(func).args, args)
                     )
@@ -122,10 +122,17 @@ class Component(Base):
                 # Auto log inputs
                 if auto_log:
                     # Get IOPointers corresponding to args and f_locals
-                    all_input_args = dict(
-                        zip(inspect.getfullargspec(func).args, args)
-                    )
+                    all_input_args = {
+                        k: v.default
+                        for k, v in inspect.signature(func).parameters.items()
+                        if v.default is not inspect.Parameter.empty
+                    }
+                    all_input_args = {
+                        **all_input_args,
+                        **dict(zip(inspect.getfullargspec(func).args, args)),
+                    }
                     all_input_args = {**all_input_args, **kwargs}
+                    # print(all_input_args.keys())
                     input_pointers += store.get_io_pointers_from_args(
                         **all_input_args
                     )
@@ -289,14 +296,6 @@ class Component(Base):
                 # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
                 if auto_log:
                     # Get IOPointers corresponding to args and f_locals
-                    # all_input_args = dict(
-                    #     zip(inspect.getfullargspec(func).args, args)
-                    # )
-                    # all_input_args = {**all_input_args, **kwargs}
-                    # input_pointers += store.get_io_pointers_from_args(
-                    #     **all_input_args
-                    # )
-
                     all_output_args = {
                         k: v
                         for k, v in local_vars.items()
@@ -340,7 +339,7 @@ class Component(Base):
                 )
 
                 # Perform after run tests
-                if not user_kwargs.get("skip_after_run"):
+                if not user_kwargs.get("skip_after"):
                     # Run after test
                     after_run_args = {
                         k
