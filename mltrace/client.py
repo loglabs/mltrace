@@ -1,7 +1,7 @@
 from datetime import datetime
 from mltrace import utils
 from mltrace.db import Store, PointerTypeEnum
-from mltrace.db.utils import _get_data_and_model_args, _load, _save
+# from mltrace.db.utils import _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
 
 import copy
@@ -187,7 +187,7 @@ def register(
             # Run function under the tracer
             sys.settrace(trace_helper)
             try:
-                #merge with existing run
+                # merge with existing run
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
