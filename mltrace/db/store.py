@@ -5,6 +5,9 @@ from mltrace.db.utils import (
     _drop_everything,
     _map_extension_to_enum,
     _hash_value,
+    _get_data_and_model_args,
+    _load,
+    _save,
 )
 from mltrace.db import (
     Component,
@@ -318,7 +321,7 @@ class Store(object):
             fresher_runs = [
                 cr for cr in fresher_runs if component_run.id != cr.id
             ]
-            if len(fresher_runs) != 1:
+            if len(fresher_runs) > 1:
                 run_or_runs = "run" if len(fresher_runs) - 1 == 1 else "runs"
                 component_run.add_staleness_message(
                     f"{dep.component_name} (ID {dep.id}) has "
@@ -342,6 +345,7 @@ class Store(object):
         """Gets IOPointers associated with component_run's inputs, checks
         against any ComponentRun's outputs, and if there are any matches,
         sets the ComponentRun's dependency on the most recent match."""
+
         input_ids = [inp.name for inp in component_run.inputs]
 
         if len(input_ids) == 0:
@@ -652,3 +656,47 @@ class Store(object):
 
     def get_all_tags(self) -> typing.List[Tag]:
         return self.session.query(Tag).all()
+
+    def get_io_pointers_from_args(self, **kwargs):
+        """Filters kwargs to data and model types,
+        then gets corresponding IOPointers."""
+
+        args_filtered = _get_data_and_model_args(**kwargs)
+        io_pointers = []
+        # Hash each arg and see if the corresponding IOPointer exists
+        for value in args_filtered:
+            hval = _hash_value(value)
+            same_name_res = (
+                self.session.query(
+                    component_run_output_association.c.output_path_name
+                )
+                .filter(
+                    component_run_output_association.c.output_path_value
+                    == hval
+                )
+                .order_by(
+                    component_run_output_association.c.component_run_id.desc()
+                )
+                .first()
+            )
+
+            if same_name_res:
+                res = (
+                    self.session.query(IOPointer)
+                    .filter(
+                        and_(
+                            IOPointer.name == same_name_res,
+                            IOPointer.value == hval,
+                        )
+                    )
+                    .all()
+                )
+                io_pointers.append(res[0])
+                continue
+
+            # Save artifact and create new IOPointer
+            pathname = _save(value, from_client=False)
+            iop = self.get_io_pointer(pathname, value)
+            io_pointers.append(iop)
+
+        return io_pointers

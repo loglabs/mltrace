@@ -24,6 +24,8 @@ from mltrace.client import (
     get_all_tags,
     get_components,
     unflag_all,
+    load,
+    save,
 )
 
 __all__ = [
@@ -52,4 +54,6 @@ __all__ = [
     "get_all_tags",
     "get_components",
     "unflag_all",
+    "load",
+    "save",
 ]

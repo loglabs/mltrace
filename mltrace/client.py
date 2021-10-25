@@ -1,6 +1,7 @@
 from datetime import datetime
 from mltrace import utils
 from mltrace.db import Store, PointerTypeEnum
+from mltrace.db.utils import _get_data_and_model_args, _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
 
 import copy
@@ -34,6 +35,20 @@ def set_address(address: str):
 def clean_db():
     """Deletes database and reinitializes tables."""
     store = Store(_db_uri, delete_first=True)
+
+
+# ----------------------- Load and save functions ---------------------- #
+
+
+def load(pathname: str):
+    """Loads joblib file at pathname."""
+    return _load(pathname)
+
+
+# TODO(shreyashankar): Handle multiple writes at the same second
+def save(obj, pathname: str = None) -> str:
+    """Saves joblib object to pathname."""
+    return _save(obj, pathname)
 
 
 # ----------------------- Creation functions ---------------------------- #
@@ -104,6 +119,9 @@ def log_component_run(
         ]
     )
 
+    # Create component if it does not exist
+    create_component(component_run.component_name, "", "")
+
     # Add dependencies if there is flag to automatically set
     if set_dependencies_from_inputs:
         store.set_dependencies_from_inputs(component_run_sql)
@@ -139,6 +157,7 @@ def register(
     output_kwargs: typing.Dict[str, str] = {},
     endpoint: bool = False,
     staleness_threshold: int = (60 * 60 * 24 * 30),
+    auto_log: bool = False,
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -172,6 +191,8 @@ def register(
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
+
+            component_run.set_end_timestamp()
 
             # Do logging here
             logging.info(f"Inspecting {frame.f_code.co_filename}")
@@ -294,13 +315,9 @@ def register(
                         ]
                     )
 
-            component_run.add_inputs(input_pointers)
-            component_run.add_outputs(output_pointers)
-
-            # Log relevant info
-            component_run.set_end_timestamp()
-            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers = (
+            # Directly specified I/O
+            input_pointers += [store.get_io_pointer(inp) for inp in inputs]
+            output_pointers += (
                 [
                     store.get_io_pointer(
                         out, pointer_type=PointerTypeEnum.ENDPOINT
@@ -310,9 +327,46 @@ def register(
                 if endpoint
                 else [store.get_io_pointer(out) for out in outputs]
             )
+
+            # If there were calls to mltrace.load and mltrace.save, log them
+            if "_mltrace_loaded_artifacts" in local_vars:
+                input_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_loaded_artifacts"
+                    ].items()
+                ]
+            if "_mltrace_saved_artifacts" in local_vars:
+                output_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_saved_artifacts"
+                    ].items()
+                ]
+
+            func_source_code = inspect.getsource(func)
+            # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
+            if auto_log:
+                # Get IOPointers corresponding to args and f_locals
+                all_input_args = dict(
+                    zip(inspect.getfullargspec(func).args, args)
+                )
+                all_input_args = {**all_input_args, **kwargs}
+                input_pointers += store.get_io_pointers_from_args(
+                    **all_input_args
+                )
+
+                all_output_args = {
+                    k: v
+                    for k, v in local_vars.items()
+                    if k not in all_input_args
+                }
+                output_pointers += store.get_io_pointers_from_args(
+                    **all_output_args
+                )
+
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
-            store.set_dependencies_from_inputs(component_run)
 
             # Add code versions
             try:
@@ -326,11 +380,15 @@ def register(
                 component_run.set_git_tags(get_git_tags())
 
             # Add source code if less than 2^16
-            func_source_code = inspect.getsource(func)
             if len(func_source_code) < 2 ** 16:
                 component_run.set_code_snapshot(
                     bytes(func_source_code, "ascii")
                 )
+
+            # Create component if it does not exist
+            create_component(component_run.component_name, "", "")
+
+            store.set_dependencies_from_inputs(component_run)
 
             # Commit component run object to the DB
             store.commit_component_run(
