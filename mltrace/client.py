@@ -22,6 +22,7 @@ _db_uri = utils.get_db_uri()
 
 def set_db_uri(uri: str):
     global _db_uri
+    utils.set_db_uri(uri)
     _db_uri = uri
 
 
