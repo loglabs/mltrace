@@ -21,15 +21,18 @@ _db_uri = utils.get_db_uri()
 
 
 def set_db_uri(uri: str):
-    utils.set_db_uri(uri)
+    global _db_uri
+    _db_uri = uri
 
 
 def get_db_uri() -> str:
+    global _db_uri
     return utils.get_db_uri()
 
 
 def set_address(address: str):
-    utils.set_address(address)
+    global _db_uri
+    _db_uri = utils.set_address(address)
 
 
 def clean_db():
