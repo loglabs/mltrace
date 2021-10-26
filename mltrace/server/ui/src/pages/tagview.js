@@ -8,7 +8,7 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const TAG_API_URL = 'api/tag'
+const TAG_API_URL = '/api/tag'
 
 export default class TagView extends Component {
 
@@ -19,8 +19,16 @@ export default class TagView extends Component {
             components: []
         }
     }
+    
+    componentDidMount() {
+        this.updateTagState();
+    }
 
     componentDidUpdate() {
+        this.updateTagState();
+    }
+
+    updateTagState() {
         if (this.state.tagName === this.props.tagName) {
             return null;
         }
@@ -46,7 +54,6 @@ export default class TagView extends Component {
             });
             // this.setState({ output_id: this.props.output_id });
         });
-
     }
 
     render() {
