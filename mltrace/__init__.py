@@ -27,6 +27,14 @@ from mltrace.client import (
     load,
     save,
 )
+from mltrace.entities import (
+    Component,
+    Test,
+    ComponentRun,
+    IOPointer,
+    components,
+    tests,
+)
 
 __all__ = [
     "clean_db",
@@ -54,6 +62,12 @@ __all__ = [
     "get_all_tags",
     "get_components",
     "unflag_all",
+    "Component",
+    "Test",
+    "ComponentRun",
+    "IOPointer",
+    "components",
+    "tests",
     "load",
     "save",
 ]

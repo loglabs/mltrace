@@ -1,4 +1,5 @@
 from datetime import datetime
+from mltrace import utils
 from mltrace.db import Store, PointerTypeEnum
 from mltrace.db.utils import _get_data_and_model_args, _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
@@ -14,23 +15,7 @@ import typing
 import uuid
 
 
-def _set_address_helper(old_uri: str, address: str):
-    first = old_uri.split("@")[0]
-    last = old_uri.split("@")[1].split(":")[1]
-    return first + "@" + address + ":" + last
-
-
-_db_uri = os.environ.get("DB_URI")
-if _db_uri is None:
-    _db_uri = "postgresql://admin:admin@localhost:5432/sqlalchemy"
-    if os.environ.get("DB_SERVER"):
-        _db_uri = _set_address_helper(_db_uri, os.environ.get("DB_SERVER"))
-    else:
-        logging.warning(
-            f"Please set DB_URI or DB_SERVER as an environment variable. \
-            Otherwise, DB_URI is set to {_db_uri}."
-        )
-
+_db_uri = utils.get_db_uri()
 
 # --------------------- Database management functions ------------------- #
 
@@ -42,12 +27,12 @@ def set_db_uri(uri: str):
 
 def get_db_uri() -> str:
     global _db_uri
-    return _db_uri
+    return utils.get_db_uri()
 
 
 def set_address(address: str):
     global _db_uri
-    _db_uri = _set_address_helper(_db_uri, address)
+    _db_uri = utils.set_address(address)
 
 
 def clean_db():
@@ -205,6 +190,7 @@ def register(
             # Run function under the tracer
             sys.settrace(trace_helper)
             try:
+                # merge with existing run
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
@@ -216,6 +202,24 @@ def register(
             input_pointers = []
             output_pointers = []
             local_vars = frame.f_locals
+
+            # Auto log inputs
+            if auto_log:
+                # Get IOPointers corresponding to args and f_locals
+                all_input_args = {
+                    k: v.default
+                    for k, v in inspect.signature(func).parameters.items()
+                    if v.default is not inspect.Parameter.empty
+                }
+                all_input_args = {
+                    **all_input_args,
+                    **dict(zip(inspect.getfullargspec(func).args, args)),
+                }
+                all_input_args = {**all_input_args, **kwargs}
+                # print(all_input_args.keys())
+                input_pointers += store.get_io_pointers_from_args(
+                    **all_input_args
+                )
 
             # Add input_vars and output_vars as pointers
             for var in input_vars:
@@ -333,6 +337,8 @@ def register(
                     )
 
             # Directly specified I/O
+            if not callable(inputs):
+                input_pointers += [store.get_io_pointer(inp) for inp in inputs]
             input_pointers += [store.get_io_pointer(inp) for inp in inputs]
             output_pointers += (
                 [
@@ -365,14 +371,6 @@ def register(
             # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
             if auto_log:
                 # Get IOPointers corresponding to args and f_locals
-                all_input_args = dict(
-                    zip(inspect.getfullargspec(func).args, args)
-                )
-                all_input_args = {**all_input_args, **kwargs}
-                input_pointers += store.get_io_pointers_from_args(
-                    **all_input_args
-                )
-
                 all_output_args = {
                     k: v
                     for k, v in local_vars.items()
@@ -430,7 +428,7 @@ def get_git_hash() -> str:
     return None
 
 
-def get_git_tags() -> str:
+def get_git_tags() -> typing.List[str]:
     """
     Gets tags associated with commit of parent git repo, if exists
     ref:https://stackoverflow.com/questions/34932306/get-tags-of-a-commit
@@ -624,7 +622,7 @@ def backtrace(output_pointer: str):
 
 def web_trace(output_id: str):
     store = Store(_db_uri)
-    return store.web_trace(output_id)
+    return store.web_trace(output_id, last_only=True)
 
 
 def review_flagged_outputs():
