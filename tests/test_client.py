@@ -8,8 +8,6 @@ from mltrace import (
     create_component,
     log_component_run,
     register,
-    get_history,
-    get_recent_run_ids,
     load,
     save,
 )
