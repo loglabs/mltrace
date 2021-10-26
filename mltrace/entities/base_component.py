@@ -275,7 +275,7 @@ class Component(Base):
                     else [store.get_io_pointer(out) for out in outputs]
                 )
 
-                # If there were calls to mltrace.load and mltrace.save, log them
+                # If there were calls to mltrace.load and mltrace.save, log
 
                 if "_mltrace_loaded_artifacts" in local_vars:
                     input_pointers += [
@@ -293,7 +293,8 @@ class Component(Base):
                     ]
 
                 func_source_code = inspect.getsource(func)
-                # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
+                # TODO (shreyashankar): Deduplicate with loaded and saved
+                # artifacts
                 if auto_log:
                     # Get IOPointers corresponding to args and f_locals
                     all_output_args = {
