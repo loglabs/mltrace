@@ -369,7 +369,6 @@ def register(
                 ]
 
             func_source_code = inspect.getsource(func)
-            # TODO (shreyashankar): Deduplicate with loaded and saved artifacts
             if auto_log:
                 # Get IOPointers corresponding to args and f_locals
                 all_output_args = {

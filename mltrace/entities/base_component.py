@@ -13,7 +13,9 @@ from mltrace.entities.base import Base
 
 import functools
 import inspect
+import io
 import git
+import sys
 
 
 class Component(Base):
@@ -83,10 +85,6 @@ class Component(Base):
         def actual_decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                # Get function information
-                filename = inspect.getfile(func)
-                function_name = func.__name__
-
                 # Construct component run object
                 store = Store(clientUtils.get_db_uri())
                 component_run = store.initialize_empty_component_run(self.name)
@@ -293,8 +291,6 @@ class Component(Base):
                     ]
 
                 func_source_code = inspect.getsource(func)
-                # TODO (shreyashankar): Deduplicate with loaded and saved
-                # artifacts
                 if auto_log:
                     # Get IOPointers corresponding to args and f_locals
                     all_output_args = {

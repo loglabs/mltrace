@@ -694,6 +694,19 @@ class Store(object):
                 io_pointers.append(res[0])
                 continue
 
+            # See if IOPointer exists but not in output table
+            res = (
+                self.session.query(IOPointer)
+                .filter(
+                    IOPointer.value == hval,
+                )
+                .first()
+            )
+
+            if res:
+                io_pointers.append(res)
+                continue
+
             # Save artifact and create new IOPointer
             pathname = _save(value, var_name=key, from_client=False)
             iop = self.get_io_pointer(pathname, value)
