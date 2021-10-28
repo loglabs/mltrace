@@ -18,6 +18,7 @@ import pandas as pd
 import random
 import sqlalchemy
 import string
+import sys
 import time
 import typing
 
@@ -83,6 +84,12 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
 
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevant enum for the filename."""
+    if "data" in filename.lower():
+        return PointerTypeEnum.DATA
+
+    if "model" in filename.lower():
+        return PointerTypeEnum.MODEL
+
     data_extensions = [
         "csv",
         "pq",
@@ -118,7 +125,8 @@ def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     if extension in model_extensions:
         return PointerTypeEnum.MODEL
 
-    # TODO(shreyashankar): figure out how to handle output id
+    # TODO(shreyashankar): figure out how to handle output i
+
     return PointerTypeEnum.UNKNOWN
 
 
@@ -139,6 +147,8 @@ def _get_data_and_model_args(**kwargs):
         if "data" in key or "model" in key:
             data_model_args[key] = value
         elif isinstance(value, pd.DataFrame):
+            data_model_args[key] = value
+        elif sys.getsizeof(value) > 1e6:
             data_model_args[key] = value
 
     return data_model_args
