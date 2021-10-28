@@ -48,9 +48,11 @@ if __name__ == "__main__":
         owner="me",
     )
 
-    arr = [random.randint(0, 100) for _ in range(10)]
+    print("Generating array...")
+    arr = [random.randint(0, 100) for _ in range(int(1e7))]
+    print("Array generated.")
     df = create_data(arr)
-    # df = double_data(df)
-    # df = triple_data(df)
+    df = double_data(df)
+    df = triple_data(df)
     df = quadruple_data(df)
     print(df)
