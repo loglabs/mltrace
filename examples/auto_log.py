@@ -33,7 +33,6 @@ def triple_data(df):
     return new_df
 
 
-# Currently this produces two outputs becaues auto_log is set to True
 @register("test_auto_logging", auto_log=True)
 def quadruple_data(df):
     new_df = df * 4
@@ -51,7 +50,7 @@ if __name__ == "__main__":
 
     arr = [random.randint(0, 100) for _ in range(10)]
     df = create_data(arr)
-    df = double_data(df)
-    df = triple_data(df)
+    # df = double_data(df)
+    # df = triple_data(df)
     df = quadruple_data(df)
     print(df)
