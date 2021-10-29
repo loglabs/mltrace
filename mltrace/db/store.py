@@ -15,6 +15,7 @@ from mltrace.db import (
     IOPointer,
     PointerTypeEnum,
     Tag,
+    Label,
     component_run_output_association,
 )
 from mltrace.db.models import component_run_output_association
@@ -713,3 +714,33 @@ class Store(object):
             io_pointers.append(iop)
 
         return io_pointers
+
+    def get_label(self, label_id: str):
+        res = self.session.query(Label).filter(Label.id == label_id).first()
+
+        # If label does not exist, create it
+        if not res:
+            label = Label(id=label_id)
+            self.session.add(label)
+            self.session.commit()
+            return label
+
+        return res
+
+    def test(self):
+        # Create a label
+        # Create an iopointer
+        # add label to iopointer
+        # verify you can query the label and get the iopointer
+        l = self.get_label("test_label")
+        print(l)
+
+        # make iop
+        iop = IOPointer(name="test_iop.csv")
+        iop.add_label(l)
+        self.session.add(iop)
+        self.session.commit()
+
+        # query label
+        l = self.get_label("test_label")
+        print(l.io_pointers)
