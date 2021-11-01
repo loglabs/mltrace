@@ -24,7 +24,6 @@ class TestTest(unittest.TestCase):
         def function(n: int = 1):
             return
 
-
     def testBeforeTestNotHaveAllVars(self):
         class DummyTest(base_test.Test):
             def __init__(self):
@@ -123,18 +122,16 @@ class TestTest(unittest.TestCase):
         )
 
         @c.run(
-            component_name="test_component",
-            input_vars=["data"],
-            output_vars=["data"],
+            component_name="test_component"
         )
         def function(data: pd.DataFrame):
-            data.replace([0, 1, 2, 3], 4)
+            data = data.replace([0, 1, 2, 3], 4)
             return
 
         df = pd.DataFrame({'A': [0, 1, 2, 3, 4],
                            'B': [5, 6, 7, 8, 9]}
                           )
 
-        function()
+        function(df)
 
 

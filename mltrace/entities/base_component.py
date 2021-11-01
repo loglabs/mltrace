@@ -76,8 +76,8 @@ class Component(Base):
         
         @param inputs:
         @param outputs:
-        @param input_vars:
-        @param output_vars:
+        @param input_vars: string variable representing the file name of the input
+        @param output_vars: string variable representing the file name of the output
         @param input_kwargs:
         @param output_kwargs:
         """
