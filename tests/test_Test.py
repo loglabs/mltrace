@@ -6,22 +6,24 @@ class TestTest(unittest.TestCase):
 
     def testRunsAllTestFunc(self):
         class DummyTest(base_test.Test):
+            counter = 0
+
             def __init__(self):
                 super().__init__("Dummy")
+                DummyTest.counter = 0
 
-            def testCorrect(self, n: list):
-                n[0] += 10
+            def testCorrect(self, n: int):
+                DummyTest.counter += 10
                 print("testCorrect called")
 
-            def testAlsoCorrect(self, n: list):
-                n[0] += 10
+            def testAlsoCorrect(self, n: int):
+                DummyTest.counter += 10
                 print("testAlsoCorrect called")
 
-            def TestNotCorrect(self, n: list):
+            def TestNotCorrect(self, n: int):
                 raise Exception("TestNotCorrect called!")
 
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
-        val = [100]
 
         @c.run(
             component_name="test_component",
@@ -29,11 +31,11 @@ class TestTest(unittest.TestCase):
             output_vars=["n"],
         )
         def function():
-            n = val
+            n = 100
             return
 
         function()
-        self.assertTrue(val[0]==120)
+        self.assertTrue(DummyTest.counter == 20)
 
     def testRunsOnlyTestFunc(self):
         class DummyTest(base_test.Test):
