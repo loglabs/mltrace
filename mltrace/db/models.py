@@ -153,6 +153,9 @@ class IOPointer(Base):
     def add_label(self, label: Label):
         self.labels.append(label)
 
+    def add_labels(self, labels: typing.list[Label]):
+        self.labels = list(set(self.labels + labels))
+
 
 component_run_input_association = Table(
     "component_runs_inputs",

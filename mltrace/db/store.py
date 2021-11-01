@@ -727,20 +727,15 @@ class Store(object):
 
         return res
 
-    def test(self):
-        # Create a label
-        # Create an iopointer
-        # add label to iopointer
-        # verify you can query the label and get the iopointer
-        l = self.get_label("test_label")
-        print(l)
-
-        # make iop
-        iop = IOPointer(name="test_iop.csv")
-        iop.add_label(l)
-        self.session.add(iop)
+    def propagate_labels(
+        self, inputs: typing.List[IOPointer], outputs: typing.List[IOPointer]
+    ):
+        """
+        Propagates labels from inputs to outputs.
+        """
+        all_labels = [inp.labels for inp in inputs]
+        all_labels = [l for labels in all_labels for l in labels]
+        for out in outputs:
+            out.add_labels(all_labels)
+            self.session.add(out)
         self.session.commit()
-
-        # query label
-        l = self.get_label("test_label")
-        print(l.io_pointers)
