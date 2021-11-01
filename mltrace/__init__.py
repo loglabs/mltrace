@@ -27,6 +27,14 @@ from mltrace.client import (
     load,
     save,
 )
+from mltrace.entities import (
+    Component,
+    Test,
+    ComponentRun,
+    IOPointer,
+    components,
+    tests,
+)
 
 from mltrace.entities import (
     Component,

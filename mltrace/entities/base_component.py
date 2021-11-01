@@ -67,12 +67,19 @@ class Component(Base):
         @c.run
         def my_function(arg1, arg2):
                 do_something()
+
             arg1 and arg2 are the arguments passed to the
             beforeRun and afterRun methods.
             We first execute the beforeRun method, then the function itself,
             then the afterRun method with the values of the args at the
             end of the function.
-        ADD DESCRIPTION HERE ABOUT INPUT VARIABLEs and what they are
+        
+        @param inputs:
+        @param outputs:
+        @param input_vars:
+        @param output_vars:
+        @param input_kwargs:
+        @param output_kwargs:
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before_run", "skip_after_run"]
@@ -91,7 +98,7 @@ class Component(Base):
 
                 # Assert key names are not in args or kwargs
                 if (
-                        set(key_names) & set(inspect.getfullargspec(func).args)
+                    set(key_names) & set(inspect.getfullargspec(func).args)
                 ) or (set(key_names) & set(kwargs.keys())):
                     raise ValueError(
                         "skip_before_run or skip_after_run cannot be in "
@@ -240,6 +247,7 @@ class Component(Base):
 
                 # Directly specified I/O
                 input_pointers += [store.get_io_pointer(inp) for inp in inputs]
+
                 output_pointers += (
                     [
                         store.get_io_pointer(
@@ -267,6 +275,7 @@ class Component(Base):
 
                 # Add source code if less than 2^16
                 func_source_code = inspect.getsource(func)
+
                 if len(func_source_code) < 2 ** 16:
                     component_run.set_code_snapshot(
                         bytes(func_source_code, "ascii")

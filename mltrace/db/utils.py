@@ -18,6 +18,7 @@ import pandas as pd
 import random
 import sqlalchemy
 import string
+import sys
 import time
 import typing
 
@@ -83,6 +84,12 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
 
 def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     """Infers the relevant enum for the filename."""
+    if "data" in filename.lower():
+        return PointerTypeEnum.DATA
+
+    if "model" in filename.lower():
+        return PointerTypeEnum.MODEL
+
     data_extensions = [
         "csv",
         "pq",
@@ -118,7 +125,8 @@ def _map_extension_to_enum(filename: str) -> PointerTypeEnum:
     if extension in model_extensions:
         return PointerTypeEnum.MODEL
 
-    # TODO(shreyashankar): figure out how to handle output id
+    # TODO(shreyashankar): figure out how to handle output i
+
     return PointerTypeEnum.UNKNOWN
 
 
@@ -133,13 +141,15 @@ def _hash_value(value: typing.Any = "") -> bytes:
 # (e.g., sklearn model, xgboost model, etc)
 def _get_data_and_model_args(**kwargs):
     """Returns a subset of args that may correspond to data and models."""
-    data_model_args = []
+    data_model_args = {}
     for key, value in kwargs.items():
         # Check if data or model is in the name of the key
         if "data" in key or "model" in key:
-            data_model_args.append(value)
+            data_model_args[key] = value
         elif isinstance(value, pd.DataFrame):
-            data_model_args.append(value)
+            data_model_args[key] = value
+        elif sys.getsizeof(value) > 1e6:
+            data_model_args[key] = value
 
     return data_model_args
 
@@ -161,14 +171,18 @@ def _load(pathname: str, from_client=True) -> typing.Any:
 
 # TODO(shreyashankar): add cases for other types
 # (e.g., sklearn model, xgboost model, etc)
-def _save(obj, pathname: str = None, from_client=True) -> str:
+def _save(
+    obj, pathname: str = None, var_name: str = "", from_client=True
+) -> str:
     """Saves joblib object to pathname."""
     if pathname is None:
         # If being called with a component context, use the component name
         _identifier = "".join(
             random.choice(string.ascii_lowercase) for i in range(5)
         )
-        pathname = f'{_identifier}{time.strftime("%Y%m%d%H%M%S")}.mlt'
+        pathname = (
+            f'{var_name}_{_identifier}{time.strftime("%Y%m%d%H%M%S")}.mlt'
+        )
         old_frame = (
             inspect.currentframe().f_back.f_back.f_back
             if from_client

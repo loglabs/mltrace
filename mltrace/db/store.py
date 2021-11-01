@@ -664,7 +664,7 @@ class Store(object):
         args_filtered = _get_data_and_model_args(**kwargs)
         io_pointers = []
         # Hash each arg and see if the corresponding IOPointer exists
-        for value in args_filtered:
+        for key, value in args_filtered.items():
             hval = _hash_value(value)
             same_name_res = (
                 self.session.query(
@@ -694,8 +694,21 @@ class Store(object):
                 io_pointers.append(res[0])
                 continue
 
+            # See if IOPointer exists but not in output table
+            res = (
+                self.session.query(IOPointer)
+                .filter(
+                    IOPointer.value == hval,
+                )
+                .first()
+            )
+
+            if res:
+                io_pointers.append(res)
+                continue
+
             # Save artifact and create new IOPointer
-            pathname = _save(value, from_client=False)
+            pathname = _save(value, var_name=key, from_client=False)
             iop = self.get_io_pointer(pathname, value)
             io_pointers.append(iop)
 

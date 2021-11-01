@@ -6,10 +6,11 @@ import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
+import { Link } from 'react-router-dom';
 
-const NOTES_API_URL = "api/notes";
-const FLAG_API_URL = "api/flag";
-const UNFLAG_API_URL = "api/unflag";
+const NOTES_API_URL = "/api/notes";
+const FLAG_API_URL = "/api/flag";
+const UNFLAG_API_URL = "/api/unflag";
 
 export default class CRInfoCard extends Component {
 
@@ -193,7 +194,7 @@ export default class CRInfoCard extends Component {
 
         let tagElements = info.tags.map((name, index) => {
             return (
-                <Tag
+                <Link to = {`/tag/${name}`}><Tag
                     minimal={true}
                     onClick={() => { this.props.commandHandler("tag " + name) }}
                     intent={Intent.PRIMARY}
@@ -201,7 +202,7 @@ export default class CRInfoCard extends Component {
                     key={index}
                     interactive={true}>
                     {name}
-                </Tag>)
+                </Tag></Link>)
         });
 
         let codeSnapshot = info.code_snapshot ? info.code_snapshot : 'no snapshot found';
@@ -212,9 +213,9 @@ export default class CRInfoCard extends Component {
                 id: 'inp' + index,
                 label: (
                     <Tooltip content={inp.pointer_type}>
-                        {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
+                        {(<Link to = {`/trace/${inp.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
                             {inp.name}
-                        </div>)}
+                        </div></Link>)}
                     </Tooltip>
                 ),
                 hasCaret: false,
@@ -230,9 +231,9 @@ export default class CRInfoCard extends Component {
                 id: 'out' + index,
                 label: (
                     <Tooltip content={out.pointer_type}>
-                        {(<div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
+                        {(<Link to = {`/trace/${out.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
                             {out.name}
-                        </div>)}
+                        </div></Link>)}
                     </Tooltip>
                 ),
                 hasCaret: false,
@@ -286,7 +287,7 @@ export default class CRInfoCard extends Component {
                     className={Classes.TOOLTIP_INDICATOR}
                     position={Position.RIGHT}
                 >
-                    {(<h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2>)}
+                    {(<Link to = {`/history/${info.component_name}`}><h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2></Link>)}
                 </Tooltip>
                 {countContent}
                 {stale}

@@ -9,8 +9,8 @@ import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-const CR_API_URL = "api/component_run";
-const IO_API_URL = "api/io_pointer";
+const CR_API_URL = "/api/component_run";
+const IO_API_URL = "/api/io_pointer";
 
 export default class InfoCard extends Component {
 

@@ -9,7 +9,7 @@ import Inspect from "./pages/inspect.js"
 import Review from "./pages/review.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 
 import axios from "axios";
 const FLAG_API_URL = "api/flag";
@@ -34,6 +34,8 @@ class App extends Component {
     this.handleHelp = this.handleHelp.bind(this);
     this.handleFlag = this.handleFlag.bind(this);
     this.handleUnflag = this.handleUnflag.bind(this);
+
+
   }
 
   handleDarkSwitchChange(useDark) {
@@ -88,8 +90,25 @@ class App extends Component {
     });
   }
 
+
+  handleUrl(input) {
+    var args = input.split("/").filter(str => str !== "");
+    this.handleCommand(args.join(" "));
+  }
+
+  componentDidMount() {
+    this.handleUrl(window.location.pathname);
+  }
+
   handleCommand(input) {
+
     var args = input.split(" ").filter(str => str !== "");
+
+    var urlPath = "/" + args.join("/")
+    console.log(urlPath)
+    this.props.history.push(urlPath)
+
+    console.log("handleCommand get called:" + args);
 
     if (args.length === 0) return;
 
@@ -117,7 +136,7 @@ class App extends Component {
         });
         return;
       }
-
+  
       this.setState({ command: 'tag', id: args[0], kwargs: {}, input: input });
     } else if (command === "history") {
       if (args.length === 0 || args.length > 2) {
@@ -207,6 +226,7 @@ class App extends Component {
   }
 
   render() {
+
     let darkstr = "";
     if (this.state.useDarkTheme === true) {
       darkstr = "bp3-dark";
@@ -227,18 +247,34 @@ class App extends Component {
           onHandleHelp={this.handleHelp}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
-        <BrowserRouter>
           <Switch>
-            <Route path="/">
+            <Route exact path="/">
+              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
               {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
               {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
               {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
               {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
               {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
             </Route>
+            <Route path="/history">
+              {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+            </Route>
+            <Route path="/recent">
+              {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+            </Route>
+            <Route path="/review">
+              {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
+            </Route>
+            <Route path="/trace">
+              {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+            </Route>
+            <Route path="/tag">
+              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+            </Route>
+            <Route path="/inspect">
+              {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+            </Route>
           </Switch>
-        </BrowserRouter>
       </div>
     );
   }
@@ -259,4 +295,4 @@ export function setTheme(themeName) {
 }
 
 
-export default App;
+export default withRouter(App);

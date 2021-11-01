@@ -9,7 +9,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import InfoCard from '../components/infocard.js';
 
-const RECENT_API_URL = 'api/recent';
+const RECENT_API_URL = '/api/recent';
 
 export default class Recent extends Component {
 
@@ -38,7 +38,6 @@ export default class Recent extends Component {
         if (this.state.componentRuns !== null && this.state.componentRuns.length !== 0) {
             params.last_run_id = this.state.componentRuns[this.state.componentRuns.length - 1];
         }
-
 
         axios.get(RECENT_API_URL, {
             params: params
