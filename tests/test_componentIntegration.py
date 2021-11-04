@@ -9,19 +9,17 @@ class TestTest(unittest.TestCase):
             def __init__(self):
                 super().__init__("Dummy")
 
-            def testCorrect(self, n: int):
-                testVal = n * 10
-                if testVal != 10:
+            def testCorrect(self, n: str):
+                testVal = n + "_before"
+                if testVal != "test_before":
                     raise Exception("Wrong Value")
 
         c = base_component.Component("aditi", "test", "test_description", beforeTests=[DummyTest])
 
         @c.run(
-            component_name="test_component",
-            input_vars=["n"],
-            output_vars=[],
+            component_name="test_component"
         )
-        def function(n: int = 1):
+        def function(n: str = "test"):
             return
 
     def testBeforeTestNotHaveAllVars(self):
@@ -37,9 +35,7 @@ class TestTest(unittest.TestCase):
         c = base_component.Component("aditi", "test", "test_description", beforeTests=[DummyTest])
 
         @c.run(
-            component_name="test_component",
-            input_vars=[],
-            output_vars=["n"],
+            component_name="test_component"
         )
         def function():
             n = 1
@@ -53,21 +49,19 @@ class TestTest(unittest.TestCase):
             def __init__(self):
                 super().__init__("Dummy")
 
-            def testCorrect(self, n: int):
-                testVal = n * 10
+            def testCorrect(self, n: str):
+                testVal = n + "check"
                 print(n)
-                if testVal != 10:
+                if testVal != "test_aftercheck":
                     raise Exception("Wrong Value")
 
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
 
         @c.run(
-            component_name="test_component",
-            input_vars=["n"],
-            output_vars=["n"],
+            component_name="test_component"
         )
-        def function(n: int = 1):
-            n += 2
+        def function(n: str = "test"):
+            n += "_after"
             return
 
     def testAfterTestNotHaveAllVars(self):
@@ -83,9 +77,7 @@ class TestTest(unittest.TestCase):
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
 
         @c.run(
-            component_name="test_component",
-            input_vars=[],
-            output_vars=["n"],
+            component_name="test_component"
         )
         def function():
             k = 1
