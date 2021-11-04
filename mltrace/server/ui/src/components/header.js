@@ -46,7 +46,7 @@ class Header extends Component {
         CustomToaster.show({
             message: <div>
                 <Text>
-                    <tt>`{this.inputValue.value}`</tt> copied to clipboard.
+                    <tt>{this.inputValue.value}</tt> copied to clipboard.
                 </Text>
             </div>,
             icon: "tick",

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Classes, Tooltip, Icon } from "@blueprintjs/core";
+import { Tree, Classes, Tooltip, Icon, Text } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import { Intent } from "@blueprintjs/core";
 import InfoCard from "../components/infocard.js";
@@ -12,6 +12,7 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 const TRACE_API_URL = "/api/trace";
 
 function styleLabels(node) {
+    node.labelText = node.label;
     // Set label to monospace style
     if (node.hasCaret === false) {
         node.label = (
@@ -32,6 +33,30 @@ function styleLabels(node) {
     }
 }
 
+function copyToClipboard(textToCopy) {
+    // navigator clipboard api needs a secure context (https)
+    if (navigator.clipboard && window.isSecureContext) {
+        // navigator clipboard api method'
+        return navigator.clipboard.writeText(textToCopy);
+    } else {
+        // text area method
+        let textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        // make the textarea out of viewport
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        return new Promise((res, rej) => {
+            // here the magic happens
+            document.execCommand('copy') ? res() : rej();
+            textArea.remove();
+        });
+    }
+}
+
 export default class Trace extends Component {
 
     constructor(props) {
@@ -48,6 +73,20 @@ export default class Trace extends Component {
     onNodeClick(node) {
         // const type = node.hasCaret === true ? 'component' : 'io';
         let id = (node.parent !== undefined) ? node.parent : node.id;
+
+        // Copy to clipboard
+        copyToClipboard(node.labelText);
+
+        CustomToaster.show({
+            message: <div>
+                <Text>
+                    <tt>{node.labelText}</tt> copied to clipboard.
+                </Text>
+            </div>,
+            icon: "tick",
+            intent: Intent.SUCCESS,
+        });
+
         this.setState({ selected_id: id });
     }
 
