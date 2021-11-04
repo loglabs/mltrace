@@ -16,6 +16,54 @@ Data model
 
 The two prominent client-facing abstractions are the :py:class:`~mltrace.entities.Component` and :py:class:`~mltrace.entities.ComponentRun` abstractions.
 
+:py:class:`~mltrace.entities.Test`
+"""""""""
+
+The ``Test`` abstraction represents some reusable computation to perform on component inputs and outputs. Defining a ``Test`` is similar to writing a unit test:
+
+.. code-block :: python
+
+    from mltrace import Test
+
+    class OutliersTest(Test):
+        def __init__(self):
+            super().__init__(name='outliers')
+
+        def testComputeStats(self; df: pd.DataFrame):
+            # Get numerical columns
+            num_df = df.select_dtypes(include=["number"])
+
+            # Compute stats
+            stats = num_df.describe()
+            print("Dataframe statistics:")
+            print(stats)
+        
+        def testZScore(
+            self,
+            df: pd.DataFrame,
+            stdev_cutoff: float = 5.0,
+            threshold: float = 0.05,
+        ):
+            """
+            Checks to make sure there are no outliers using z score cutoff.
+            """
+            # Get numerical columns
+            num_df = df.select_dtypes(include=["number"])
+
+            z_scores = (
+                (num_df - num_df.mean(axis=0, skipna=True))
+                / num_df.std(axis=0, skipna=True)
+            ).abs()
+
+            if (z_scores > stdev_cutoff).to_numpy().sum() > threshold * len(df):
+                print(
+                    f"Number of outliers: {(z_scores > stdev_cutoff).to_numpy().sum()}"
+                )
+                print(f"Outlier threshold: {threshold * len(df)}")
+                raise Exception("There are outlier values!")
+
+Tests can be defined and passed to components as arguments, as described in the section below.
+
 :py:class:`mltrace.entities.Component`
 """""""""
 
@@ -25,8 +73,16 @@ The ``Component`` abstraction represents a stage in a pipeline and its static me
 * description
 * owner
 * tags (optional list of string values to reference the component by)
+* tests
 
 Tags are generally useful when you have multiple components in a higher-level stage. For example, ETL computation could consist of different components such as "cleaning" or "feature generation." You could create the "cleaning" and "feature generation" components with the tag ``etl`` and then easily query component runs with the ``etl`` tag in the UI.
+
+Components have a life-cycle:
+
+* ``c = Component(...)``: construction of the component object
+* ``c.beforeRun``: a list of ``Tests`` to run before the component is run
+* ``c.run``: a decorator for a user-defined function that represents the component's computation
+* ``c.afterRun``: a list of ``Tests`` to run after the component is run 
 
 :py:class:`mltrace.entities.ComponentRun`
 """""""""
