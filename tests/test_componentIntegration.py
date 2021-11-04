@@ -16,9 +16,7 @@ class TestTest(unittest.TestCase):
 
         c = base_component.Component("aditi", "test", "test_description", beforeTests=[DummyTest])
 
-        @c.run(
-            component_name="test_component"
-        )
+        @c.run
         def function(n: str = "test"):
             return
 
@@ -34,9 +32,7 @@ class TestTest(unittest.TestCase):
 
         c = base_component.Component("aditi", "test", "test_description", beforeTests=[DummyTest])
 
-        @c.run(
-            component_name="test_component"
-        )
+        @c.run
         def function():
             n = 1
             return
@@ -57,9 +53,7 @@ class TestTest(unittest.TestCase):
 
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
 
-        @c.run(
-            component_name="test_component"
-        )
+        @c.run
         def function(n: str = "test"):
             n += "_after"
             return
@@ -76,9 +70,7 @@ class TestTest(unittest.TestCase):
 
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
 
-        @c.run(
-            component_name="test_component"
-        )
+        @c.run
         def function():
             k = 1
             return
@@ -113,9 +105,7 @@ class TestTest(unittest.TestCase):
             afterTests=[AfterTest]
         )
 
-        @c.run(
-            component_name="test_component"
-        )
+        @c.run
         def function(data: pd.DataFrame):
             data = data.replace([0, 1, 2, 3], 4)
             return

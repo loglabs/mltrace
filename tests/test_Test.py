@@ -22,11 +22,7 @@ class TestTest(unittest.TestCase):
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
         val = [100]
 
-        @c.run(
-            component_name="test_component",
-            input_vars=[],
-            output_vars=[],
-        )
+        @c.run
         def function():
             n = val
             return
@@ -54,10 +50,7 @@ class TestTest(unittest.TestCase):
 
         c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
 
-        @c.run(
-            input_vars=[],
-            output_vars=["n"],
-        )
+        @c.run
         def function():
             n = "test"
             return

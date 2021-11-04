@@ -8,11 +8,7 @@ class TestComponents(unittest.TestCase):
         # Create component then log a run of it
         c = base_component.Component("aditi", "test", "test_description")
 
-        @c.run(
-            component_name="test_component",
-            input_vars=["foo"],
-            output_vars=["bar"],
-        )
+        @c.run
         def function():
             foo = "foo"
             bar = "bar"
@@ -24,11 +20,7 @@ class TestComponents(unittest.TestCase):
         # Create component then log a run of it
         c = base_component.Component("aditi", "test", "test_description")
 
-        @c.run(
-            component_name="test_component",
-            input_vars=["foo"],
-            output_vars=["bar"],
-        )
+        @c.run
         def function():
             x = 0
             foo = x + 1
