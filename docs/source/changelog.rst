@@ -2,6 +2,15 @@
 Changelog
 =========
 
+- :release:`0.17 <2021-11-04>`
+- :support:`-` Added ability to create tests and execute them before and after components are run. Also, the web app has a React Router refactor, thanks to `@Boyuan-Deng`.
+
+  .. warning::
+    This change is requries a DB migration. You can follow the documentation to perform the migration_ if you are using a release prior to this one.
+
+- :feature:`226` Adds functionality to run triggers before and after components are run. Thanks `@aditim1359` for taking this on!
+
+
 - :release:`0.16 <2021-07-08>`
 - :support:`-` Added the review feature to aid in debugging erroneous outputs and functionality to log git tags to integrate with DVC.
 

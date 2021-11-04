@@ -85,12 +85,12 @@ If you do not set ``auto_log`` to True, then you will need to manually define yo
 Python approach
 """""""""
 
-You can also create an instance of a :py:class:`~mltrace.entities.ComponentRun` and log it using :py:func:`mltrace.log_component_run` yourself for greater flexibility. An example of this is as follows:
+You can also create an instance of a :py:class:`~mltrace.ComponentRun` and log it using :py:func:`mltrace.log_component_run` yourself for greater flexibility. An example of this is as follows:
 
 .. code-block :: python
 
     from datetime import datetime
-    from mltrace.entities import ComponentRun
+    from mltrace import ComponentRun
     from mltrace import get_git_hash, log_component_run
     import pandas as pd
 
@@ -115,12 +115,12 @@ You can also create an instance of a :py:class:`~mltrace.entities.ComponentRun` 
 
         return clean_version
 
-Note that in :py:func:`~mltrace.log_component_run`, ``set_dependencies_from_inputs`` is set to ``True`` by default. You can set it to False if you want to manually specify the names of the components that this component run depends on. To manually specify a dependency, you can call :py:func:`~mltrace.entities.ComponentRun.set_upstream` with the dependent component name or list of component names before you call :py:func:`~mltrace.log_component_run`.
+Note that in :py:func:`~mltrace.log_component_run`, ``set_dependencies_from_inputs`` is set to ``True`` by default. You can set it to False if you want to manually specify the names of the components that this component run depends on. To manually specify a dependency, you can call :py:func:`~mltrace.ComponentRun.set_upstream` with the dependent component name or list of component names before you call :py:func:`~mltrace.log_component_run`.
 
 Testing
 ^^^^^^^
 
-You can define Tests, or reusable blocks of computation, to run before and after components are run. To define a test, you need to subclass the :py:class:`~mltrace.entities.Test` class. Defining a test is similar to defining a Python unittest, for example:
+You can define Tests, or reusable blocks of computation, to run before and after components are run. To define a test, you need to subclass the :py:class:`~mltrace.Test` class. Defining a test is similar to defining a Python unittest, for example:
 
 .. code-block :: python
 
