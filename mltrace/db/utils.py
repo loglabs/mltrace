@@ -191,8 +191,8 @@ def _save(
         if "component_run" in old_frame.f_locals:
             prefix = (
                 old_frame.f_locals["component_run"]
-                    .component_name.lower()
-                    .replace(" ", "_")
+                .component_name.lower()
+                .replace(" ", "_")
             )
             pathname = os.path.join(prefix, pathname)
 

@@ -145,5 +145,6 @@ class TestComponents(unittest.TestCase):
                 inp_val=[1],
             )
 
+
 if __name__ == "__main__":
     unittest.main()

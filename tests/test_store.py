@@ -410,5 +410,6 @@ class TestStore(unittest.TestCase):
         ]
         self.assertEqual(res, expected_res)
 
+
 if __name__ == "__main__":
     unittest.main()

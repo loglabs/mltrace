@@ -19,7 +19,11 @@ class TestTest(unittest.TestCase):
             def TestNotCorrect(self, n: list):
                 raise Exception("TestNotCorrect called!")
 
-        c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
+        c = base_component.Component(
+            "aditi",
+            "test",
+            "test_description",
+            afterTests=[DummyTest])
         val = [100]
 
         @c.run
@@ -48,7 +52,11 @@ class TestTest(unittest.TestCase):
             def Test(self, n: str):
                 raise Exception("Test called!")
 
-        c = base_component.Component("aditi", "test", "test_description", afterTests=[DummyTest])
+        c = base_component.Component(
+            "aditi",
+            "test",
+            "test_description",
+            afterTests=[DummyTest])
 
         @c.run
         def function():
