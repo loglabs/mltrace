@@ -685,7 +685,7 @@ class Store(object):
                     self.session.query(IOPointer)
                     .filter(
                         and_(
-                            IOPointer.name == same_name_res,
+                            IOPointer.name == same_name_res[0],
                             IOPointer.value == hval,
                         )
                     )
