@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tree, Classes, Tooltip, Icon } from "@blueprintjs/core";
+import { Tree, Classes, Tooltip, Icon, Text } from "@blueprintjs/core";
 import { CustomToaster } from "../components/toaster.js";
 import { Intent } from "@blueprintjs/core";
 import InfoCard from "../components/infocard.js";
@@ -12,6 +12,7 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 const TRACE_API_URL = "/api/trace";
 
 function styleLabels(node) {
+    node.labelText = node.label;
     // Set label to monospace style
     if (node.hasCaret === false) {
         node.label = (
@@ -48,6 +49,20 @@ export default class Trace extends Component {
     onNodeClick(node) {
         // const type = node.hasCaret === true ? 'component' : 'io';
         let id = (node.parent !== undefined) ? node.parent : node.id;
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(node.labelText);
+
+        CustomToaster.show({
+            message: <div>
+                <Text>
+                    <tt>{node.labelText}</tt> copied to clipboard.
+                </Text>
+            </div>,
+            icon: "tick",
+            intent: Intent.SUCCESS,
+        });
+
         this.setState({ selected_id: id });
     }
 

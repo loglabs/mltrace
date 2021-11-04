@@ -194,7 +194,7 @@ export default class CRInfoCard extends Component {
 
         let tagElements = info.tags.map((name, index) => {
             return (
-                <Link to = {`/tag/${name}`}><Tag
+                <Link to={`/tag/${name}`}><Tag
                     minimal={true}
                     onClick={() => { this.props.commandHandler("tag " + name) }}
                     intent={Intent.PRIMARY}
@@ -213,7 +213,7 @@ export default class CRInfoCard extends Component {
                 id: 'inp' + index,
                 label: (
                     <Tooltip content={inp.pointer_type}>
-                        {(<Link to = {`/trace/${inp.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
+                        {(<Link to={`/trace/${inp.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + inp.name))}>
                             {inp.name}
                         </div></Link>)}
                     </Tooltip>
@@ -231,7 +231,7 @@ export default class CRInfoCard extends Component {
                 id: 'out' + index,
                 label: (
                     <Tooltip content={out.pointer_type}>
-                        {(<Link to = {`/trace/${out.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
+                        {(<Link to={`/trace/${out.name}`}><div style={{ fontFamily: 'monospace' }} onClick={() => (this.props.commandHandler("trace " + out.name))}>
                             {out.name}
                         </div></Link>)}
                     </Tooltip>
@@ -287,7 +287,7 @@ export default class CRInfoCard extends Component {
                     className={Classes.TOOLTIP_INDICATOR}
                     position={Position.RIGHT}
                 >
-                    {(<Link to = {`/history/${info.component_name}`}><h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2></Link>)}
+                    {(<Link to={`/history/${info.component_name}`}><h2 onClick={() => (this.props.commandHandler("history " + info.component_name))}>{info.component_name}</h2></Link>)}
                 </Tooltip>
                 {countContent}
                 {stale}
