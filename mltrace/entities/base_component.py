@@ -75,7 +75,13 @@ class Component(Base):
             We first execute the beforeRun method, then the function itself,
             then the afterRun method with the values of the args at the
             end of the function.
-        ADD DESCRIPTION HERE ABOUT INPUT VARIABLEs and what they are
+
+        @:param inputs - To deprecate
+        @:param outputs - to deprecate
+        @:param input_vars - string variable representing the variable of the input
+        @:param output_vars - string variable representing the variable of the output
+        @:param input_kwargs - string variable representing the file name of the input
+        @:param output_kwargs - string variable representing the file name of the output
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before", "skip_after"]

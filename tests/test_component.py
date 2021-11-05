@@ -1,5 +1,5 @@
 import unittest
-from mltrace.entities import components, base_component
+from mltrace.entities import base_component
 
 
 class TestComponents(unittest.TestCase):

@@ -36,15 +36,6 @@ from mltrace.entities import (
     tests,
 )
 
-from mltrace.entities import (
-    Component,
-    Test,
-    ComponentRun,
-    IOPointer,
-    components,
-    tests,
-)
-
 __all__ = [
     "clean_db",
     "create_component",
