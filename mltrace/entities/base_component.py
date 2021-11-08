@@ -13,9 +13,7 @@ from mltrace.entities.base import Base
 
 import functools
 import inspect
-import io
 import git
-import sys
 
 
 class Component(Base):
