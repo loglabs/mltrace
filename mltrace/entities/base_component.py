@@ -72,10 +72,14 @@ class Component(Base):
             then the afterRun method with the values of the args at the
             end of the function.
 
-        @:param input_vars - string variable representing the variable of the input
-        @:param output_vars - string variable representing the variable of the output
-        @:param input_kwargs - string variable representing the file name of the input
-        @:param output_kwargs - string variable representing the file name of the output
+        @:param input_vars - string variable representing the variable
+            of the input
+        @:param output_vars - string variable representing the variable
+            of the output
+        @:param input_kwargs - string variable representing the file name
+            of the input
+        @:param output_kwargs - string variable representing the file name
+            of the output
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before", "skip_after"]
@@ -153,7 +157,9 @@ class Component(Base):
                         if isinstance(val, list):
                             input_pointers += store.get_io_pointers(val)
                         else:
-                            input_pointers.append(store.get_io_pointer(str(val)))
+                            input_pointers.append(
+                                store.get_io_pointer(str(val))
+                            )
                     for var in output_vars:
                         if var not in local_vars:
                             raise ValueError(

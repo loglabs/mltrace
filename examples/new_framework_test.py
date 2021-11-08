@@ -20,6 +20,7 @@ _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
 c = Component("aditi", "test", "test_description")
 
+
 @c.run(input_vars=["type", "n"], output_vars=["testOutput"])
 def gen_fake_data(
     type: str,
