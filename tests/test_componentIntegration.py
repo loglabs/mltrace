@@ -1,11 +1,11 @@
 import unittest
 import pandas as pd
-from mltrace.entities import base_test, base_component
+from mltrace import Test, Component
 
 
 class TestTest(unittest.TestCase):
     def testBeforeTestHasAllVars(self):
-        class DummyTest(base_test.Test):
+        class DummyTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -14,7 +14,7 @@ class TestTest(unittest.TestCase):
                 if testVal != "test_before":
                     raise Exception("Wrong Value")
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",
@@ -25,7 +25,7 @@ class TestTest(unittest.TestCase):
             return
 
     def testBeforeTestNotHaveAllVars(self):
-        class DummyTest(base_test.Test):
+        class DummyTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -34,7 +34,7 @@ class TestTest(unittest.TestCase):
                 if testVal != 10:
                     raise Exception("Wrong Value")
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",
@@ -49,7 +49,7 @@ class TestTest(unittest.TestCase):
             function()
 
     def testAfterTestHasAllVars(self):
-        class DummyTest(base_test.Test):
+        class DummyTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -59,7 +59,7 @@ class TestTest(unittest.TestCase):
                 if testVal != "test_aftercheck":
                     raise Exception("Wrong Value")
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",
@@ -71,7 +71,7 @@ class TestTest(unittest.TestCase):
             return
 
     def testAfterTestNotHaveAllVars(self):
-        class DummyTest(base_test.Test):
+        class DummyTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -80,7 +80,7 @@ class TestTest(unittest.TestCase):
                 if testVal != 10:
                     raise Exception("Wrong Value")
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",
@@ -95,7 +95,7 @@ class TestTest(unittest.TestCase):
             function()
 
     def testValueChange(self):
-        class BeforeTest(base_test.Test):
+        class BeforeTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -106,7 +106,7 @@ class TestTest(unittest.TestCase):
                         "Wrong Value in Before Test"
                     )
 
-        class AfterTest(base_test.Test):
+        class AfterTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -117,7 +117,7 @@ class TestTest(unittest.TestCase):
                         "Wrong Value in After Test"
                     )
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",

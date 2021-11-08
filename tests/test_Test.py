@@ -1,10 +1,10 @@
 import unittest
-from mltrace.entities import base_test, base_component
+from mltrace.entities import Test, Component
 
 
 class TestTest(unittest.TestCase):
     def testRunsAllTestFunc(self):
-        class DummyTest(base_test.Test):
+        class DummyTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -19,7 +19,7 @@ class TestTest(unittest.TestCase):
             def TestNotCorrect(self, n: list):
                 raise Exception("TestNotCorrect called!")
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",
@@ -36,7 +36,7 @@ class TestTest(unittest.TestCase):
         self.assertTrue(val[0] == 120)
 
     def testRunsOnlyTestFunc(self):
-        class DummyTest(base_test.Test):
+        class DummyTest(Test):
             def __init__(self):
                 super().__init__("Dummy")
 
@@ -52,7 +52,7 @@ class TestTest(unittest.TestCase):
             def Test(self, n: str):
                 raise Exception("Test called!")
 
-        c = base_component.Component(
+        c = Component(
             "aditi",
             "test",
             "test_description",

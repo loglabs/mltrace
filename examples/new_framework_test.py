@@ -8,19 +8,17 @@ run. Thus if you trace the last output in the UI, you should
 see that it depends on 9 things.
 """
 
-from mltrace.entities import components
+from mltrace import Component
 
 import pandas as pd
 import numpy as np
 import random
 import string
 
+
 _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
-c = components.PreprocessingComponent(
-    owner="aditi", description="tests output for outliers"
-)
-
+c = Component("aditi", "test", "test_description")
 
 @c.run(input_vars=["type", "n"], output_vars=["testOutput"])
 def gen_fake_data(

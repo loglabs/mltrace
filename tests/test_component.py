@@ -1,12 +1,12 @@
 import unittest
-from mltrace.entities import base_component
+from mltrace import Component
 
 
 class TestComponents(unittest.TestCase):
 
     def testBasicComponent(self):
         # Create component then log a run of it
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run
         def function():
@@ -18,7 +18,7 @@ class TestComponents(unittest.TestCase):
 
     def testFunctionNoReturnVars(self):
         # Create component then log a run of it
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run
         def function():
@@ -31,7 +31,7 @@ class TestComponents(unittest.TestCase):
     def testComponentWrongVar(self):
         # Have a var not exist in the function and assert there is
         # an error
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run(
             component_name="test_component",
@@ -61,7 +61,7 @@ class TestComponents(unittest.TestCase):
 
     def testComponentKWargs(self):
         # Test that logs are successful with kwargs
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run(
             component_name="test_component",
@@ -78,7 +78,7 @@ class TestComponents(unittest.TestCase):
         )
 
     def testComponentKWargsList(self):
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run(
             component_name="test_component",
@@ -95,7 +95,7 @@ class TestComponents(unittest.TestCase):
         )
 
     def testComponentKWargsListWrongLengths(self):
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run(
             component_name="test_component",
@@ -113,7 +113,7 @@ class TestComponents(unittest.TestCase):
             )
 
     def testComponentKWargsListWrongNames(self):
-        c = base_component.Component("aditi", "test", "test_description")
+        c = Component("aditi", "test", "test_description")
 
         @c.run(
             component_name="test_component",
