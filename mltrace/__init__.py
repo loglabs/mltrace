@@ -32,8 +32,6 @@ from mltrace.entities import (
     Test,
     ComponentRun,
     IOPointer,
-    components,
-    tests,
 )
 
 __all__ = [
@@ -66,8 +64,6 @@ __all__ = [
     "Test",
     "ComponentRun",
     "IOPointer",
-    "components",
-    "tests",
     "load",
     "save",
 ]
