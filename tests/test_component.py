@@ -1,8 +1,12 @@
 import unittest
-from mltrace import Component
+from mltrace import \
+    Component, \
+    set_db_uri
 
 
 class TestComponents(unittest.TestCase):
+    def setUp(self):
+        set_db_uri("test")
 
     def testBasicComponent(self):
         # Create component then log a run of it

@@ -1,8 +1,14 @@
 import unittest
-from mltrace.entities import Test, Component
+from mltrace import \
+    Test, \
+    Component, \
+    set_db_uri
 
 
 class TestTest(unittest.TestCase):
+    def setUp(self):
+        set_db_uri("test")
+
     def testRunsAllTestFunc(self):
         class DummyTest(Test):
             def __init__(self):

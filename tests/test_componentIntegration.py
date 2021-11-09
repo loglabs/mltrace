@@ -1,9 +1,14 @@
 import unittest
 import pandas as pd
-from mltrace import Test, Component
+from mltrace import Test, \
+    Component, \
+    set_db_uri
 
 
 class TestTest(unittest.TestCase):
+    def setUp(self):
+        set_db_uri("test")
+
     def testBeforeTestHasAllVars(self):
         class DummyTest(Test):
             def __init__(self):
