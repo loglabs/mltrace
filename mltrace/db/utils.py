@@ -24,7 +24,7 @@ import typing
 
 
 def _create_engine_wrapper(
-    uri: str, max_retries=5
+        uri: str, max_retries=5
 ) -> sqlalchemy.engine.base.Engine:
     """Creates engine using sqlalchemy API. Includes max retries parameter."""
     retries = 0
@@ -172,7 +172,7 @@ def _load(pathname: str, from_client=True) -> typing.Any:
 # TODO(shreyashankar): add cases for other types
 # (e.g., sklearn model, xgboost model, etc)
 def _save(
-    obj, pathname: str = None, var_name: str = "", from_client=True
+        obj, pathname: str = None, var_name: str = "", from_client=True
 ) -> str:
     """Saves joblib object to pathname."""
     if pathname is None:

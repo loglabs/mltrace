@@ -59,7 +59,7 @@ def save(obj, pathname: str = None) -> str:
 
 
 def create_component(
-    name: str, description: str, owner: str, tags: typing.List[str] = []
+        name: str, description: str, owner: str, tags: typing.List[str] = []
 ):
     """Creates a component entity in the database."""
     store = Store(_db_uri)
@@ -73,9 +73,9 @@ def tag_component(component_name: str, tags: typing.List[str]):
 
 
 def log_component_run(
-    component_run: ComponentRun,
-    set_dependencies_from_inputs=True,
-    staleness_threshold: int = (60 * 60 * 24 * 30),
+        component_run: ComponentRun,
+        set_dependencies_from_inputs=True,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
     """Takes client-facing ComponentRun object and logs it to the DB."""
     store = Store(_db_uri)
@@ -152,16 +152,16 @@ def create_random_ids(num_outputs=1) -> typing.List[str]:
 
 # TODO(shreyashankar): change logging.debug to thrown errors
 def register(
-    component_name: str,
-    inputs: typing.List[str] = [],
-    outputs: typing.List[str] = [],
-    input_vars: typing.List[str] = [],
-    output_vars: typing.List[str] = [],
-    input_kwargs: typing.Dict[str, str] = {},
-    output_kwargs: typing.Dict[str, str] = {},
-    endpoint: bool = False,
-    staleness_threshold: int = (60 * 60 * 24 * 30),
-    auto_log: bool = False,
+        component_name: str,
+        inputs: typing.List[str] = [],
+        outputs: typing.List[str] = [],
+        input_vars: typing.List[str] = [],
+        output_vars: typing.List[str] = [],
+        input_kwargs: typing.Dict[str, str] = {},
+        output_kwargs: typing.Dict[str, str] = {},
+        endpoint: bool = False,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
+        auto_log: bool = False,
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -276,7 +276,7 @@ def register(
                     continue
                 if isinstance(local_vars[key], list):
                     if not isinstance(local_vars[val], list) or len(
-                        local_vars[key]
+                            local_vars[key]
                     ) != len(local_vars[val]):
                         raise ValueError(
                             f'Value "{val}" does not have the same length as'
@@ -303,7 +303,7 @@ def register(
                     continue
                 if isinstance(local_vars[key], list):
                     if not isinstance(local_vars[val], list) or len(
-                        local_vars[key]
+                            local_vars[key]
                     ) != len(local_vars[val]):
                         raise ValueError(
                             f'Value "{val}" does not have the same length as'
@@ -471,10 +471,10 @@ def unflag_all():
 
 
 def get_history(
-    component_name: str,
-    limit: int = 10,
-    date_lower: typing.Union[datetime, str] = datetime.min,
-    date_upper: typing.Union[datetime, str] = datetime.max,
+        component_name: str,
+        limit: int = 10,
+        date_lower: typing.Union[datetime, str] = datetime.min,
+        date_upper: typing.Union[datetime, str] = datetime.max,
 ) -> typing.List[ComponentRun]:
     """Returns a list of ComponentRuns that are part of the component's
     history."""
@@ -574,7 +574,7 @@ def get_recent_run_ids(limit: int = 5, last_run_id=None):
 
 
 def get_io_pointer(
-    io_pointer_id: str, io_pointer_val: typing.Any = None, create=True
+        io_pointer_id: str, io_pointer_val: typing.Any = None, create=True
 ):
     """Returns IO Pointer metadata."""
     store = Store(_db_uri)

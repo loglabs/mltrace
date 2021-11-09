@@ -1,6 +1,5 @@
 """
 examples/auto_log.py
-
 This file contains one component and four different
 functions that are used to demonstrate the auto_log
 functionality. The user does not need to manually
