@@ -2,7 +2,7 @@
 Base class for test objects.
 """
 
-import inspect
+import inspect, typing
 
 
 class Test(object):
@@ -27,15 +27,17 @@ class Test(object):
         ]
         return testMethods
 
-    def runTests(self, **kwargs):
+    def runTests(self, **kwargs) -> {}:
         """
         Runs all tests in this class.
         """
         testMethods = self.getTestMethods()
+        status = {}
         for method in testMethods:
             test_args = {
                 k: v
                 for k, v in kwargs.items()
                 if k in inspect.signature(method).parameters
             }
-            getattr(self, method.__name__)(**test_args)
+            result = getattr(self, method.__name__)(**test_args) # is this calling the test? returning result?
+            status[method.__name__] = result

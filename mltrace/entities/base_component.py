@@ -35,18 +35,23 @@ class Component(Base):
         self._tags = tags
         self._beforeTests = beforeTests
         self._afterTests = afterTests
+        self._testStatus = {}
 
-    def beforeRun(self, **kwargs):
+    def beforeRun(self, **kwargs) -> {}:
         """Computation to execute before running a component.
         Will run each test object listed in beforeTests."""
+        status = {}
         for test in self._beforeTests:
-            test().runTests(**kwargs)
+            status.update(test().runTests(**kwargs))
+        return status
 
-    def afterRun(self, **local_vars):
+    def afterRun(self, **local_vars) -> {}:
         """Computation to execute after running a component.
         Will run all test objects listed in afterTests."""
+        status = {}
         for test in self._afterTests:
-            test().runTests(**local_vars)
+            status.update(test().runTests(**local_vars))
+        return status
 
     def run(
             self,
@@ -101,6 +106,9 @@ class Component(Base):
                         + f"the arguments of the function {func.__name__}"
                     )
 
+                # Make Distionary of test status
+                status = {}
+
                 # Run before test
                 if not user_kwargs.get("skip_before"):
                     all_args = dict(
@@ -113,7 +121,7 @@ class Component(Base):
                         for k, v in all_args.items()
                     }
                     all_args = {**all_args, **kwargs}
-                    self.beforeRun(**all_args)
+                    status.update(self.beforeRun(**all_args))
 
                 # Create input and output pointers
                 input_pointers = []
@@ -333,7 +341,10 @@ class Component(Base):
                         else inv_user_kwargs[k]: v
                         for k, v in local_vars.items()
                     }
-                    self.afterRun(**after_run_args)
+                    status.update(self.afterRun(**after_run_args))
+
+                # update the component's testStatus
+                self._testStatus.update(status)
 
                 return value
 
