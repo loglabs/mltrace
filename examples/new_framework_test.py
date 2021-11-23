@@ -9,6 +9,7 @@ see that it depends on 9 things.
 """
 
 from mltrace import Component
+from mltrace.entities.components import PreprocessingComponent
 
 import pandas as pd
 import numpy as np
@@ -18,7 +19,9 @@ import string
 
 _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 
-c = Component("aditi", "test", "test_description")
+# c = Component("aditi", "test", "test_description")
+
+c = PreprocessingComponent("aditi")
 
 
 @c.run(input_vars=["type", "n"], output_vars=["testOutput"])

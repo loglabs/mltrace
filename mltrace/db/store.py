@@ -339,6 +339,7 @@ class Store(object):
             f"Committing ComponentRun of type "
             + f'"{component_run.component_name}" to the database.'
         )
+        print("before store: ", component_run.test_results)
         self.session.commit()
 
     def set_dependencies_from_inputs(self, component_run: ComponentRun):

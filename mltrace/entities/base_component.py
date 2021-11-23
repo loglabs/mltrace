@@ -35,7 +35,6 @@ class Component(Base):
         self._tags = tags
         self._beforeTests = beforeTests
         self._afterTests = afterTests
-        self._testStatus = {}
 
     def beforeRun(self, **kwargs) -> {}:
         """Computation to execute before running a component.
@@ -106,7 +105,7 @@ class Component(Base):
                         + f"the arguments of the function {func.__name__}"
                     )
 
-                # Make Distionary of test status
+                # Make Dictionary of test status
                 status = {}
 
                 # Run before test
@@ -327,11 +326,6 @@ class Component(Base):
                 # Set dependencies
                 store.set_dependencies_from_inputs(component_run)
 
-                # Commit component run object to the DB
-                store.commit_component_run(
-                    component_run, staleness_threshold=staleness_threshold
-                )
-
                 # Perform after run tests
                 if not user_kwargs.get("skip_after"):
                     # Run after test
@@ -343,8 +337,14 @@ class Component(Base):
                     }
                     status.update(self.afterRun(**after_run_args))
 
-                # update the component's testStatus
-                self._testStatus.update(status)
+                # update the component's testStatus, convert status to a json
+                print("status ", status)
+                component_run.set_test_result(status)
+
+                # Commit component run object to the DB
+                store.commit_component_run(
+                    component_run, staleness_threshold=staleness_threshold
+                )
 
                 return value
 

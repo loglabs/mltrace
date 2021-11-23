@@ -197,7 +197,7 @@ class ComponentRun(Base):
         self.outputs = []
         self.dependencies = []
         self.stale = []
-        self.test_results = JSON.NULL #JSON Null, not SQL null
+        self.test_results = JSON.NULL
 
     def set_start_timestamp(self, ts: datetime = None):
         """Call this function to set the start timestamp

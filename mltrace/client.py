@@ -529,6 +529,7 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     """Returns a ComponentRun object."""
     store = Store(_db_uri)
     cr = store.get_component_run(component_run_id)
+    print("test results from cr: ", cr.test_results)
     if not cr:
         raise RuntimeError(f"Component run with id {id} not found.")
     inputs = [
