@@ -105,10 +105,7 @@ class App extends Component {
     var args = input.split(" ").filter(str => str !== "");
 
     var urlPath = "/" + args.join("/")
-    console.log(urlPath)
     this.props.history.push(urlPath)
-
-    console.log("handleCommand get called:" + args);
 
     if (args.length === 0) return;
 
@@ -136,7 +133,7 @@ class App extends Component {
         });
         return;
       }
-  
+
       this.setState({ command: 'tag', id: args[0], kwargs: {}, input: input });
     } else if (command === "history") {
       if (args.length === 0 || args.length > 2) {
@@ -247,34 +244,34 @@ class App extends Component {
           onHandleHelp={this.handleHelp}
         />
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
-          <Switch>
-            <Route exact path="/">
-              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
-              {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
-              {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-              {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
-              {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
-              {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
-            </Route>
-            <Route path="/history">
-              {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
-            </Route>
-            <Route path="/recent">
-              {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
-            </Route>
-            <Route path="/review">
-              {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
-            </Route>
-            <Route path="/trace">
-              {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-            </Route>
-            <Route path="/tag">
-              {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
-            </Route>
-            <Route path="/inspect">
-              {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
-            </Route>
-          </Switch>
+        <Switch>
+          <Route exact path="/">
+            {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+            {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+            {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+            {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+            {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+            {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
+          </Route>
+          <Route path="/history">
+            {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
+          </Route>
+          <Route path="/recent">
+            {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
+          </Route>
+          <Route path="/review">
+            {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
+          </Route>
+          <Route path="/trace">
+            {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
+          </Route>
+          <Route path="/tag">
+            {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
+          </Route>
+          <Route path="/inspect">
+            {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
+          </Route>
+        </Switch>
       </div>
     );
   }

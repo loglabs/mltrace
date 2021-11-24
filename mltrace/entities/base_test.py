@@ -2,12 +2,11 @@
 Base class for test objects.
 """
 
-# from mltrace.entities.base import Base
 import inspect
 
 
 class Test(object):
-    def __init__(self, name: str = ""):  # pass in list as args type?
+    def __init__(self, name: str = ""):
         self._name = name
 
     @property

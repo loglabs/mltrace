@@ -14,9 +14,31 @@ Knowing data flow is a precursor to debugging issues in data pipelines. ``mltrac
 Data model
 ^^^^^^^^^^
 
-The two prominent client-facing abstractions are the :py:class:`~mltrace.entities.Component` and :py:class:`~mltrace.entities.ComponentRun` abstractions.
+The two prominent client-facing abstractions are the :py:class:`~mltrace.Component` and :py:class:`~mltrace.ComponentRun` abstractions.
 
-:py:class:`mltrace.entities.Component`
+:py:class:`~mltrace.Test`
+"""""""""
+
+The ``Test`` abstraction represents some reusable computation to perform on component inputs and outputs. Defining a ``Test`` is similar to writing a unit test:
+
+.. code-block :: python
+
+    from mltrace import Test
+
+    class OutliersTest(Test):
+        def __init__(self):
+            super().__init__(name='outliers')
+
+        def testSomething(self; df: pd.DataFrame):
+            ....
+        
+        def testSomethingElse(self; df: pd.DataFrame):
+            ....
+
+
+Tests can be defined and passed to components as arguments, as described in the section below.
+
+:py:class:`mltrace.Component`
 """""""""
 
 The ``Component`` abstraction represents a stage in a pipeline and its static metadata, such as:
@@ -25,10 +47,49 @@ The ``Component`` abstraction represents a stage in a pipeline and its static me
 * description
 * owner
 * tags (optional list of string values to reference the component by)
+* tests
 
 Tags are generally useful when you have multiple components in a higher-level stage. For example, ETL computation could consist of different components such as "cleaning" or "feature generation." You could create the "cleaning" and "feature generation" components with the tag ``etl`` and then easily query component runs with the ``etl`` tag in the UI.
 
-:py:class:`mltrace.entities.ComponentRun`
+Components have a life-cycle:
+
+* ``c = Component(...)``: construction of the component object
+* ``c.beforeTests``: a list of ``Tests`` to run before the component is run
+* ``c.run``: a decorator for a user-defined function that represents the component's computation
+* ``c.afterTests``: a list of ``Tests`` to run after the component is run 
+
+Putting it all together, we can define our own component:
+
+.. code-block :: python
+
+    from mltrace import Component
+
+    class Featuregen(Component):
+        def __init__(self, beforeTests=[], afterTests=[OutliersTest]):
+
+        super().__init__(
+            name="featuregen",
+            owner="spark-gymnast",
+            description="Generates features for high tip prediction problem",
+            tags=["nyc-taxicab"],
+            beforeTests=beforeTests,
+            afterTests=afterTests,
+        )
+    
+
+And in our main application code, we can decorate any feature generation function:
+
+.. code-block :: python
+
+    @Featuregen().run
+    def generateFeatures(df: pd.DataFrame):
+        # Generate features
+        df = ...
+        return df
+
+See the next page for a more in-depth tutorial on instrumenting a pipeline.
+
+:py:class:`mltrace.ComponentRun`
 """""""""
 
 The ``ComponentRun`` abstraction represents an instance of a ``Component`` being run. Think of a ``ComponentRun`` instance as an object storing *dynamic* metadata for a ``Component``, such as:
@@ -41,7 +102,7 @@ The ``ComponentRun`` abstraction represents an instance of a ``Component`` being
 * source code
 * dependencies (you do not need to manually declare)
 
-If you dig into the codebase, you will find another abstraction, the :py:class:`~mltrace.entities.IOPointer`. Inputs and outputs to a ``ComponentRun`` are stored as ``IOPointer`` objects. You do not need to explicitly create an ``IOPointer`` -- the abstraction exists so that ``mltrace`` can easily find and store dependencies between ``ComponentRun`` objects.
+If you dig into the codebase, you will find another abstraction, the :py:class:`~mltrace.IOPointer`. Inputs and outputs to a ``ComponentRun`` are stored as ``IOPointer`` objects. You do not need to explicitly create an ``IOPointer`` -- the abstraction exists so that ``mltrace`` can easily find and store dependencies between ``ComponentRun`` objects.
 
 You will not need to explicitly define all of these variables, nor do you have to create instances of a ``ComponentRun`` yourself. See the next section for logging functions and an example.
 
