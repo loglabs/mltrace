@@ -38,6 +38,43 @@ component_tag_association = Table(
 )
 
 
+# Functionality for label tracking.
+
+label_io_pointer_association = Table(
+    "labels_io_pointers",
+    Base.metadata,
+    Column("label", String, ForeignKey("labels.id"), index=True),
+    Column("io_pointer_name", String),
+    Column("io_pointer_value", LargeBinary),
+    ForeignKeyConstraint(
+        ["io_pointer_name", "io_pointer_value"],
+        ["io_pointers.name", "io_pointers.value"],
+    ),
+)
+
+deleted_labels = Table(
+    "deleted_labels",
+    Base.metadata,
+    Column("label", String, ForeignKey("labels.id"), primary_key=True),
+    Column("deletion_request_time", DateTime),
+)
+
+
+class Label(Base):
+    __tablename__ = "labels"
+    id = Column(String, primary_key=True)
+    io_pointers = relationship(
+        "IOPointer",
+        secondary=label_io_pointer_association,
+        cascade="all",
+        backref="io_pointers",
+    )
+
+    def __init__(self, id: str):
+        self.id = id
+        self.io_pointers = []
+
+
 class Component(Base):
     __tablename__ = "components"
 
@@ -82,6 +119,13 @@ class IOPointer(Base):
     pointer_type = Column(Enum(PointerTypeEnum))
     flag = Column(Boolean, default=False)
 
+    labels = relationship(
+        "Label",
+        secondary=label_io_pointer_association,
+        cascade="all",
+        backref="labels",
+    )
+
     __table_args__ = (UniqueConstraint("name", "value", name="_iop_uc"),)
 
     def __init__(
@@ -89,11 +133,13 @@ class IOPointer(Base):
         name: str,
         value: bytes = b"",
         pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN,
+        labels=[],
     ):
         self.name = name
         self.value = value
         self.pointer_type = pointer_type
         self.flag = False
+        self.labels = labels
 
     def set_pointer_type(self, pointer_type: PointerTypeEnum):
         self.pointer_type = pointer_type
@@ -103,6 +149,12 @@ class IOPointer(Base):
 
     def clear_flag(self):
         self.flag = False
+
+    def add_label(self, label: Label):
+        self.labels = list(set(self.labels + [label]))
+
+    def add_labels(self, labels: typing.list[Label]):
+        self.labels = list(set(self.labels + labels))
 
 
 component_run_input_association = Table(

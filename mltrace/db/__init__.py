@@ -4,6 +4,7 @@ from mltrace.db.models import (
     ComponentRun,
     PointerTypeEnum,
     Tag,
+    Label,
     component_run_output_association,
 )
 from mltrace.db.store import Store
@@ -15,4 +16,5 @@ __all__ = [
     "Store",
     "PointerTypeEnum",
     "Tag",
+    "Label",
 ]

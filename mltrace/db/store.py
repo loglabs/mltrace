@@ -15,6 +15,7 @@ from mltrace.db import (
     IOPointer,
     PointerTypeEnum,
     Tag,
+    Label,
     component_run_output_association,
 )
 from mltrace.db.models import component_run_output_association
@@ -336,7 +337,7 @@ class Store(object):
         # Commit to DB
         self.session.add(component_run)
         logging.info(
-            f"Committing ComponentRun of type "
+            f"Committing ComponentRun {component_run.id} of type "
             + f'"{component_run.component_name}" to the database.'
         )
         self.session.commit()
@@ -657,11 +658,14 @@ class Store(object):
     def get_all_tags(self) -> typing.List[Tag]:
         return self.session.query(Tag).all()
 
-    def get_io_pointers_from_args(self, **kwargs):
+    def get_io_pointers_from_args(self, should_filter=True, **kwargs):
         """Filters kwargs to data and model types,
         then gets corresponding IOPointers."""
 
-        args_filtered = _get_data_and_model_args(**kwargs)
+        args_filtered = kwargs
+        if should_filter:
+            args_filtered = _get_data_and_model_args(**kwargs)
+
         io_pointers = []
         # Hash each arg and see if the corresponding IOPointer exists
         for key, value in args_filtered.items():
@@ -713,3 +717,28 @@ class Store(object):
             io_pointers.append(iop)
 
         return io_pointers
+
+    def get_label(self, label_id: str):
+        res = self.session.query(Label).filter(Label.id == label_id).first()
+
+        # If label does not exist, create it
+        if not res:
+            label = Label(id=label_id)
+            self.session.add(label)
+            self.session.commit()
+            return label
+
+        return res
+
+    def propagate_labels(
+        self, inputs: typing.List[IOPointer], outputs: typing.List[IOPointer]
+    ):
+        """
+        Propagates labels from inputs to outputs.
+        """
+        all_labels = [inp.labels for inp in inputs]
+        all_labels = [lab for labels in all_labels for lab in labels]
+        for out in outputs:
+            out.add_labels(all_labels)
+            self.session.add(out)
+        self.session.commit()
