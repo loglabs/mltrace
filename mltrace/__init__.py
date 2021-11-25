@@ -26,6 +26,9 @@ from mltrace.client import (
     unflag_all,
     load,
     save,
+    delete_label,
+    print_deleted_labels,
+    delete_labels,
 )
 from mltrace.entities import (
     Component,
@@ -66,4 +69,7 @@ __all__ = [
     "IOPointer",
     "load",
     "save",
+    "delete_label",
+    "print_deleted_labels",
+    "delete_labels",
 ]

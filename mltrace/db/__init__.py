@@ -6,6 +6,7 @@ from mltrace.db.models import (
     Tag,
     Label,
     component_run_output_association,
+    deleted_labels,
 )
 from mltrace.db.store import Store
 
@@ -17,4 +18,5 @@ __all__ = [
     "PointerTypeEnum",
     "Tag",
     "Label",
+    "deleted_labels",
 ]
