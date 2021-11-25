@@ -337,7 +337,7 @@ class Store(object):
         # Commit to DB
         self.session.add(component_run)
         logging.info(
-            f"Committing ComponentRun of type "
+            f"Committing ComponentRun {component_run.id} of type "
             + f'"{component_run.component_name}" to the database.'
         )
         self.session.commit()
@@ -658,11 +658,14 @@ class Store(object):
     def get_all_tags(self) -> typing.List[Tag]:
         return self.session.query(Tag).all()
 
-    def get_io_pointers_from_args(self, **kwargs):
+    def get_io_pointers_from_args(self, should_filter=True, **kwargs):
         """Filters kwargs to data and model types,
         then gets corresponding IOPointers."""
 
-        args_filtered = _get_data_and_model_args(**kwargs)
+        args_filtered = kwargs
+        if should_filter:
+            args_filtered = _get_data_and_model_args(**kwargs)
+
         io_pointers = []
         # Hash each arg and see if the corresponding IOPointer exists
         for key, value in args_filtered.items():
@@ -734,7 +737,7 @@ class Store(object):
         Propagates labels from inputs to outputs.
         """
         all_labels = [inp.labels for inp in inputs]
-        all_labels = [l for l in labels for labels in all_labels]
+        all_labels = [l for labels in all_labels for l in labels]
         for out in outputs:
             out.add_labels(all_labels)
             self.session.add(out)

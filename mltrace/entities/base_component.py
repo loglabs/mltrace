@@ -18,13 +18,13 @@ import git
 
 class Component(Base):
     def __init__(
-            self,
-            name: str = "",
-            owner: str = "",
-            description: str = "",
-            beforeTests: list = [],
-            afterTests: list = [],
-            tags: typing.List[str] = [],
+        self,
+        name: str = "",
+        owner: str = "",
+        description: str = "",
+        beforeTests: list = [],
+        afterTests: list = [],
+        tags: typing.List[str] = [],
     ):
         """Components abstraction.
         Components should have a name, owner, and lists
@@ -49,16 +49,18 @@ class Component(Base):
             test().runTests(**local_vars)
 
     def run(
-            self,
-            input_vars: typing.List[str] = [],
-            output_vars: typing.List[str] = [],
-            input_kwargs: typing.Dict[str, str] = {},
-            output_kwargs: typing.Dict[str, str] = {},
-            endpoint: bool = False,
-            staleness_threshold: int = (60 * 60 * 24 * 30),
-            auto_log: bool = False,
-            *user_args,
-            **user_kwargs,
+        self,
+        input_filenames: typing.List[str] = [],
+        output_filenames: typing.List[str] = [],
+        input_vars: typing.List[str] = [],
+        output_vars: typing.List[str] = [],
+        input_kwargs: typing.Dict[str, str] = {},
+        output_kwargs: typing.Dict[str, str] = {},
+        endpoint: bool = False,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
+        auto_log: bool = False,
+        *user_args,
+        **user_kwargs,
     ):
         """
         Decorator around the function executed:
@@ -72,10 +74,12 @@ class Component(Base):
             then the afterRun method with the values of the args at the
             end of the function.
 
-        @:param input_vars - string variable representing the variable
+        @:param input_filenames - string variable representing the variable
             of the input
-        @:param output_vars - string variable representing the variable
+        @:param output_filenames - string variable representing the variable
             of the output
+        @:param input_vars - list of variables representing inputs
+        @:param output_vars - list of variables representing outputs
         @:param input_kwargs - string variable representing the file name
             of the input
         @:param output_kwargs - string variable representing the file name
@@ -94,7 +98,7 @@ class Component(Base):
 
                 # Assert key names are not in args or kwargs
                 if (
-                        set(key_names) & set(inspect.getfullargspec(func).args)
+                    set(key_names) & set(inspect.getfullargspec(func).args)
                 ) or (set(key_names) & set(kwargs.keys())):
                     raise ValueError(
                         "skip_before or skip_after cannot be in "
@@ -134,7 +138,7 @@ class Component(Base):
                     all_input_args = {**all_input_args, **kwargs}
                     # print(all_input_args.keys())
                     input_pointers += store.get_io_pointers_from_args(
-                        **all_input_args
+                        should_filter=True, **all_input_args
                     )
 
                 # Run function
@@ -143,9 +147,9 @@ class Component(Base):
                 )
                 component_run.set_end_timestamp()
 
-                # Add input_vars and output_vars as pointers
-                if not callable(input_vars):
-                    for var in input_vars:
+                # Add input_filenames and output_filenames as pointers
+                if not callable(input_filenames):
+                    for var in input_filenames:
                         if var not in local_vars:
                             raise ValueError(
                                 f"Variable {var} not in current stack frame."
@@ -160,7 +164,7 @@ class Component(Base):
                             input_pointers.append(
                                 store.get_io_pointer(str(val))
                             )
-                    for var in output_vars:
+                    for var in output_filenames:
                         if var not in local_vars:
                             raise ValueError(
                                 f"Variable {var} not in current stack frame."
@@ -201,7 +205,7 @@ class Component(Base):
                             continue
                         if isinstance(local_vars[key], list):
                             if not isinstance(local_vars[val], list) or len(
-                                    local_vars[key]
+                                local_vars[key]
                             ) != len(local_vars[val]):
                                 raise ValueError(
                                     f'Value "{val}" does not have the same '
@@ -228,7 +232,7 @@ class Component(Base):
                             continue
                         if isinstance(local_vars[key], list):
                             if not isinstance(local_vars[val], list) or len(
-                                    local_vars[key]
+                                local_vars[key]
                             ) != len(local_vars[val]):
                                 raise ValueError(
                                     f'Value "{val}" does not have the same '
@@ -262,6 +266,33 @@ class Component(Base):
                                 ]
                             )
 
+                    # Log input and output vars
+                    for var in input_vars:
+                        if var not in local_vars:
+                            raise ValueError(
+                                f"Variable {var} not in current stack frame."
+                            )
+                        val = local_vars[var]
+                        if val is None:
+                            logging.debug(f"Variable {var} has value {val}.")
+                            continue
+                        input_pointers += store.get_io_pointers_from_args(
+                            should_filter=False, **{var: val}
+                        )
+
+                    for var in output_vars:
+                        if var not in local_vars:
+                            raise ValueError(
+                                f"Variable {var} not in current stack frame."
+                            )
+                        val = local_vars[var]
+                        if val is None:
+                            logging.debug(f"Variable {var} has value {val}.")
+                            continue
+                        output_pointers += store.get_io_pointers_from_args(
+                            should_filter=False, **{var: val}
+                        )
+
                 # If there were calls to mltrace.load and mltrace.save, log
 
                 if "_mltrace_loaded_artifacts" in local_vars:
@@ -288,7 +319,7 @@ class Component(Base):
                         if k not in all_input_args
                     }
                     output_pointers += store.get_io_pointers_from_args(
-                        **all_output_args
+                        should_filter=True, **all_output_args
                     )
 
                 component_run.add_inputs(input_pointers)
@@ -339,9 +370,9 @@ class Component(Base):
 
             return wrapper
 
-        if callable(input_vars):
+        if callable(input_filenames):
             # Used decorator without arguments
-            return actual_decorator(input_vars)
+            return actual_decorator(input_filenames)
 
         else:
             # User passed in some kwargs
