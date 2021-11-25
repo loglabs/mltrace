@@ -737,7 +737,7 @@ class Store(object):
         Propagates labels from inputs to outputs.
         """
         all_labels = [inp.labels for inp in inputs]
-        all_labels = [l for labels in all_labels for l in labels]
+        all_labels = [lab for labels in all_labels for lab in labels]
         for out in outputs:
             out.add_labels(all_labels)
             self.session.add(out)

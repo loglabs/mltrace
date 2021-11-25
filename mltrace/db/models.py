@@ -151,7 +151,7 @@ class IOPointer(Base):
         self.flag = False
 
     def add_label(self, label: Label):
-        self.labels.append(label)
+        self.labels = list(set(self.labels + [label]))
 
     def add_labels(self, labels: typing.list[Label]):
         self.labels = list(set(self.labels + labels))
