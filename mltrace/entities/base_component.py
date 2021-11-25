@@ -167,9 +167,10 @@ class Component(Base):
                                     if isinstance(label_vars, list)
                                     else local_vars[label_vars]
                                 )
-                            except:
+                            except KeyError:
                                 raise ValueError(
-                                    f"Variable {label_vars} not in current stack frame."
+                                    f"Variable {label_vars} not "
+                                    + f"in current stack frame."
                                 )
                         if val is None:
                             logging.debug(f"Variable {var} has value {val}.")

@@ -191,7 +191,7 @@ class Store(object):
             .all()
         )
         # Create label vector
-        label_vec = [self.get_label(l) for l in labels] if labels else None
+        label_vec = [self.get_label(lab) for lab in labels] if labels else None
         if res and labels:
             for iop in res:
                 iop.add_labels(label_vec)
@@ -250,7 +250,7 @@ class Store(object):
         same_name_res = [r[0] for r in same_name_res]
 
         # Create label vector
-        label_vec = [self.get_label(l) for l in labels] if labels else None
+        label_vec = [self.get_label(lab) for lab in labels] if labels else None
 
         if len(same_name_res) > 0 and bytes(same_name_res[0]) != hval:
             logging.warning(
@@ -775,12 +775,14 @@ class Store(object):
 
         if hard_deleted_label_objects:
             raise RuntimeError(
-                f"Label(s) {hard_deleted_label_objects} have been deleted."
+                f"Label(s) {hard_deleted_label_objects}"
+                + f" have been deleted."
             )
 
         if soft_deleted_label_objects:
             logging.warning(
-                f"Label(s) {soft_deleted_label_objects} were deleted in the past {day_threshold} days."
+                f"Label(s) {soft_deleted_label_objects} were deleted"
+                + f" in the past {day_threshold} days."
             )
 
     def propagate_labels(
