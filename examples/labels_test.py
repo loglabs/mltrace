@@ -21,6 +21,8 @@ from mltrace import Component
 import random
 import string
 
+from mltrace import delete_label, print_deleted_labels
+
 ingest_component = Component(
     "ingest",
     description="Example of ingesting data from some client.",
@@ -51,10 +53,10 @@ infer_component = Component(
 
 
 @ingest_component.run(
-    input_filenames=["client_data_filename"],
+    input_filenames={"client_data_filename": "labels"},
     output_filenames=["ingested_data_filename"],
 )
-def ingest(client_data_filename: str, label_cols: list = []) -> str:
+def ingest(client_data_filename: str, labels: list = []) -> str:
     # Ingest client's data into our data lake
     ingested_data_filename = f"ingested_{client_data_filename}"
     return ingested_data_filename
@@ -109,7 +111,7 @@ if __name__ == "__main__":
     deleted_customers = []
 
     # Train a model on historical data
-    train1_ingested = ingest(training_data_1)
+    train1_ingested = ingest(training_data_1, labels=["Alice"])
     train2_ingested = ingest(training_data_2)
 
     # Train topic classification model
@@ -130,24 +132,21 @@ if __name__ == "__main__":
     print(f"Final spam output id: {spam_output_id}")
 
     # Deletion request from one customer from training_data_1
-    # print("Customer Alice requesting data deletion")
-    # delete_customer(["Alice"])
-    # deleted_customers.append("Alice")
+    print("Customer Alice requesting data deletion")
 
-    # # Run inference again and show it breaks--expect error?
-    # live_ingested = ingest(live_data_path)
-    # try:
-    #     print("Beginning topic classification of emails")
-    #     topics_output_id = inference(live_ingested, classification_model)
-    #     print(f"Topics output id: {output_id}")
-    # except LabelDeletedError as e:
-    #     print(e)
-    # try:
-    #     print("Beginning spam filtering of emails")
-    #     spam_output_id = inference(live_ingested, spam_model)
-    #     print(f"Spam output id: {spam_output_id}")
-    # except LabelDeletedError as e:
-    #     print(e)
+    delete_label("Alice")
+    print_deleted_labels()
+    deleted_customers.append("Alice")
+
+    # Run inference again and show it breaks--there should be warning
+    live_ingested = ingest(live_data_path)
+    print("Beginning topic classification of emails")
+    topics_output_id = inference(live_ingested, classification_model)
+    print(f"Topics output id: {topics_output_id}")
+
+    print("Beginning spam filtering of emails")
+    spam_output_id = inference(live_ingested, spam_model)
+    print(f"Spam output id: {spam_output_id}")
 
     # # Delete another customer
     # print("Customer Bob requesting data deletion")

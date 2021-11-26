@@ -147,22 +147,41 @@ class Component(Base):
                 )
                 component_run.set_end_timestamp()
 
-                # Add input_filenames and output_filenames as pointers
                 if not callable(input_filenames):
-                    for var in input_filenames:
+
+                    duplicate = input_filenames
+                    if not isinstance(duplicate, dict):
+                        duplicate = {fname: None for fname in duplicate}
+
+                    for var, label_vars in duplicate.items():
                         if var not in local_vars:
                             raise ValueError(
                                 f"Variable {var} not in current stack frame."
                             )
                         val = local_vars[var]
+                        labels = None
+                        if label_vars is not None:
+                            try:
+                                labels = (
+                                    [local_vars[lv] for lv in label_vars]
+                                    if isinstance(label_vars, list)
+                                    else local_vars[label_vars]
+                                )
+                            except KeyError:
+                                raise ValueError(
+                                    f"Variable {label_vars} not "
+                                    + f"in current stack frame."
+                                )
                         if val is None:
                             logging.debug(f"Variable {var} has value {val}.")
                             continue
                         if isinstance(val, list):
-                            input_pointers += store.get_io_pointers(val)
+                            input_pointers += store.get_io_pointers(
+                                val, labels=labels
+                            )
                         else:
                             input_pointers.append(
-                                store.get_io_pointer(str(val))
+                                store.get_io_pointer(str(val), labels=labels)
                             )
                     for var in output_filenames:
                         if var not in local_vars:
@@ -321,6 +340,14 @@ class Component(Base):
                     output_pointers += store.get_io_pointers_from_args(
                         should_filter=True, **all_output_args
                     )
+
+                # Check that none of the labels in the inputs are deleted
+                store.assert_not_deleted_labels(
+                    input_pointers, staleness_threshold=staleness_threshold
+                )
+
+                # TODO(shreyashankar): propagate labels
+                store.propagate_labels(input_pointers, output_pointers)
 
                 component_run.add_inputs(input_pointers)
                 component_run.add_outputs(output_pointers)

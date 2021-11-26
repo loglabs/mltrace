@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from mltrace.db.utils import (
     _create_engine_wrapper,
     _initialize_db_tables,
@@ -17,11 +17,13 @@ from mltrace.db import (
     Tag,
     Label,
     component_run_output_association,
+    deleted_labels,
 )
 from mltrace.db.models import component_run_output_association
 from sqlalchemy import func, and_
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.sql.expression import Tuple
+from sqlalchemy.dialects.postgresql import insert
 
 import ctypes
 import hashlib
@@ -171,6 +173,7 @@ class Store(object):
         names: typing.List[str],
         values: typing.List[typing.Any] = None,
         pointer_type: PointerTypeEnum = None,
+        labels: typing.List[str] = None,
     ) -> typing.List[IOPointer]:
         """Creates io pointers around the specified path names. Retrieves
         existing io pointer if exists in DB, otherwise creates a new one with
@@ -187,6 +190,12 @@ class Store(object):
             )
             .all()
         )
+        # Create label vector
+        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        if res and labels:
+            for iop in res:
+                iop.add_labels(label_vec)
+
         res_names_values = set([(r.name, r.value) for r in res])
         need_to_add = set(zip(names, values)) - res_names_values
 
@@ -204,6 +213,9 @@ class Store(object):
                 )
                 for name, value in need_to_add
             ]
+            if labels:
+                for iop in iops:
+                    iop.add_labels(label_vec)
             self.session.add_all(iops)
             self.session.commit()
             return res + iops
@@ -216,6 +228,7 @@ class Store(object):
         value: typing.Any = "",
         pointer_type: PointerTypeEnum = None,
         create=True,
+        labels: typing.List[str] = None,
     ) -> IOPointer:
         """Creates an io pointer around the specified path.
         Retrieves existing io pointer if exists in DB,
@@ -235,6 +248,9 @@ class Store(object):
             .all()
         )
         same_name_res = [r[0] for r in same_name_res]
+
+        # Create label vector
+        label_vec = [self.get_label(lab) for lab in labels] if labels else None
 
         if len(same_name_res) > 0 and bytes(same_name_res[0]) != hval:
             logging.warning(
@@ -261,11 +277,16 @@ class Store(object):
                 pointer_type = _map_extension_to_enum(name)
 
             iop = IOPointer(name=name, value=hval, pointer_type=pointer_type)
+            if labels:
+                iop.add_labels(label_vec)
             self.session.add(iop)
             self.session.commit()
             return iop
 
         # Return existing object
+        # Add labels if they exist
+        if labels:
+            res[0].add_labels(label_vec)
         return res[0]
 
     def delete_component(self, component: Component):
@@ -730,6 +751,40 @@ class Store(object):
 
         return res
 
+    def assert_not_deleted_labels(
+        self,
+        io_pointers: typing.List[IOPointer],
+        staleness_threshold: int = 0,
+    ):
+        """Asserts that all labels are not deleted."""
+        all_labels = [iop.labels for iop in io_pointers]
+        all_labels = [lab.id for labels in all_labels for lab in labels]
+        day_threshold = int(staleness_threshold // (60 * 60 * 24))
+
+        deleted_label_objects = self.session.query(deleted_labels).filter(
+            deleted_labels.c.label.in_(all_labels)
+        )
+        hard_deleted_label_objects = deleted_label_objects.filter(
+            deleted_labels.c.deletion_request_time
+            < datetime.now() - timedelta(days=day_threshold)
+        ).all()
+        soft_deleted_label_objects = deleted_label_objects.filter(
+            deleted_labels.c.deletion_request_time
+            >= datetime.now() - timedelta(days=day_threshold)
+        ).all()
+
+        if hard_deleted_label_objects:
+            raise RuntimeError(
+                f"Label(s) {hard_deleted_label_objects}"
+                + f" have been deleted."
+            )
+
+        if soft_deleted_label_objects:
+            logging.warning(
+                f"Label(s) {soft_deleted_label_objects} were deleted"
+                + f" in the past {day_threshold} days."
+            )
+
     def propagate_labels(
         self, inputs: typing.List[IOPointer], outputs: typing.List[IOPointer]
     ):
@@ -742,3 +797,29 @@ class Store(object):
             out.add_labels(all_labels)
             self.session.add(out)
         self.session.commit()
+
+    def delete_label(self, label_id: str):
+        stmt = insert(deleted_labels).values(
+            label=label_id, deletion_request_time=datetime.now()
+        )
+        stmt = stmt.on_conflict_do_nothing(
+            constraint=deleted_labels.primary_key,
+        )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def delete_labels(self, label_ids: typing.List[str]):
+        stmt = insert(deleted_labels).values(
+            [
+                {"label": label_id, "deletion_request_time": datetime.now()}
+                for label_id in label_ids
+            ]
+        )
+        stmt = stmt.on_conflict_do_nothing(
+            constraint=deleted_labels.primary_key,
+        )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def print_deleted_labels(self):
+        print(self.session.query(deleted_labels).all())
