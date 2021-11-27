@@ -165,7 +165,7 @@ class Component(Base):
                                 labels = (
                                     [local_vars[lv] for lv in label_vars]
                                     if isinstance(label_vars, list)
-                                    else local_vars[label_vars]
+                                    else [local_vars[label_vars]]
                                 )
                             except KeyError:
                                 raise ValueError(
@@ -286,17 +286,34 @@ class Component(Base):
                             )
 
                     # Log input and output vars
-                    for var in input_vars:
+                    duplicate = input_vars
+                    if not isinstance(duplicate, dict):
+                        duplicate = {vname: None for vname in input_vars}
+
+                    for var, label_vars in duplicate.items():
                         if var not in local_vars:
                             raise ValueError(
                                 f"Variable {var} not in current stack frame."
                             )
                         val = local_vars[var]
+                        labels = None
+                        if label_vars is not None:
+                            try:
+                                labels = (
+                                    [local_vars[lv] for lv in label_vars]
+                                    if isinstance(label_vars, list)
+                                    else [local_vars[label_vars]]
+                                )
+                            except KeyError:
+                                raise ValueError(
+                                    f"Variable {label_vars} not "
+                                    + f"in current stack frame."
+                                )
                         if val is None:
                             logging.debug(f"Variable {var} has value {val}.")
                             continue
                         input_pointers += store.get_io_pointers_from_args(
-                            should_filter=False, **{var: val}
+                            should_filter=False, labels=labels, **{var: val}
                         )
 
                     for var in output_vars:
