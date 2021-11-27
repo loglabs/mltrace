@@ -679,13 +679,18 @@ class Store(object):
     def get_all_tags(self) -> typing.List[Tag]:
         return self.session.query(Tag).all()
 
-    def get_io_pointers_from_args(self, should_filter=True, **kwargs):
+    def get_io_pointers_from_args(
+        self, should_filter=True, labels: typing.List[str] = None, **kwargs
+    ):
         """Filters kwargs to data and model types,
         then gets corresponding IOPointers."""
 
         args_filtered = kwargs
         if should_filter:
             args_filtered = _get_data_and_model_args(**kwargs)
+
+        # Create label vector
+        label_vec = [self.get_label(lab) for lab in labels] if labels else None
 
         io_pointers = []
         # Hash each arg and see if the corresponding IOPointer exists
@@ -716,6 +721,8 @@ class Store(object):
                     )
                     .all()
                 )
+                if label_vec:
+                    res[0].add_labels(label_vec)
                 io_pointers.append(res[0])
                 continue
 
@@ -729,12 +736,14 @@ class Store(object):
             )
 
             if res:
+                if label_vec:
+                    res.add_labels(label_vec)
                 io_pointers.append(res)
                 continue
 
             # Save artifact and create new IOPointer
             pathname = _save(value, var_name=key, from_client=False)
-            iop = self.get_io_pointer(pathname, value)
+            iop = self.get_io_pointer(pathname, value, labels=labels)
             io_pointers.append(iop)
 
         return io_pointers
@@ -780,10 +789,11 @@ class Store(object):
             )
 
         if soft_deleted_label_objects:
-            logging.warning(
-                f"Label(s) {soft_deleted_label_objects} were deleted"
-                + f" in the past {day_threshold} days."
-            )
+            for label, time in soft_deleted_label_objects:
+                logging.warning(
+                    f"You are reading label {label}, which was deleted "
+                    + f"{(datetime.now() - time).days} days ago."
+                )
 
     def propagate_labels(
         self, inputs: typing.List[IOPointer], outputs: typing.List[IOPointer]
