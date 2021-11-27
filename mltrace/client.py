@@ -641,9 +641,15 @@ def delete_label(label_id: str):
 
 def delete_labels(label_ids: typing.List[str]):
     store = Store(_db_uri)
-    store.delete_label(label_ids)
+    store.delete_labels(label_ids)
 
 
-def print_deleted_labels():
+def retrieve_deleted_labels():
     store = Store(_db_uri)
-    store.print_deleted_labels()
+    print(store.retrieve_deleted_labels())
+
+
+def retrieve_io_pointers_for_label(label_id: str):
+    store = Store(_db_uri)
+    iops = store.retrieve_io_pointers_for_label(label_id)
+    return [IOPointer.from_dictionary(iop.__dict__) for iop in iops]

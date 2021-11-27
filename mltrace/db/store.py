@@ -831,5 +831,12 @@ class Store(object):
         self.session.execute(stmt)
         self.session.commit()
 
-    def print_deleted_labels(self):
-        print(self.session.query(deleted_labels).all())
+    def retrieve_deleted_labels(self):
+        return self.session.query(deleted_labels).all()
+
+    def retrieve_io_pointers_for_label(self, label_id: str):
+        """Retrieves all IOPointers that have the given label."""
+        label = self.session.query(Label).filter(Label.id == label_id).first()
+        if not label:
+            raise RuntimeError(f"Label {label_id} does not exist.")
+        return label.io_pointers
