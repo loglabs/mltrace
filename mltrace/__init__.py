@@ -27,8 +27,9 @@ from mltrace.client import (
     load,
     save,
     delete_label,
-    print_deleted_labels,
+    retrieve_deleted_labels,
     delete_labels,
+    retrieve_io_pointers_for_label,
 )
 from mltrace.entities import (
     Component,
@@ -70,6 +71,7 @@ __all__ = [
     "load",
     "save",
     "delete_label",
-    "print_deleted_labels",
+    "retrieve_deleted_labels",
     "delete_labels",
+    "retrieve_io_pointers_for_label",
 ]
