@@ -8,6 +8,7 @@ import threading
 class MLTraceError(Exception):
     pass
 
+
 def run_func_capture_locals(func, *args, **kwargs):
     """
     Calls the function *func* with the specified arguments and keyword
@@ -46,4 +47,3 @@ def asynchronous(func):
         return thread
 
     return wrapper
-

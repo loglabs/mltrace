@@ -54,34 +54,34 @@ class Test(object):
         return status
 
     # MLTrace Test Exceptions
-    def assertEqual(self, a, b, msg = None):
+    def assertEqual(self, a, b, msg=None):
         if not a == b:
             raise MLTraceError(msg)
 
-    def assertNotEqual(self, a, b, msg = None):
+    def assertNotEqual(self, a, b, msg=None):
         if not a != b:
             raise MLTraceError(msg)
 
-    def assertGreater(self, a, b, msg = None):
+    def assertGreater(self, a, b, msg=None):
         if not a > b:
             raise MLTraceError(msg)
 
-    def assertLess(self, a, b, msg = None):
+    def assertLess(self, a, b, msg=None):
         if not a < b:
             raise MLTraceError(msg)
 
-    def assertGreaterEqual(self, a, b, msg = None):
+    def assertGreaterEqual(self, a, b, msg=None):
         if not a >= b:
             raise MLTraceError(msg)
 
-    def assertLessEqual(self, a, b, msg = None):
+    def assertLessEqual(self, a, b, msg=None):
         if not a <= b:
             raise MLTraceError(msg)
 
-    def assertTrue(self, a, msg = None):
+    def assertTrue(self, a, msg=None):
         if not a:
             raise MLTraceError(msg)
 
-    def assertFalse(self, a, msg = None):
+    def assertFalse(self, a, msg=None):
         if a:
             raise MLTraceError(msg)

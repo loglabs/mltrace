@@ -17,7 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("component_runs", sa.Column("test_results", sa.JSON, default=False))
+    op.add_column("component_runs", sa.Column(
+        "test_results", sa.JSON, default=False))
 
 
 def downgrade():

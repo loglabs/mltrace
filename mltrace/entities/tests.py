@@ -17,11 +17,11 @@ class OutliersTest(Test):
         Checks to make sure there are no outliers using z score cutoff.
         """
         z_scores = (
-                (df - df.mean(axis=0, skipna=True)) / df.std(axis=0, skipna=True)
+                (df - df.mean(axis=0, skipna=True)) /
+                df.std(axis=0, skipna=True)
         ).abs()
 
-        # can add print here to stdout to log as info about a test run in testLog
-
-        self.assertGreater(0, (z_scores > stdev_cutoff).to_numpy().sum(), "There are outlier values!")
+        self.assertGreater(0, (z_scores > stdev_cutoff).to_numpy().sum(),
+                           "There are outlier values!")
 
     # log result of test and stdout
