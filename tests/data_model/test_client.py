@@ -53,6 +53,7 @@ class TestComponentRun(unittest.TestCase):
             "dependencies": [],
             "id": None,
             "stale": [],
+            "test_result": None,
         }
 
         self.mock_inputs = [
