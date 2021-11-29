@@ -3,6 +3,7 @@ Base class for test objects.
 """
 
 import inspect
+import logging
 from mltrace.entities.utils import MLTraceError
 
 
@@ -47,9 +48,9 @@ class Test(object):
                 status[method.__name__] = "fail"
                 if len(str(e)) != 0:
                     status[method.__name__] += ", error: " + str(e)
-                    print("Test " + method.__name__ + " failed: " + str(e))
+                    logging.warning("Test " + method.__name__ + " failed: " + str(e))
                 else:
-                    print("Test " + method.__name__ + " failed")
+                    logging.warning("Test " + method.__name__ + " failed")
 
         return status
 
