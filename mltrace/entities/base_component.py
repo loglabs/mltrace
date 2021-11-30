@@ -139,7 +139,6 @@ class Component(Base):
                         **dict(zip(inspect.getfullargspec(func).args, args)),
                     }
                     all_input_args = {**all_input_args, **kwargs}
-                    # print(all_input_args.keys())
                     input_pointers += store.get_io_pointers_from_args(
                         **all_input_args
                     )
@@ -338,7 +337,6 @@ class Component(Base):
                     status.update(self.afterRun(**after_run_args))
 
                 # update the component's testStatus, convert status to a json
-                print("status ", status)
                 component_run.set_test_result(status)
 
                 # Commit component run object to the DB
