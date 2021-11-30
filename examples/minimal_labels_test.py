@@ -3,7 +3,7 @@ from mltrace import Component
 import random
 import pandas as pd
 
-from mltrace import delete_label, retrieve_io_pointers_for_label
+from mltrace import retract_label, retrieve_io_pointers_for_label
 
 first_component = Component("first", "shreya")
 second_component = Component("second", "shreya")
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         {"test_col": [random.randint(0, 100) for _ in range(10)]}
     )
     df = first(df, "temp_label")
-    delete_label("temp_label")
+    retract_label("temp_label")
     third(second(df))
     iops = retrieve_io_pointers_for_label("temp_label")
     for iop in iops:
