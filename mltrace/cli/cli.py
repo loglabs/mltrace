@@ -13,12 +13,18 @@ from mltrace import (
     flag_output_id,
     unflag_output_id,
     review_flagged_outputs,
-    get_all_tags,
+    get_tags,
     get_components,
     unflag_all,
     clean_db,
+    retract_label,
+    retrieve_io_pointers_for_label,
+    retrieve_retracted_labels,
+    get_labels,
 )
 import textwrap
+
+from mltrace.entities import io_pointer
 
 
 # ------------------------- Utilities ------------------------ #
@@ -369,8 +375,7 @@ def components(owner: str = "", tag: str = "", address: str = ""):
 
     # Display components, one per line
     for comp in result:
-        click.echo(f"Name: {comp.name}")
-        click.echo()
+        click.echo(f"{comp.name}")
 
 
 @mltrace.command("tags")
@@ -384,10 +389,10 @@ def tags(address: str = ""):
         set_address(address)
 
     # Get all tags, automatically unique
-    all_tags = get_all_tags()
+    all_tags = get_tags()
 
-    click.echo(all_tags)
-    click.echo()
+    for tag in all_tags:
+        click.echo(f"{tag}")
 
 
 @mltrace.command("clear")
@@ -401,3 +406,80 @@ def clear(address: str = ""):
         set_address(address)
 
     clean_db()
+
+
+@mltrace.command("retract")
+@click.argument("label_id")
+@click.option(
+    "--delete",
+    help="Delete artifacts that correspond to the label",
+    is_flag=True,
+)
+@click.option("--address", help="Database server address")
+def retract(label_id: str, delete: bool = False, address: str = ""):
+    """
+    Command to retract a label.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    # TODO (shreyashankar): if delete is true, delete all artifacts
+    # that correspond to the label
+
+    retract_label(label_id)
+    # TODO(shreyashankar): add functionality to delete multiple labels
+
+
+@mltrace.command("retrieve")
+@click.argument("label_id")
+@click.option("--address", help="Database server address")
+def retrieve(label_id: str, address: str = ""):
+    """
+    Command to retrieve artifacts for a label.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    io_pointers = retrieve_io_pointers_for_label(label_id)
+    click.echo(f"Name: {label_id}")
+    click.echo("└─IOPointers:")
+    for idx, iop in enumerate(io_pointers):
+        if idx == len(io_pointers) - 1:
+            click.echo(f"   └─{iop.name}")
+        else:
+            click.echo(f"   ├─{iop.name}")
+
+
+@mltrace.command("retracted")
+@click.option("--address", help="Database server address")
+def list_retracted(address: str = ""):
+    """
+    Command to list retracted labels.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    labels = retrieve_retracted_labels()
+    for label in labels:
+        lname, ddate = label
+        click.echo(f"Name: {lname}")
+        click.echo(f"└─Deleted: {ddate}")
+        click.echo()
+
+
+@mltrace.command("labels")
+@click.option("--address", help="Database server address")
+def labels(address: str = ""):
+    """
+    Command to list all labels.
+    """
+    # Set address
+    if address and len(address) > 0:
+        set_address(address)
+
+    labels = get_labels()
+    for label in labels:
+        click.echo(f"{label}")

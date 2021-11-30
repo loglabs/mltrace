@@ -582,9 +582,9 @@ def get_io_pointer(
     return IOPointer.from_dictionary(iop.__dict__)
 
 
-def get_all_tags() -> typing.List[str]:
+def get_tags() -> typing.List[str]:
     store = Store(_db_uri)
-    res = store.get_all_tags()
+    res = store.get_tags()
     tags = [t.name for t in res]
     return tags
 
@@ -634,22 +634,27 @@ def review_flagged_outputs():
     return store.review_flagged_outputs()
 
 
-def delete_label(label_id: str):
+def retract_label(label_id: str):
     store = Store(_db_uri)
     store.delete_label(label_id)
 
 
-def delete_labels(label_ids: typing.List[str]):
+def retract_labels(label_ids: typing.List[str]):
     store = Store(_db_uri)
     store.delete_labels(label_ids)
 
 
-def retrieve_deleted_labels():
+def retrieve_retracted_labels():
     store = Store(_db_uri)
-    print(store.retrieve_deleted_labels())
+    return store.retrieve_deleted_labels()
 
 
 def retrieve_io_pointers_for_label(label_id: str):
     store = Store(_db_uri)
     iops = store.retrieve_io_pointers_for_label(label_id)
     return [IOPointer.from_dictionary(iop.__dict__) for iop in iops]
+
+
+def get_labels() -> typing.List[str]:
+    store = Store(_db_uri)
+    return [label.id for label in store.get_labels()]
