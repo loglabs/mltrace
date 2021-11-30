@@ -21,7 +21,7 @@ from mltrace import Component
 import random
 import string
 
-from mltrace import delete_label, print_deleted_labels
+from mltrace import retract_label
 
 ingest_component = Component(
     "ingest",
@@ -134,8 +134,7 @@ if __name__ == "__main__":
     # Deletion request from one customer from training_data_1
     print("Customer Alice requesting data deletion")
 
-    delete_label("Alice")
-    print_deleted_labels()
+    retract_label("Alice")
     deleted_customers.append("Alice")
 
     # Run inference again and show it breaks--there should be warning

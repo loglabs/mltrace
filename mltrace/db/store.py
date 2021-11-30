@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+
+from git.index import typ
+from sqlalchemy.exc import IntegrityError
 from mltrace.db.utils import (
     _create_engine_wrapper,
     _initialize_db_tables,
@@ -28,6 +31,7 @@ from sqlalchemy.dialects.postgresql import insert
 import ctypes
 import hashlib
 import logging
+import sqlalchemy
 import typing
 
 
@@ -676,7 +680,7 @@ class Store(object):
         # Return a list of the ComponentRuns in the order
         return flagged_output_ids, trace_nodes_counts
 
-    def get_all_tags(self) -> typing.List[Tag]:
+    def get_tags(self) -> typing.List[Tag]:
         return self.session.query(Tag).all()
 
     def get_io_pointers_from_args(
@@ -815,8 +819,13 @@ class Store(object):
         stmt = stmt.on_conflict_do_nothing(
             constraint=deleted_labels.primary_key,
         )
-        self.session.execute(stmt)
-        self.session.commit()
+        try:
+            self.session.execute(stmt)
+            self.session.commit()
+        except Exception as e:
+            if type(e) == sqlalchemy.exc.IntegrityError:
+                raise RuntimeError(f"Label {label_id} does not exist.")
+            pass
 
     def delete_labels(self, label_ids: typing.List[str]):
         stmt = insert(deleted_labels).values(
@@ -840,3 +849,6 @@ class Store(object):
         if not label:
             raise RuntimeError(f"Label {label_id} does not exist.")
         return label.io_pointers
+
+    def get_labels(self):
+        return self.session.query(Label).all()

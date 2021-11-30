@@ -136,7 +136,6 @@ class Component(Base):
                         **dict(zip(inspect.getfullargspec(func).args, args)),
                     }
                     all_input_args = {**all_input_args, **kwargs}
-                    # print(all_input_args.keys())
                     input_pointers += store.get_io_pointers_from_args(
                         should_filter=True, **all_input_args
                     )
@@ -165,8 +164,10 @@ class Component(Base):
                                 labels = (
                                     [local_vars[lv] for lv in label_vars]
                                     if isinstance(label_vars, list)
-                                    else [local_vars[label_vars]]
+                                    else local_vars[label_vars]
                                 )
+                                if isinstance(labels, str):
+                                    labels = [labels]
                             except KeyError:
                                 raise ValueError(
                                     f"Variable {label_vars} not "
@@ -302,8 +303,10 @@ class Component(Base):
                                 labels = (
                                     [local_vars[lv] for lv in label_vars]
                                     if isinstance(label_vars, list)
-                                    else [local_vars[label_vars]]
+                                    else local_vars[label_vars]
                                 )
+                                if isinstance(labels, str):
+                                    labels = [labels]
                             except KeyError:
                                 raise ValueError(
                                     f"Variable {label_vars} not "
