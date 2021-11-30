@@ -48,7 +48,8 @@ class Test(object):
                 status[method.__name__] = "fail"
                 if len(str(e)) != 0:
                     status[method.__name__] += ", error: " + str(e)
-                    logging.warning("Test " + method.__name__ + " failed: " + str(e))
+                    logging.warning("Test " + method.__name__
+                                    + " failed: " + str(e))
                 else:
                     logging.warning("Test " + method.__name__ + " failed")
 
