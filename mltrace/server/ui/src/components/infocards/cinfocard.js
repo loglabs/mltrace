@@ -5,13 +5,14 @@ import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { createBrowserHistory } from 'history'
+
 // import { INTENT_DANGER } from '@blueprintjs/core/lib/esm/common/classes';
-
-
+const history = createBrowserHistory();
 const HISTORY_API_URL = '/api/history';
 
-export default class CInfoCard extends Component {
+class CInfoCard extends Component {
 
     constructor(props) {
         super(props);
@@ -22,7 +23,8 @@ export default class CInfoCard extends Component {
             componentName: '',
             limit: undefined,
             dateLower: undefined,
-            dateUpper: undefined
+            dateUpper: undefined,
+            url: undefined
         }
 
         this._isMounted = false;
@@ -30,7 +32,7 @@ export default class CInfoCard extends Component {
     }
 
     componentDidMount() {
-        this._isMounted = true;
+        console.log("info card did Mount ")
 
         // set history if calling from history page
         if (this.props.showHistoryOnLoad === true) {
@@ -52,6 +54,7 @@ export default class CInfoCard extends Component {
                 // this.setState({ output_id: this.props.output_id });
             });
         }
+        this._isMounted = true;
     }
 
     componentWillUnmount() {
@@ -59,45 +62,57 @@ export default class CInfoCard extends Component {
     }
 
     handleClick() {
+        console.log("clicked");
         this.setState({ isOpen: !this.state.isOpen });
     }
 
-    componentDidUpdate() {
-        if (this.state.componentName === this.props.src.name && this.props.limit === this.state.limit && this.props.dateUpper === this.state.dateUpper && this.props.dateLower === this.state.dateLower) {
-            return null;
-        }
+    // componentDidUpdate() {
+    //     console.log("info card did update ")
+    //     if (this.state.componentName === this.props.src.name && this.props.limit === this.state.limit && this.props.dateUpper === this.state.dateUpper && this.props.dateLower === this.state.dateLower) {
+    //         return null;
+    //     }
 
-        axios.get(HISTORY_API_URL, {
-            params: {
-                component_name: this.props.src.name,
-                limit: this.props.limit,
-                date_lower: this.props.dateLower,
-                date_upper: this.props.dateUpper
-            }
-        }).then(
-            ({ data }) => {
-                this._isMounted && this.setState({ history: data, componentName: this.props.src.name, limit: this.props.limit, dateLower: this.props.dateLower, dateUpper: this.props.dateUpper });
-            }
-        ).catch(e => {
-            console.log(e);
-            // this.setState({ output_id: this.props.output_id });
-        });
-    }
+    //     axios.get(HISTORY_API_URL, {
+    //         params: {
+    //             component_name: this.props.src.name,
+    //             limit: this.props.limit,
+    //             date_lower: this.props.dateLower,
+    //             date_upper: this.props.dateUpper
+    //         }
+    //     }).then(
+    //         ({ data }) => {
+    //             this._isMounted && this.setState({ history: data, componentName: this.props.src.name, limit: this.props.limit, dateLower: this.props.dateLower, dateUpper: this.props.dateUpper });
+    //         }
+    //     ).catch(e => {
+    //         console.log(e);
+    //         // this.setState({ output_id: this.props.output_id });
+    //     });
+    // }
 
     render() {
         let info = this.props.src;
+        history.listen(location => {
+            if (location.action === "POP") {
+                console.log("listened");
+                var args = location.pathname.split("/").filter(str => str !== "");
+                this.props.commandHandler(args.join(" "));
+            }
+        });
         let description = info.description ? info.description : "no description found";
         let tagElements = info.tags.map((name, index) => {
             return (
-                <Link to = {`/tag/${name}`}><Tag
+                <Tag
                     minimal={true}
-                    onClick={() => (this.props.commandHandler("tag " + name))}
+                    onClick={() => {
+                        this.props.history.push(`/tag/${name}`);
+                        this.props.commandHandler("tag " + name);
+                    }}
                     intent={Intent.PRIMARY}
                     style={{ marginRight: '0.5em', marginTop: '1.5em' }}
                     key={index}
                     interactive={true}>
                     {name}
-                </Tag></Link>)
+                </Tag>)
         });
 
         let runElements = this.state.history.map((cr, index) => {
@@ -117,7 +132,11 @@ export default class CInfoCard extends Component {
             }
 
             return (
-                <tr key={'componentrun_' + index} onClick={() => this.props.commandHandler("inspect " + cr.id)}>
+                <tr key={'componentrun_' + index} onClick={
+                    () => {
+                        this.props.history.push(`/inspect/${cr.id}`);
+                        this.props.commandHandler("inspect " + cr.id);
+                    }}>
                     <td>{id}</td>
                     <td>{cr.start_timestamp}</td>
                     <td>{(end - start) / 1000}sec</td>
@@ -161,3 +180,5 @@ export default class CInfoCard extends Component {
     }
 
 }
+
+export default withRouter(CInfoCard);

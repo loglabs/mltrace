@@ -15,6 +15,8 @@ import axios from "axios";
 const FLAG_API_URL = "api/flag";
 const UNFLAG_API_URL = "api/unflag";
 
+let update_url = true;
+
 class App extends Component {
 
   constructor(props) {
@@ -92,6 +94,7 @@ class App extends Component {
 
 
   handleUrl(input) {
+    update_url = true;
     var args = input.split("/").filter(str => str !== "");
     this.handleCommand(args.join(" "));
   }
@@ -101,11 +104,18 @@ class App extends Component {
   }
 
   handleCommand(input) {
+    
+    console.log("handleCommand")
+    console.log(input)
 
     var args = input.split(" ").filter(str => str !== "");
 
-    var urlPath = "/" + args.join("/")
-    this.props.history.push(urlPath)
+    if (update_url) {
+      var urlPath = "/" + args.join("/");
+      this.props.history.push(urlPath);
+      update_url = false;
+      console.log(urlPath);
+    }
 
     if (args.length === 0) return;
 
