@@ -5,6 +5,7 @@ Quickstart
 
 To use ``mltrace``, you first need to set up a server to log to. You will need the following utilities:
 
+* Python 3.7 or later
 * Docker_
 * Postgres_
 * Yarn_

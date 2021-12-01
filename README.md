@@ -5,10 +5,9 @@
 ![PyPI](https://img.shields.io/pypi/v/mltrace)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-`mltrace` tracks data flow through various components in ML pipelines and
-contains a UI and API to show a trace of steps in an ML pipeline that produces
-an output. It offers the following:
+`mltrace` is a lightweight, open-source Python tool to get "bolt-on" observability in ML pipelines. It offers the following:
 
+- interface to define data and ML tests for components in pipelines
 - coarse-grained lineage and tracing
 - Python API to log versions of data and pipeline components
 - database to store information about component runs

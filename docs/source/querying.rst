@@ -40,7 +40,7 @@ You can toggle between light and dark mode using the moon or sun button at the t
 .. _Using the CLI:
 
 Using the CLI
-^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 The following commands are supported via CLI:
 
@@ -83,7 +83,7 @@ To begin debugging, we recommend looking at the code, inputs, and outputs for th
 You can unflag output IDs by using the ``unflag`` command, which has usage patterns similar to ``flag``.
 
 :py:mod:`mltrace` module functions
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :py:func:`~mltrace.backtrace`
 - :py:func:`~mltrace.get_component_information`
