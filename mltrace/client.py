@@ -217,7 +217,6 @@ def register(
                     **dict(zip(inspect.getfullargspec(func).args, args)),
                 }
                 all_input_args = {**all_input_args, **kwargs}
-                # print(all_input_args.keys())
                 input_pointers += store.get_io_pointers_from_args(
                     **all_input_args
                 )

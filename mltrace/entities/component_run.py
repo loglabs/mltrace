@@ -31,6 +31,7 @@ class ComponentRun(Base):
         id: str = None,
         stale: typing.List[str] = [],
         dependencies: typing.List[str] = [],
+        test_results: json = None,
     ):
         """Set class attributes. Note that timestamps are represented in
         seconds since epoch."""
@@ -50,6 +51,7 @@ class ComponentRun(Base):
         self._id = id
         self._stale = stale
         self._dependencies = dependencies
+        self._test_results = test_results
 
     @property
     def component_name(self) -> str:
@@ -137,6 +139,10 @@ class ComponentRun(Base):
     @property
     def stale(self) -> typing.List[str]:
         return self._stale
+
+    @property
+    def test_result(self) -> json:
+        return self._test_results
 
     def set_start_timestamp(self, ts: datetime = None):
         if ts is None:
