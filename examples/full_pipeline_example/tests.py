@@ -12,7 +12,7 @@ class OutliersTest(Test):
     def __init__(self):
         super().__init__("Outliers")
 
-    def testZscore(self, df=pd.DataFrame, stdev_cutoff: float = 5.0):
+    def testZscore(self, df: pd.DataFrame, stdev_cutoff: float = 5.0):
         """
         Checks to make sure there are no outliers using z score cutoff.
         """
