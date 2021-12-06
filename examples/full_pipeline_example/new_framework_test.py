@@ -33,7 +33,6 @@ def gen_fake_data(
         columns=["rando"],
     )
     testOutput = "hello world!"
-    print(testOutput)
     return testOutput
 
 
