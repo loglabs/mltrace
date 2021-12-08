@@ -1,4 +1,4 @@
-alembic==1.6.2
+alembic==1.4.1
 attrs==20.3.0
 autopep8==1.5.6
 click==7.1.2
