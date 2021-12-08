@@ -6,6 +6,7 @@ from sqlalchemy.sql.sqltypes import Boolean
 from mltrace.db.base import Base
 from sqlalchemy import (
     Column,
+    JSON,
     String,
     LargeBinary,
     Integer,
@@ -239,6 +240,7 @@ class ComponentRun(Base):
         cascade="all",
     )
     stale = Column(PickleType)
+    test_results = Column(JSON)
 
     def __init__(self, component_name):
         """Initialize ComponentRun, or an instance of a Component's 'run.'"""
@@ -248,6 +250,7 @@ class ComponentRun(Base):
         self.outputs = []
         self.dependencies = []
         self.stale = []
+        self.test_results = JSON.NULL
 
     def set_mlflow_run_id(self, mlflow_run_id : str):
         """Call this function to set the mlflow component run id"""
@@ -382,3 +385,6 @@ class ComponentRun(Base):
             )
 
         return status_dict
+
+    def set_test_result(self, test_results: JSON):
+        self.test_results = test_results
