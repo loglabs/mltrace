@@ -772,18 +772,17 @@ class Store(object):
         """Asserts that all labels are not deleted."""
         all_labels = [iop.labels for iop in io_pointers]
         all_labels = [lab.id for labels in all_labels for lab in labels]
-        day_threshold = int(staleness_threshold // (60 * 60 * 24))
 
         deleted_label_objects = self.session.query(deleted_labels).filter(
             deleted_labels.c.label.in_(all_labels)
         )
         hard_deleted_label_objects = deleted_label_objects.filter(
             deleted_labels.c.deletion_request_time
-            < datetime.now() - timedelta(days=day_threshold)
+            < datetime.now() - timedelta(seconds=staleness_threshold)
         ).all()
         soft_deleted_label_objects = deleted_label_objects.filter(
             deleted_labels.c.deletion_request_time
-            >= datetime.now() - timedelta(days=day_threshold)
+            >= datetime.now() - timedelta(seconds=staleness_threshold)
         ).all()
 
         if hard_deleted_label_objects:
