@@ -37,7 +37,7 @@ docker-compose build
 docker-compose up [-d]
 ```
 
-And then to tear down the containers, you can run `docker-compose down`.
+And then to tear down the containers, you can run `docker-compose down`. Bring down the volumes as well, if you've made changes to DB schema using `docker-compose down --volumes`.
 
 ### Run pipelines (client-side)
 
