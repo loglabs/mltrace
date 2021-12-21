@@ -38,4 +38,4 @@ def gen_fake_data(
 
 if __name__ == "__main__":
     # Run the tiny function with some fake inputs and outputs
-    gen_fake_data("wald")
+    gen_fake_data("normal")

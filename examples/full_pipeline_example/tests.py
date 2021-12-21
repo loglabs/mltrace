@@ -23,5 +23,3 @@ class OutliersTest(Test):
 
         self.assertGreater(0, (z_scores > stdev_cutoff).to_numpy().sum(),
                            "There are outlier values!")
-
-    # log result of test and stdout
