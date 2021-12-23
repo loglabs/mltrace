@@ -1,8 +1,6 @@
 import unittest
 import pandas as pd
-from mltrace import Test, \
-    Component, \
-    set_db_uri
+from mltrace import Test, Component, set_db_uri
 
 
 class TestTest(unittest.TestCase):
@@ -20,10 +18,8 @@ class TestTest(unittest.TestCase):
                     raise Exception("Wrong Value")
 
         c = Component(
-            "aditi",
-            "test",
-            "test_description",
-            beforeTests=[DummyTest])
+            "aditi", "test", "test_description", beforeTests=[DummyTest]
+        )
 
         @c.run
         def function(n: str = "test"):
@@ -40,10 +36,8 @@ class TestTest(unittest.TestCase):
                     raise Exception("Wrong Value")
 
         c = Component(
-            "aditi",
-            "test",
-            "test_description",
-            beforeTests=[DummyTest])
+            "aditi", "test", "test_description", beforeTests=[DummyTest]
+        )
 
         @c.run
         def function():
@@ -65,10 +59,8 @@ class TestTest(unittest.TestCase):
                     raise Exception("Wrong Value")
 
         c = Component(
-            "aditi",
-            "test",
-            "test_description",
-            afterTests=[DummyTest])
+            "aditi", "test", "test_description", afterTests=[DummyTest]
+        )
 
         @c.run
         def function(n: str = "test"):
@@ -86,10 +78,8 @@ class TestTest(unittest.TestCase):
                     raise Exception("Wrong Value")
 
         c = Component(
-            "aditi",
-            "test",
-            "test_description",
-            afterTests=[DummyTest])
+            "aditi", "test", "test_description", afterTests=[DummyTest]
+        )
 
         @c.run
         def function():
@@ -107,9 +97,7 @@ class TestTest(unittest.TestCase):
             def testCorrect(self, data: pd.DataFrame):
                 testVal = data["A"].mean()
                 if testVal != 2:
-                    raise Exception(
-                        "Wrong Value in Before Test"
-                    )
+                    raise Exception("Wrong Value in Before Test")
 
         class AfterTest(Test):
             def __init__(self):
@@ -118,16 +106,14 @@ class TestTest(unittest.TestCase):
             def testCorrect(self, data: pd.DataFrame):
                 testVal = data["A"].mean()
                 if testVal != 4:
-                    raise Exception(
-                        "Wrong Value in After Test"
-                    )
+                    raise Exception("Wrong Value in After Test")
 
         c = Component(
             "aditi",
             "test",
             "test_description",
             beforeTests=[BeforeTest],
-            afterTests=[AfterTest]
+            afterTests=[AfterTest],
         )
 
         @c.run
@@ -135,8 +121,6 @@ class TestTest(unittest.TestCase):
             data = data.replace([0, 1, 2, 3], 4)
             return
 
-        df = pd.DataFrame({'A': [0, 1, 2, 3, 4],
-                           'B': [5, 6, 7, 8, 9]}
-                          )
+        df = pd.DataFrame({"A": [0, 1, 2, 3, 4], "B": [5, 6, 7, 8, 9]})
 
         function(df)

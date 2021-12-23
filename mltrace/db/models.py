@@ -5,8 +5,10 @@ from sqlalchemy.sql.schema import UniqueConstraint
 from sqlalchemy.sql.sqltypes import Boolean
 from mltrace.db.base import Base
 from sqlalchemy import (
+    ARRAY,
     Column,
     JSON,
+    Index,
     String,
     LargeBinary,
     Integer,
@@ -16,6 +18,8 @@ from sqlalchemy import (
     Enum,
     PickleType,
     UniqueConstraint,
+    text,
+    Numeric,
 )
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.schema import ForeignKeyConstraint
@@ -29,6 +33,39 @@ class PointerTypeEnum(str, enum.Enum):
     MODEL = "MODEL"
     ENDPOINT = "ENDPOINT"
     UNKNOWN = "UNKNOWN"
+
+
+# Tables for monitoring extensions
+
+output_table = Table(
+    "outputs",
+    Base.metadata,
+    Column("timestamp", DateTime),
+    Column("identifier", String),
+    Column("task_name", String),
+    Column("value", Numeric),
+    Index("outputs_ts_name_asc", "timestamp", "task_name"),
+    Index(
+        "outputs_ts_name_desc",
+        text("timestamp DESC"),
+        "task_name",
+    ),
+)
+
+feedback_table = Table(
+    "feedback",
+    Base.metadata,
+    Column("timestamp", DateTime),
+    Column("identifier", String),
+    Column("task_name", String),
+    Column("value", Numeric),
+    Index("feedback_ts_name_asc", "timestamp", "task_name"),
+    Index(
+        "feedback_ts_name_desc",
+        text("timestamp DESC"),
+        "task_name",
+    ),
+)
 
 
 component_tag_association = Table(

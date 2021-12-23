@@ -662,3 +662,30 @@ def get_labels() -> typing.List[str]:
 def create_labels(label_ids: typing.List[str]):
     store = Store(_db_uri)
     store.get_labels(label_ids)
+
+
+def log_output(
+    identifier: str,
+    task_name: str,
+    val: float,
+):
+    store = Store(_db_uri)
+    store.log_output(identifier, task_name, val)
+
+
+def log_feedback(
+    identifier: str,
+    task_name: str,
+    val: float,
+):
+    store = Store(_db_uri)
+    store.log_feedback(identifier, task_name, val)
+
+
+def compute_metric(
+    metric_fn: typing.Callable,
+    task_name: str,
+    window_size: int = None,
+):
+    store = Store(_db_uri)
+    store.compute_metric(metric_fn, task_name, window_size)
