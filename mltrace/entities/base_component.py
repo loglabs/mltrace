@@ -373,7 +373,6 @@ class Component(Base):
                     input_pointers, staleness_threshold=staleness_threshold
                 )
 
-                # TODO(shreyashankar): propagate labels
                 store.propagate_labels(input_pointers, output_pointers)
 
                 component_run.add_inputs(input_pointers)
