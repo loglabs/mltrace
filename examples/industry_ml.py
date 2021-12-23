@@ -25,30 +25,54 @@ import string
 
 # Components for the mltrace
 
-ingest_component = Component(name="ingest", description="Example of ingesting data from some client.", 
-                            owner="data_engineer", tags=["example"])
+ingest_component = Component(
+    name="ingest",
+    description="Example of ingesting data from some client.",
+    owner="data_engineer",
+    tags=["example"],
+)
 
-clean_component = Component(name="clean", description="Example of cleaning data",
-                            owner="data_engineer", tags=["example"])
+clean_component = Component(
+    name="clean",
+    description="Example of cleaning data",
+    owner="data_engineer",
+    tags=["example"],
+)
 
-featuregen_component = Component(name="featuregen", description="Example of generating features.",
-                                owner="ml_engineer", tags=["example"])
+featuregen_component = Component(
+    name="featuregen",
+    description="Example of generating features.",
+    owner="ml_engineer",
+    tags=["example"],
+)
 
-training_component = Component(name="training", description="Example of training a model.",
-                               owner="data_scientist", tags=["example"])
+training_component = Component(
+    name="training",
+    description="Example of training a model.",
+    owner="data_scientist",
+    tags=["example"],
+)
 
-inference_component = Component(name="inference", description="Example of doing inference.",
-                                owner="ml_engineer", tags=["example"]) 
+inference_component = Component(
+    name="inference",
+    description="Example of doing inference.",
+    owner="ml_engineer",
+    tags=["example"],
+)
 
 
-@ingest_component.run(input_vars=["client_data_filename"], output_vars=["ingested_data_filename"])
+@ingest_component.run(
+    input_vars=["client_data_filename"], output_vars=["ingested_data_filename"]
+)
 def ingest(client_data_filename: str) -> str:
     # Ingest client's data into our data lake
     ingested_data_filename = f"ingested_{client_data_filename}"
     return ingested_data_filename
 
 
-@clean_component.run(input_vars=["filename"], output_vars=["clean_data_filename"])
+@clean_component.run(
+    input_vars=["filename"], output_vars=["clean_data_filename"]
+)
 def clean(filename: str) -> str:
     # Read data into dataframe and clean it
     # df = pd.read_csv(filename)
@@ -57,7 +81,9 @@ def clean(filename: str) -> str:
     return clean_data_filename
 
 
-@featuregen_component.run(input_vars=["filename"], output_vars=["features_filename"])
+@featuregen_component.run(
+    input_vars=["filename"], output_vars=["features_filename"]
+)
 def featuregen(filename: str) -> str:
     # Read data and make features
     # df = pd.read_csv(filename)
@@ -66,7 +92,9 @@ def featuregen(filename: str) -> str:
     return features_filename
 
 
-@training_component.run(input_vars=["filename", "dev_model"], output_vars=["model_filename"])
+@training_component.run(
+    input_vars=["filename", "dev_model"], output_vars=["model_filename"]
+)
 def training(filename: str, dev_model: str = "") -> str:
     # Read data and train model
     # df = pd.read_csv(filename)
@@ -78,7 +106,9 @@ def training(filename: str, dev_model: str = "") -> str:
     return model_filename
 
 
-@inference_component.run(input_vars=["filename", "model_path"], output_vars=["output_id"])
+@inference_component.run(
+    input_vars=["filename", "model_path"], output_vars=["output_id"]
+)
 def inference(filename: str, model_path: str) -> str:
     # Load model and data
     # Run some inference
