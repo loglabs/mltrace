@@ -195,7 +195,7 @@ class Store(object):
             .all()
         )
         # Create label vector
-        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        label_vec = self.get_labels(labels) if labels else None
         if res and labels:
             for iop in res:
                 iop.add_labels(label_vec)
@@ -254,7 +254,7 @@ class Store(object):
         same_name_res = [r[0] for r in same_name_res]
 
         # Create label vector
-        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        label_vec = self.get_labels(labels) if labels else None
 
         if len(same_name_res) > 0 and bytes(same_name_res[0]) != hval:
             logging.warning(
@@ -358,6 +358,12 @@ class Store(object):
         # Warn user if there is a staleness message
         if len(component_run.stale) > 0:
             logging.warning(component_run.stale)
+
+        # Dedup labels
+        for inp in component_run.inputs:
+            inp.dedup_labels()
+        for out in component_run.outputs:
+            out.dedup_labels()
 
         # Commit to DB
         self.session.add(component_run)
@@ -694,7 +700,7 @@ class Store(object):
             args_filtered = _get_data_and_model_args(**kwargs)
 
         # Create label vector
-        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        label_vec = self.get_labels(labels) if labels else None
 
         io_pointers = []
         # Hash each arg and see if the corresponding IOPointer exists
@@ -761,6 +767,19 @@ class Store(object):
             self.session.add(label)
             self.session.commit()
             return label
+
+        return res
+
+    def get_labels(self, label_ids: typing.List[str]):
+
+        res = self.session.query(Label).filter(Label.id.in_(label_ids)).all()
+        need_to_add = list(set(label_ids) - set([r.id for r in res]))
+
+        if len(need_to_add) > 0:
+            labels = [Label(id=label_id) for label_id in need_to_add]
+            self.session.add_all(labels)
+            self.session.commit()
+            return res + labels
 
         return res
 
@@ -849,5 +868,5 @@ class Store(object):
             raise RuntimeError(f"Label {label_id} does not exist.")
         return label.io_pointers
 
-    def get_labels(self):
+    def get_all_labels(self):
         return self.session.query(Label).all()

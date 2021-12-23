@@ -656,4 +656,9 @@ def retrieve_io_pointers_for_label(label_id: str):
 
 def get_labels() -> typing.List[str]:
     store = Store(_db_uri)
-    return [label.id for label in store.get_labels()]
+    return [label.id for label in store.get_all_labels()]
+
+
+def create_labels(label_ids: typing.List[str]):
+    store = Store(_db_uri)
+    store.get_labels(label_ids)

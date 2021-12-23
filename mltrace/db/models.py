@@ -152,10 +152,13 @@ class IOPointer(Base):
         self.flag = False
 
     def add_label(self, label: Label):
-        self.labels = list(set(self.labels + [label]))
+        self.labels = self.labels + [label]
 
     def add_labels(self, labels: typing.list[Label]):
-        self.labels = list(set(self.labels + labels))
+        self.labels = self.labels + labels
+
+    def dedup_labels(self):
+        self.labels = list(set(self.labels))
 
 
 component_run_input_association = Table(
