@@ -21,6 +21,8 @@ from mltrace.db import (
     Label,
     component_run_output_association,
     deleted_labels,
+    output_table,
+    feedback_table,
 )
 from mltrace.db.models import component_run_output_association
 from sqlalchemy import func, and_
@@ -30,6 +32,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 import ctypes
 import hashlib
+import inspect
 import logging
 import sqlalchemy
 import typing
@@ -870,3 +873,115 @@ class Store(object):
 
     def get_all_labels(self):
         return self.session.query(Label).all()
+
+    def log_output(
+        self,
+        identifier: str,
+        task_name: str,
+        val: float,
+    ):
+        """
+        Logs an output value to the output table.
+        """
+
+        stmt = insert(output_table).values(
+            timestamp=datetime.now(),
+            identifier=identifier,
+            task_name=task_name,
+            value=val,
+        )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def log_feedback(
+        self,
+        identifier: str,
+        task_name: str,
+        val: float,
+    ):
+        """
+        Logs a feedback value to the feedback table.
+        """
+
+        stmt = insert(feedback_table).values(
+            timestamp=datetime.now(),
+            identifier=identifier,
+            task_name=task_name,
+            value=val,
+        )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def get_outputs_or_feedback(
+        self,
+        task_name: str,
+        tablename: str = "output_table",
+        limit: int = None,
+        window_size: int = None,
+    ):
+        if tablename not in ["output_table", "feedback_table"]:
+            raise ValueError(f"Invalid table name {tablename}")
+
+        table = output_table if tablename == "output_table" else feedback_table
+
+        query = self.session.query(
+            table.c.timestamp,
+            table.c.identifier,
+            table.c.value,
+        ).filter(table.c.task_name == task_name)
+
+        if limit:
+            query = query.order_by(table.c.timestamp.desc()).limit(limit)
+
+        if window_size:
+            query = query.filter(
+                table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+
+        return query.all()
+
+    def compute_metric(
+        self,
+        metric_fn: typing.Callable,
+        task_name: str,
+        window_size: int = None,
+    ):
+        """
+        Computes a metric over the specified window (in seconds).
+        """
+        # Check the function is well formed (has y_true, y_pred signature)
+        args = inspect.signature(metric_fn)
+        if len(args.parameters) < 2:
+            raise RuntimeError(
+                "The function must take at least two arguments: y_true, y_pred."
+            )
+
+        output_join_conditions = [output_table.c.task_name == task_name]
+        feedback_join_conditions = [feedback_table.c.task_name == task_name]
+
+        if window_size:
+            output_join_conditions.append(
+                output_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+            feedback_join_conditions.append(
+                feedback_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+
+        join_conditions = output_join_conditions + feedback_join_conditions
+        outputs_feedback_joined = (
+            self.session.query(feedback_table.c.value, output_table.c.value)
+            .join(
+                output_table,
+                output_table.c.identifier == feedback_table.c.identifier,
+            )
+            .filter(and_(*join_conditions))
+        ).all()
+
+        # Apply the function to each pair of outputs and feedback
+        y_true = [float(out[0]) for out in outputs_feedback_joined]
+        y_pred = [float(out[1]) for out in outputs_feedback_joined]
+
+        return metric_fn(y_true, y_pred)
