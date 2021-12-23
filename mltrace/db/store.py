@@ -954,7 +954,7 @@ class Store(object):
         args = inspect.signature(metric_fn)
         if len(args.parameters) < 2:
             raise RuntimeError(
-                "The function must take at least two arguments: y_true, y_pred."
+                "The function must take at least 2 arguments: y_true, y_pred."
             )
 
         output_join_conditions = [output_table.c.task_name == task_name]
