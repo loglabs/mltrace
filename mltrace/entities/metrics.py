@@ -6,28 +6,27 @@ This file defines many common metrics for use in machine learning.
 
 from sklearn import metrics
 
-supported_sklearn_metrics = {
+supported_sklearn_metric_functions = {
     "accuracy": metrics.accuracy_score,
     "precision": metrics.precision_score,
     "recall": metrics.recall_score,
     "f1": metrics.f1_score,
     "roc_auc": metrics.roc_auc_score,
-    "auc": metrics.auc,
     "mean_absolute_error": metrics.mean_absolute_error,
     "mean_squared_error": metrics.mean_squared_error,
     "median_absolute_error": metrics.median_absolute_error,
     "r2": metrics.r2_score,
     "explained_variance": metrics.explained_variance_score,
     "confusion_matrix": metrics.confusion_matrix,
-    "coverage_error": metrics.coverage_error,
-    "label_ranking_loss": metrics.label_ranking_loss,
     "mutual_info_score": metrics.mutual_info_score,
 }
+
+supported_sklearn_metrics = supported_sklearn_metric_functions.keys()
 
 
 def get_metric_function(name):
     """
-    Get a metric from the supported_sklearn_metrics dictionary.
+    Get a metric from the supported_sklearn_metric_functions dictionary.
 
     Parameters
     ----------
@@ -39,11 +38,11 @@ def get_metric_function(name):
     metric : function
         The metric function.
     """
-    if name in supported_sklearn_metrics:
-        return supported_sklearn_metrics[name]
+    if name in supported_sklearn_metric_functions:
+        return supported_sklearn_metric_functions[name]
 
     raise ValueError(
         "The metric {} is not supported. Supported metrics are: {}".format(
-            name, list(supported_sklearn_metrics.keys())
+            name, list(supported_sklearn_metrics)
         )
     )

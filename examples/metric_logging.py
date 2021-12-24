@@ -8,7 +8,7 @@ task = Task("testing")
 
 
 def inference_component(output_id):
-    task.logOutput(random.random(), output_id)
+    task.logOutput(random.randint(0, 1), output_id)
 
 
 def feedback_component(output_id):
@@ -26,4 +26,4 @@ if __name__ == "__main__":
         feedback_component(output_id)
 
     # Compute accuracy
-    print(task.computeMetric("roc_auc"))
+    print(task.computeMetric("accuracy"))

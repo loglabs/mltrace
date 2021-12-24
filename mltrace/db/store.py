@@ -984,4 +984,6 @@ class Store(object):
         y_true = [float(out[0]) for out in outputs_feedback_joined]
         y_pred = [float(out[1]) for out in outputs_feedback_joined]
 
+        # Try computing metric function
+
         return metric_fn(y_true, y_pred)
