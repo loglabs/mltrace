@@ -26,4 +26,4 @@ if __name__ == "__main__":
         feedback_component(output_id)
 
     # Compute accuracy
-    print(task.compute_metric(mean_squared_error))
+    print(task.computeMetric("accuracy"))
