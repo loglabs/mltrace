@@ -35,7 +35,14 @@ from mltrace.client import (
     log_feedback,
     compute_metric,
 )
-from mltrace.entities import Component, Test, ComponentRun, IOPointer, Task
+from mltrace.entities import (
+    Component,
+    Test,
+    ComponentRun,
+    IOPointer,
+    Task,
+    supported_sklearn_metrics,
+)
 
 __all__ = [
     "clean_db",
@@ -78,4 +85,5 @@ __all__ = [
     "log_feedback",
     "compute_metric",
     "Task",
+    "supported_sklearn_metrics",
 ]

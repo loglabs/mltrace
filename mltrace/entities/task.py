@@ -1,5 +1,6 @@
 from mltrace import utils as clientUtils
 from mltrace.db import Store
+from mltrace.entities.metrics import get_metric_function
 
 import typing
 
@@ -50,9 +51,14 @@ class Task(object):
 
     def computeMetric(
         self,
-        metric_fn,
+        metric: typing.Union[typing.Callable, str],
         window_size: int = None,
     ):
+
+        metric_fn = (
+            get_metric_function(metric) if not callable(metric) else metric
+        )
+
         return self.store.compute_metric(
             metric_fn, self.task_name, window_size=window_size
         )

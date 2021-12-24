@@ -1,5 +1,7 @@
-from mltrace import Task
+from mltrace import Task, supported_sklearn_metrics
 
+import random
+import string
 import unittest
 
 
@@ -42,3 +44,15 @@ class TestTask(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             task.computeMetric(bad)
+
+    def testComputeMettrics(self):
+        task = Task("test_metrics")
+        for _ in range(10):
+            output_id = "".join(
+                random.choice(string.ascii_uppercase) for _ in range(10)
+            )
+            task.logOutput(random.randint(0, 1), output_id)
+            task.logFeedback(random.randint(0, 1), output_id)
+
+        for metric in supported_sklearn_metrics:
+            task.computeMetric(metric)
