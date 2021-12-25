@@ -1,6 +1,6 @@
 from mltrace import utils as clientUtils
 from mltrace.db import Store
-from mltrace.entities.metrics import get_metric_function
+from mltrace.entities.metrics import get_metric_function, Metric
 
 import typing
 
@@ -9,7 +9,21 @@ class Task(object):
     def __init__(self, task_name: str):
         self.task_name = task_name
         self.store = Store(clientUtils.get_db_uri())
+        self.metrics = []
         # TODO(shreyashankar): Add metric cache
+
+    def registerMetric(self, metric: Metric):
+        self.metrics.append(metric)
+
+        # TODO(shreyashankar) add materialized view for metric
+
+    def computeMetrics(self):
+        results = {}
+        for metric in self.metrics:
+            results[metric.getIdentifier()] = self.store.compute_metric(
+                self.task_name, metric.fn, window_size=metric.window_size
+            )
+        return results
 
     def logOutput(
         self,
@@ -20,6 +34,28 @@ class Task(object):
             identifier=identifier,
             task_name=self.task_name,
             val=output_value,
+        )
+
+    def logOutputs(
+        self,
+        output_values: typing.List[float],
+        identifiers: typing.List[str],
+    ):
+        self.store.log_outputs(
+            task_name=self.task_name,
+            vals=output_values,
+            identifiers=identifiers,
+        )
+
+    def logFeedbacks(
+        self,
+        feedback_values: typing.List[float],
+        identifiers: typing.List[str],
+    ):
+        self.store.log_feedbacks(
+            task_name=self.task_name,
+            vals=feedback_values,
+            identifiers=identifiers,
         )
 
     def logFeedback(
@@ -60,5 +96,5 @@ class Task(object):
         )
 
         return self.store.compute_metric(
-            metric_fn, self.task_name, window_size=window_size
+            self.task_name, metric_fn, window_size=window_size
         )

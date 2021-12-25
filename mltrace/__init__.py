@@ -42,6 +42,7 @@ from mltrace.entities import (
     IOPointer,
     Task,
     supported_sklearn_metrics,
+    Metric,
 )
 
 __all__ = [
@@ -86,4 +87,5 @@ __all__ = [
     "compute_metric",
     "Task",
     "supported_sklearn_metrics",
+    "Metric",
 ]
