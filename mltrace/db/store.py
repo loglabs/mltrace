@@ -25,7 +25,7 @@ from mltrace.db import (
     feedback_table,
 )
 from mltrace.db.models import component_run_output_association
-from sqlalchemy import func, and_, select
+from sqlalchemy import func, and_
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.sql.expression import Tuple
 from sqlalchemy.dialects.postgresql import insert

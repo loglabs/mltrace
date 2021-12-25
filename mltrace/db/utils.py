@@ -1,4 +1,3 @@
-from sqlalchemy.sql.ddl import _DropView
 from mltrace.db.base import Base
 from mltrace.db.models import ComponentRun, PointerTypeEnum
 from sqlalchemy import create_engine
