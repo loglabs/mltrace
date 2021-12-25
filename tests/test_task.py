@@ -68,6 +68,6 @@ class TestTask(unittest.TestCase):
             task.logFeedback(random.randint(0, 1), output_id)
 
         for metric in supported_sklearn_metrics:
-            task.registerMetric(Metric(metric))
+            task.registerMetric(Metric(metric), create_view=False)
 
-        task.computeMetrics()
+        task.computeMetrics(use_views=False)

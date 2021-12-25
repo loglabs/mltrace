@@ -1112,13 +1112,11 @@ class Store(object):
     ):
         """
         Computes a metric over the specified window (in seconds).
-
-        TODO(shreyashankar): Implement this
         """
 
         view_name = _get_view_name(task_name, window_size)
         stmt = "SELECT feedback_value, output_value FROM {}".format(view_name)
-        res = self.session.execute(stmt)
+        res = self.session.execute(stmt).fetchall()
 
         y_true = []
         y_pred = []
