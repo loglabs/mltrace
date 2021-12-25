@@ -25,7 +25,7 @@ from mltrace.db import (
     feedback_table,
 )
 from mltrace.db.models import component_run_output_association
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, select
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.sql.expression import Tuple
 from sqlalchemy.dialects.postgresql import insert
@@ -1037,3 +1037,66 @@ class Store(object):
         # Try computing metric function
 
         return metric_fn(y_true, y_pred)
+
+    def create_view(self, task_name: str, window_size: int = None):
+        """
+        Creates a materialized view on joined outputs and feedback.
+        """
+
+        output_join_conditions = [output_table.c.task_name == task_name]
+        feedback_join_conditions = [feedback_table.c.task_name == task_name]
+
+        if window_size:
+            output_join_conditions.append(
+                output_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+            feedback_join_conditions.append(
+                feedback_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+
+        join_conditions = output_join_conditions + feedback_join_conditions
+
+        stmt = (
+            self.session.query(
+                feedback_table.c.value.label("feedback_value"),
+                output_table.c.value.label("output_value"),
+            )
+            .join(
+                output_table,
+                output_table.c.identifier == feedback_table.c.identifier,
+            )
+            .filter(and_(*join_conditions))
+        )
+
+        view_name = f"{task_name}_{window_size}_view"
+        str_stmt = stmt.statement.compile(
+            compile_kwargs={"literal_binds": True}
+        )
+
+        str_stmt = (
+            f"CREATE MATERIALIZED VIEW IF NOT EXISTS {view_name} AS {str_stmt}"
+        )
+
+        self.session.execute(str_stmt)
+
+        # Create trigger to update the view when new feedbacks are logged
+        trigger_fn = f"""CREATE OR REPLACE FUNCTION refresh_view_{view_name}()
+            RETURNS TRIGGER LANGUAGE plpgsql
+            AS $$
+            BEGIN
+            REFRESH MATERIALIZED VIEW CONCURRENTLY {view_name};
+            RETURN NULL;
+            END $$;"""
+
+        trigger_stmt = f"""CREATE TRIGGER refresh_view_{view_name}
+            AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+            ON feedback
+            FOR EACH STATEMENT
+            EXECUTE PROCEDURE refresh_view_{view_name}();"""
+
+        self.session.execute(trigger_fn)
+        self.session.execute(trigger_stmt)
+
+        self.session.commit()

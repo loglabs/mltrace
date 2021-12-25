@@ -13,6 +13,7 @@ class Task(object):
         # TODO(shreyashankar): Add metric cache
 
     def registerMetric(self, metric: Metric):
+        self.store.create_view(self.task_name, metric.window_size)
         self.metrics.append(metric)
 
         # TODO(shreyashankar) add materialized view for metric
