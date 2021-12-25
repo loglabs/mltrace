@@ -1,3 +1,4 @@
+from sqlalchemy import exc
 from mltrace import utils as clientUtils
 from mltrace.db import Store
 from mltrace.entities.metrics import get_metric_function, Metric
@@ -12,17 +13,24 @@ class Task(object):
         self.metrics = []
         # TODO(shreyashankar): Add metric cache
 
-    def registerMetric(self, metric: Metric):
+    def registerMetric(self, metric: Metric, create_view: bool = True):
+        if create_view:
+            self.store.create_view(self.task_name, metric.window_size)
         self.metrics.append(metric)
 
-        # TODO(shreyashankar) add materialized view for metric
-
-    def computeMetrics(self):
+    def computeMetrics(self, use_views=True):
         results = {}
         for metric in self.metrics:
-            results[metric.getIdentifier()] = self.store.compute_metric(
-                self.task_name, metric.fn, window_size=metric.window_size
-            )
+            if use_views:
+                results[
+                    metric.getIdentifier()
+                ] = self.store.compute_metric_from_view(
+                    self.task_name, metric.fn, window_size=metric.window_size
+                )
+            else:
+                results[metric.getIdentifier()] = self.store.compute_metric(
+                    self.task_name, metric.fn, window_size=metric.window_size
+                )
         return results
 
     def logOutput(

@@ -11,6 +11,7 @@ from mltrace.db.utils import (
     _get_data_and_model_args,
     _load,
     _save,
+    _get_view_name,
 )
 from mltrace.db import (
     Component,
@@ -1035,5 +1036,92 @@ class Store(object):
         y_pred = [float(out[1]) for out in outputs_feedback_joined]
 
         # Try computing metric function
+
+        return metric_fn(y_true, y_pred)
+
+    def create_view(self, task_name: str, window_size: int = None):
+        """
+        Creates a materialized view on joined outputs and feedback.
+        """
+
+        output_join_conditions = [output_table.c.task_name == task_name]
+        feedback_join_conditions = [feedback_table.c.task_name == task_name]
+
+        if window_size:
+            output_join_conditions.append(
+                output_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+            feedback_join_conditions.append(
+                feedback_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+
+        join_conditions = output_join_conditions + feedback_join_conditions
+
+        stmt = (
+            self.session.query(
+                feedback_table.c.identifier.label("identifier"),
+                feedback_table.c.value.label("feedback_value"),
+                output_table.c.value.label("output_value"),
+            )
+            .join(
+                output_table,
+                output_table.c.identifier == feedback_table.c.identifier,
+            )
+            .filter(and_(*join_conditions))
+        )
+
+        view_name = _get_view_name(task_name, window_size)
+        str_stmt = stmt.statement.compile(
+            compile_kwargs={"literal_binds": True}
+        )
+
+        self.session.execute(
+            f"CREATE MATERIALIZED VIEW IF NOT EXISTS {view_name} AS {str_stmt}"
+        )
+        self.session.execute(
+            f"CREATE UNIQUE INDEX ON {view_name} (identifier)"
+        )
+
+        # Create trigger to update the view when new feedbacks are logged
+        trigger_fn = f"""CREATE OR REPLACE FUNCTION refresh_view_{view_name}()
+            RETURNS TRIGGER LANGUAGE plpgsql
+            AS $$
+            BEGIN
+            REFRESH MATERIALIZED VIEW CONCURRENTLY {view_name};
+            RETURN NULL;
+            END $$;"""
+
+        trigger_stmt = f"""CREATE OR REPLACE TRIGGER refresh_view_{view_name}
+            AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+            ON feedback
+            FOR EACH STATEMENT
+            EXECUTE PROCEDURE refresh_view_{view_name}();"""
+
+        self.session.execute(trigger_fn)
+        self.session.execute(trigger_stmt)
+
+        self.session.commit()
+
+    def compute_metric_from_view(
+        self,
+        task_name: str,
+        metric_fn: typing.Callable,
+        window_size: int = None,
+    ):
+        """
+        Computes a metric over the specified window (in seconds).
+        """
+
+        view_name = _get_view_name(task_name, window_size)
+        stmt = "SELECT feedback_value, output_value FROM {}".format(view_name)
+        res = self.session.execute(stmt).fetchall()
+
+        y_true = []
+        y_pred = []
+        for elem in res:
+            y_true.append(float(elem[0]))
+            y_pred.append(float(elem[1]))
 
         return metric_fn(y_true, y_pred)

@@ -55,12 +55,10 @@ class Metric(object):
     def __init__(
         self,
         name: str,
-        compute_freqency: int = 1,
         window_size: int = None,
         fn: typing.Callable = None,
     ):
         self.name = name
-        self.compute_freqency = compute_freqency
         self.window_size = window_size
 
         # Create function
@@ -81,6 +79,4 @@ class Metric(object):
             )
 
     def getIdentifier(self):
-        return (
-            f"{self.name}_freq{self.compute_freqency}_window{self.window_size}"
-        )
+        return f"{self.name}_window{self.window_size}"

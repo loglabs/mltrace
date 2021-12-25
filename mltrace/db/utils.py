@@ -24,7 +24,7 @@ import typing
 
 
 def _create_engine_wrapper(
-        uri: str, max_retries=5
+    uri: str, max_retries=5
 ) -> sqlalchemy.engine.base.Engine:
     """Creates engine using sqlalchemy API. Includes max retries parameter."""
     retries = 0
@@ -59,6 +59,11 @@ def _drop_everything(engine: sqlalchemy.engine.base.Engine):
     meta = MetaData()
     tables = []
     all_fkeys = []
+
+    for view_name in inspector.get_view_names():
+        con.execute(
+            "DROP MATERIALIZED VIEW IF EXISTS {} CASCADE".format(view_name)
+        )
 
     for table_name in inspector.get_table_names():
         fkeys = []
@@ -172,7 +177,7 @@ def _load(pathname: str, from_client=True) -> typing.Any:
 # TODO(shreyashankar): add cases for other types
 # (e.g., sklearn model, xgboost model, etc)
 def _save(
-        obj, pathname: str = None, var_name: str = "", from_client=True
+    obj, pathname: str = None, var_name: str = "", from_client=True
 ) -> str:
     """Saves joblib object to pathname."""
     if pathname is None:
@@ -217,3 +222,8 @@ def _save(
         )
 
     return pathname
+
+
+def _get_view_name(task_name: str, window_size: int) -> str:
+    """Returns the view name for a given task name."""
+    return f"{task_name}_{window_size}_view"
