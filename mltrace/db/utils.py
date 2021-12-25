@@ -222,3 +222,8 @@ def _save(
         )
 
     return pathname
+
+
+def _get_view_name(task_name: str, window_size: int) -> str:
+    """Returns the view name for a given task name."""
+    return f"{task_name}_{window_size}_view"

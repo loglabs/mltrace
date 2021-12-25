@@ -11,6 +11,7 @@ from mltrace.db.utils import (
     _get_data_and_model_args,
     _load,
     _save,
+    _get_view_name,
 )
 from mltrace.db import (
     Component,
@@ -1070,7 +1071,7 @@ class Store(object):
             .filter(and_(*join_conditions))
         )
 
-        view_name = f"{task_name}_{window_size}_view"
+        view_name = _get_view_name(task_name, window_size)
         str_stmt = stmt.statement.compile(
             compile_kwargs={"literal_binds": True}
         )
@@ -1100,3 +1101,28 @@ class Store(object):
         self.session.execute(trigger_stmt)
 
         self.session.commit()
+
+    def compute_metric_from_view(
+        self,
+        task_name: str,
+        metric_fn: typing.Callable,
+        window_size: int = None,
+    ):
+        """
+        Computes a metric over the specified window (in seconds).
+
+        TODO(shreyashankar): Implement this
+        """
+
+        view_name = _get_view_name(task_name, window_size)
+        stmt = "SELECT * FROM {}".format(view_name)
+        res = self.session.execute(stmt)
+        print(res)
+
+        # Apply the function to each pair of outputs and feedback
+        y_true = [float(out[0]) for out in res]
+        y_pred = [float(out[1]) for out in res]
+
+        # Try computing metric function
+
+        return metric_fn(y_true, y_pred)

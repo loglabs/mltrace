@@ -16,14 +16,17 @@ class Task(object):
         self.store.create_view(self.task_name, metric.window_size)
         self.metrics.append(metric)
 
-        # TODO(shreyashankar) add materialized view for metric
-
     def computeMetrics(self):
         results = {}
         for metric in self.metrics:
-            results[metric.getIdentifier()] = self.store.compute_metric(
+            results[
+                metric.getIdentifier()
+            ] = self.store.compute_metric_from_view(
                 self.task_name, metric.fn, window_size=metric.window_size
             )
+            # results[metric.getIdentifier()] = self.store.compute_metric(
+            #     self.task_name, metric.fn, window_size=metric.window_size
+            # )
         return results
 
     def logOutput(
