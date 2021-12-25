@@ -876,8 +876,8 @@ class Store(object):
 
     def log_output(
         self,
-        identifier: str,
         task_name: str,
+        identifier: str,
         val: float,
     ):
         """
@@ -893,10 +893,35 @@ class Store(object):
         self.session.execute(stmt)
         self.session.commit()
 
+    def log_outputs(
+        self,
+        task_name: str,
+        identifiers: typing.List[str],
+        vals: typing.List[float],
+    ):
+        """
+        Logs an output value to the output table.
+        """
+
+        stmt = insert(output_table).values(
+            [
+                {
+                    "timestamp": datetime.now(),
+                    "identifier": i,
+                    "task_name": task_name,
+                    "value": v,
+                }
+                for i, v in zip(identifiers, vals)
+            ]
+        )
+
+        self.session.execute(stmt)
+        self.session.commit()
+
     def log_feedback(
         self,
-        identifier: str,
         task_name: str,
+        identifier: str,
         val: float,
     ):
         """
@@ -909,6 +934,31 @@ class Store(object):
             task_name=task_name,
             value=val,
         )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def log_feedbacks(
+        self,
+        task_name: str,
+        identifiers: typing.List[str],
+        vals: typing.List[float],
+    ):
+        """
+        Logs an output value to the output table.
+        """
+
+        stmt = insert(feedback_table).values(
+            [
+                {
+                    "timestamp": datetime.now(),
+                    "identifier": i,
+                    "task_name": task_name,
+                    "value": v,
+                }
+                for i, v in zip(identifiers, vals)
+            ]
+        )
+
         self.session.execute(stmt)
         self.session.commit()
 
@@ -943,8 +993,8 @@ class Store(object):
 
     def compute_metric(
         self,
-        metric_fn: typing.Callable,
         task_name: str,
+        metric_fn: typing.Callable,
         window_size: int = None,
     ):
         """

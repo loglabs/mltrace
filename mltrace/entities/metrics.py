@@ -6,6 +6,9 @@ This file defines many common metrics for use in machine learning.
 
 from sklearn import metrics
 
+import inspect
+import typing
+
 supported_sklearn_metric_functions = {
     "accuracy": metrics.accuracy_score,
     "precision": metrics.precision_score,
@@ -46,3 +49,38 @@ def get_metric_function(name):
             name, list(supported_sklearn_metrics)
         )
     )
+
+
+class Metric(object):
+    def __init__(
+        self,
+        name: str,
+        compute_freqency: int = 1,
+        window_size: int = None,
+        fn: typing.Callable = None,
+    ):
+        self.name = name
+        self.compute_freqency = compute_freqency
+        self.window_size = window_size
+
+        # Create function
+        self.fn = fn
+        if name in supported_sklearn_metrics and not self.fn:
+            self.fn = get_metric_function(name)
+
+        if not self.fn:
+            raise ValueError(
+                "You must pass a supported metric name or fn yourself."
+            )
+
+        # Check the function is well formed (has y_true, y_pred signature)
+        args = inspect.signature(self.fn)
+        if len(args.parameters) < 2:
+            raise RuntimeError(
+                "The function must take at least 2 arguments: y_true, y_pred."
+            )
+
+    def getIdentifier(self):
+        return (
+            f"{self.name}_freq{self.compute_freqency}_window{self.window_size}"
+        )

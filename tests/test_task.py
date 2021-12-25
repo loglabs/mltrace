@@ -1,4 +1,4 @@
-from mltrace import Task, supported_sklearn_metrics
+from mltrace import Task, supported_sklearn_metrics, Metric
 
 import random
 import string
@@ -45,7 +45,7 @@ class TestTask(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             task.computeMetric(bad)
 
-    def testComputeMettrics(self):
+    def testComputeMetrics(self):
         task = Task("test_metrics")
         for _ in range(10):
             output_id = "".join(
@@ -56,3 +56,18 @@ class TestTask(unittest.TestCase):
 
         for metric in supported_sklearn_metrics:
             task.computeMetric(metric)
+
+    def testMetric(self):
+        task = Task("test_metrics")
+
+        for _ in range(10):
+            output_id = "".join(
+                random.choice(string.ascii_uppercase) for _ in range(10)
+            )
+            task.logOutput(random.randint(0, 1), output_id)
+            task.logFeedback(random.randint(0, 1), output_id)
+
+        for metric in supported_sklearn_metrics:
+            task.registerMetric(Metric(metric))
+
+        task.computeMetrics()

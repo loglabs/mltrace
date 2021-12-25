@@ -665,27 +665,27 @@ def create_labels(label_ids: typing.List[str]):
 
 
 def log_output(
-    identifier: str,
     task_name: str,
+    identifier: str,
     val: float,
 ):
     store = Store(_db_uri)
-    store.log_output(identifier, task_name, val)
+    store.log_output(identifier=identifier, task_name=task_name, val=val)
 
 
 def log_feedback(
-    identifier: str,
     task_name: str,
+    identifier: str,
     val: float,
 ):
     store = Store(_db_uri)
-    store.log_feedback(identifier, task_name, val)
+    store.log_feedback(identifier=identifier, task_name=task_name, val=val)
 
 
 def compute_metric(
-    metric_fn: typing.Callable,
     task_name: str,
+    metric_fn: typing.Callable,
     window_size: int = None,
 ):
     store = Store(_db_uri)
-    store.compute_metric(metric_fn, task_name, window_size)
+    store.compute_metric(task_name, metric_fn, window_size)
