@@ -1061,6 +1061,7 @@ class Store(object):
 
         stmt = (
             self.session.query(
+                feedback_table.c.identifier.label("identifier"),
                 feedback_table.c.value.label("feedback_value"),
                 output_table.c.value.label("output_value"),
             )
@@ -1076,11 +1077,12 @@ class Store(object):
             compile_kwargs={"literal_binds": True}
         )
 
-        str_stmt = (
+        self.session.execute(
             f"CREATE MATERIALIZED VIEW IF NOT EXISTS {view_name} AS {str_stmt}"
         )
-
-        self.session.execute(str_stmt)
+        self.session.execute(
+            f"CREATE UNIQUE INDEX ON {view_name} (identifier)"
+        )
 
         # Create trigger to update the view when new feedbacks are logged
         trigger_fn = f"""CREATE OR REPLACE FUNCTION refresh_view_{view_name}()
@@ -1091,7 +1093,7 @@ class Store(object):
             RETURN NULL;
             END $$;"""
 
-        trigger_stmt = f"""CREATE TRIGGER refresh_view_{view_name}
+        trigger_stmt = f"""CREATE OR REPLACE TRIGGER refresh_view_{view_name}
             AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
             ON feedback
             FOR EACH STATEMENT
@@ -1115,14 +1117,13 @@ class Store(object):
         """
 
         view_name = _get_view_name(task_name, window_size)
-        stmt = "SELECT * FROM {}".format(view_name)
+        stmt = "SELECT feedback_value, output_value FROM {}".format(view_name)
         res = self.session.execute(stmt)
-        print(res)
 
-        # Apply the function to each pair of outputs and feedback
-        y_true = [float(out[0]) for out in res]
-        y_pred = [float(out[1]) for out in res]
-
-        # Try computing metric function
+        y_true = []
+        y_pred = []
+        for elem in res:
+            y_true.append(float(elem[0]))
+            y_pred.append(float(elem[1]))
 
         return metric_fn(y_true, y_pred)
