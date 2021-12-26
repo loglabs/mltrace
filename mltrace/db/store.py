@@ -1042,6 +1042,8 @@ class Store(object):
     def create_view(self, task_name: str, window_size: int = None):
         """
         Creates a materialized view on joined outputs and feedback.
+        If window_size is specified, only the window_size most recent joined
+        values are kept.
         """
 
         output_join_conditions = [output_table.c.task_name == task_name]
