@@ -26,7 +26,7 @@ from mltrace.db import (
     feedback_table,
 )
 from mltrace.db.models import component_run_output_association
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, text
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.sql.expression import Tuple
 from sqlalchemy.dialects.postgresql import insert
@@ -1042,21 +1042,12 @@ class Store(object):
     def create_view(self, task_name: str, window_size: int = None):
         """
         Creates a materialized view on joined outputs and feedback.
+        If window_size is specified, only the window_size most recent joined
+        values are kept.
         """
 
         output_join_conditions = [output_table.c.task_name == task_name]
         feedback_join_conditions = [feedback_table.c.task_name == task_name]
-
-        if window_size:
-            output_join_conditions.append(
-                output_table.c.timestamp
-                >= datetime.now() - timedelta(seconds=window_size)
-            )
-            feedback_join_conditions.append(
-                feedback_table.c.timestamp
-                >= datetime.now() - timedelta(seconds=window_size)
-            )
-
         join_conditions = output_join_conditions + feedback_join_conditions
 
         stmt = (
@@ -1071,6 +1062,11 @@ class Store(object):
             )
             .filter(and_(*join_conditions))
         )
+
+        if window_size:
+            stmt = stmt.order_by(feedback_table.c.timestamp.desc()).limit(
+                window_size
+            )
 
         view_name = _get_view_name(task_name, window_size)
         str_stmt = stmt.statement.compile(
