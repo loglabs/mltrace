@@ -232,7 +232,7 @@ class TestDags(unittest.TestCase):
                 2,
                 [
                     "component_1 (ID 1) was run "
-                    + f"{now - start_date} days"
+                    + f"{(now - start_date).days} days"
                     + " ago."
                 ],
             ),
