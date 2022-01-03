@@ -339,7 +339,7 @@ class Component(Base):
                             should_filter=False, **{var: val}
                         )
 
-                # If there were calls to mltrace.load and mltrace.save, log them
+                # If there were calls to mltrace.load and mltrace.save, log
 
                 if "_mltrace_loaded_artifacts" in local_vars:
                     input_pointers += [
