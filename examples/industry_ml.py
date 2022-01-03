@@ -17,8 +17,7 @@ the trace of steps that produced that output ID.
 """
 
 
-from mltrace import create_component, register
-from mltrace.entities.base_component import Component
+from mltrace import Component
 import random
 import string
 

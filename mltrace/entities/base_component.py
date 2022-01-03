@@ -36,7 +36,7 @@ class Component(Base):
         self._beforeTests = beforeTests
         self._afterTests = afterTests
 
-    def beforeRun(self, **kwargs) -> {}:
+    def beforeRun(self, **kwargs) -> dict:
         """Computation to execute before running a component.
         Will run each test object listed in beforeTests."""
         status = {}
@@ -44,13 +44,136 @@ class Component(Base):
             status.update(test().runTests(**kwargs))
         return status
 
-    def afterRun(self, **local_vars) -> {}:
+    def afterRun(self, **local_vars) -> dict:
         """Computation to execute after running a component.
         Will run all test objects listed in afterTests."""
         status = {}
         for test in self._afterTests:
             status.update(test().runTests(**local_vars))
         return status
+
+    def _logInputFilenames(
+        self, input_filenames: typing.List[str], local_vars: dict, store: Store
+    ):
+        input_pointers = []
+
+        duplicate = input_filenames
+        if not isinstance(duplicate, dict):
+            duplicate = {fname: None for fname in duplicate}
+
+        for var, label_vars in duplicate.items():
+            if var not in local_vars:
+                raise ValueError(f"Variable {var} not in current stack frame.")
+            val = local_vars[var]
+            labels = None
+            if label_vars is not None:
+                try:
+                    labels = (
+                        [local_vars[lv] for lv in label_vars]
+                        if isinstance(label_vars, list)
+                        else local_vars[label_vars]
+                    )
+                    if isinstance(labels, str):
+                        labels = [labels]
+                except KeyError:
+                    raise ValueError(
+                        f"Variable {label_vars} not "
+                        + f"in current stack frame."
+                    )
+            if val is None:
+                logging.debug(f"Variable {var} has value {val}.")
+                continue
+            if isinstance(val, list):
+                input_pointers += store.get_io_pointers(val, labels=labels)
+            else:
+                input_pointers.append(
+                    store.get_io_pointer(str(val), labels=labels)
+                )
+        return input_pointers
+
+    def _logOutputFilenames(
+        self,
+        output_filenames: typing.List[str],
+        endpoint: bool,
+        local_vars: dict,
+        store: Store,
+    ):
+        output_pointers = []
+        for var in output_filenames:
+            if var not in local_vars:
+                raise ValueError(f"Variable {var} not in current stack frame.")
+            val = local_vars[var]
+            if val is None:
+                logging.debug(f"Variable {var} has value {val}.")
+                continue
+            if isinstance(val, list):
+                output_pointers += (
+                    store.get_io_pointers(
+                        val, pointer_type=PointerTypeEnum.ENDPOINT
+                    )
+                    if endpoint
+                    else store.get_io_pointers(val)
+                )
+            else:
+                output_pointers += (
+                    [
+                        store.get_io_pointer(
+                            str(val),
+                            pointer_type=PointerTypeEnum.ENDPOINT,
+                        )
+                    ]
+                    if endpoint
+                    else [store.get_io_pointer(str(val))]
+                )
+        return output_pointers
+
+    def _logKwargs(
+        self, kwargs: dict, endpoint: bool, local_vars: dict, store: Store
+    ):
+        """Logs the kwargs passed to the component."""
+        pointers = []
+        for key, val in kwargs.items():
+            if key not in local_vars or val not in local_vars:
+                raise ValueError(f"({key}, {val}) not in current stack frame.")
+            if local_vars[key] is None:
+                logging.debug(f"Variable {key} has value {local_vars[key]}.")
+                continue
+            if isinstance(local_vars[key], list):
+                if not isinstance(local_vars[val], list) or len(
+                    local_vars[key]
+                ) != len(local_vars[val]):
+                    raise ValueError(
+                        f'Value "{val}" does not have the same '
+                        + f'length as the key "{key}."'
+                    )
+                pointers += (
+                    store.get_io_pointers(
+                        local_vars[key],
+                        local_vars[val],
+                        pointer_type=PointerTypeEnum.ENDPOINT,
+                    )
+                    if endpoint
+                    else store.get_io_pointers(
+                        local_vars[key], local_vars[val]
+                    )
+                )
+            else:
+                pointers += (
+                    [
+                        store.get_io_pointer(
+                            str(local_vars[key]),
+                            local_vars[val],
+                            pointer_type=PointerTypeEnum.ENDPOINT,
+                        )
+                    ]
+                    if endpoint
+                    else [
+                        store.get_io_pointer(
+                            str(local_vars[key]), local_vars[val]
+                        )
+                    ]
+                )
+        return pointers
 
     def run(
         self,
@@ -112,7 +235,7 @@ class Component(Base):
                 # Make Dictionary of test status
                 status = {}
 
-                # Run before test
+                # Run before tests
                 if not user_kwargs.get("skip_before"):
                     all_args = dict(
                         zip(inspect.getfullargspec(func).args, args)
@@ -154,144 +277,21 @@ class Component(Base):
                 component_run.set_end_timestamp()
 
                 if not callable(input_filenames):
+                    # Log input and output filenames
+                    input_pointers += self._logInputFilenames(
+                        input_filenames, local_vars, store
+                    )
+                    output_pointers += self._logOutputFilenames(
+                        output_filenames, endpoint, local_vars, store
+                    )
 
-                    duplicate = input_filenames
-                    if not isinstance(duplicate, dict):
-                        duplicate = {fname: None for fname in duplicate}
-
-                    for var, label_vars in duplicate.items():
-                        if var not in local_vars:
-                            raise ValueError(
-                                f"Variable {var} not in current stack frame."
-                            )
-                        val = local_vars[var]
-                        labels = None
-                        if label_vars is not None:
-                            try:
-                                labels = (
-                                    [local_vars[lv] for lv in label_vars]
-                                    if isinstance(label_vars, list)
-                                    else local_vars[label_vars]
-                                )
-                                if isinstance(labels, str):
-                                    labels = [labels]
-                            except KeyError:
-                                raise ValueError(
-                                    f"Variable {label_vars} not "
-                                    + f"in current stack frame."
-                                )
-                        if val is None:
-                            logging.debug(f"Variable {var} has value {val}.")
-                            continue
-                        if isinstance(val, list):
-                            input_pointers += store.get_io_pointers(
-                                val, labels=labels
-                            )
-                        else:
-                            input_pointers.append(
-                                store.get_io_pointer(str(val), labels=labels)
-                            )
-                    for var in output_filenames:
-                        if var not in local_vars:
-                            raise ValueError(
-                                f"Variable {var} not in current stack frame."
-                            )
-                        val = local_vars[var]
-                        if val is None:
-                            logging.debug(f"Variable {var} has value {val}.")
-                            continue
-                        if isinstance(val, list):
-                            output_pointers += (
-                                store.get_io_pointers(
-                                    val, pointer_type=PointerTypeEnum.ENDPOINT
-                                )
-                                if endpoint
-                                else store.get_io_pointers(val)
-                            )
-                        else:
-                            output_pointers += (
-                                [
-                                    store.get_io_pointer(
-                                        str(val),
-                                        pointer_type=PointerTypeEnum.ENDPOINT,
-                                    )
-                                ]
-                                if endpoint
-                                else [store.get_io_pointer(str(val))]
-                            )
                     # Add input_kwargs and output_kwargs as pointers
-                    for key, val in input_kwargs.items():
-                        if key not in local_vars or val not in local_vars:
-                            raise ValueError(
-                                f"({key}, {val}) not in current stack frame."
-                            )
-                        if local_vars[key] is None:
-                            logging.debug(
-                                f"Variable {key} has value {local_vars[key]}."
-                            )
-                            continue
-                        if isinstance(local_vars[key], list):
-                            if not isinstance(local_vars[val], list) or len(
-                                local_vars[key]
-                            ) != len(local_vars[val]):
-                                raise ValueError(
-                                    f'Value "{val}" does not have the same '
-                                    + f'length as the key "{key}."'
-                                )
-                            input_pointers += store.get_io_pointers(
-                                local_vars[key], values=local_vars[val]
-                            )
-                        else:
-                            input_pointers.append(
-                                store.get_io_pointer(
-                                    str(local_vars[key]), local_vars[val]
-                                )
-                            )
-                    for key, val in output_kwargs.items():
-                        if key not in local_vars or val not in local_vars:
-                            raise ValueError(
-                                f"({key}, {val}) not in current stack frame."
-                            )
-                        if local_vars[key] is None:
-                            logging.debug(
-                                f"Variable {key} has value {local_vars[key]}."
-                            )
-                            continue
-                        if isinstance(local_vars[key], list):
-                            if not isinstance(local_vars[val], list) or len(
-                                local_vars[key]
-                            ) != len(local_vars[val]):
-                                raise ValueError(
-                                    f'Value "{val}" does not have the same '
-                                    + f'length as the key "{key}."'
-                                )
-                            output_pointers += (
-                                store.get_io_pointers(
-                                    local_vars[key],
-                                    local_vars[val],
-                                    pointer_type=PointerTypeEnum.ENDPOINT,
-                                )
-                                if endpoint
-                                else store.get_io_pointers(
-                                    local_vars[key], local_vars[val]
-                                )
-                            )
-                        else:
-                            output_pointers += (
-                                [
-                                    store.get_io_pointer(
-                                        str(local_vars[key]),
-                                        local_vars[val],
-                                        pointer_type=PointerTypeEnum.ENDPOINT,
-                                    )
-                                ]
-                                if endpoint
-                                else [
-                                    store.get_io_pointer(
-                                        str(local_vars[key]), local_vars[val]
-                                    )
-                                ]
-                            )
+                    input_pointers += self._logKwargs(
+                        input_kwargs, False, local_vars, store
+                    )
+                    output_pointers += self._logKwargs(
+                        output_kwargs, endpoint, local_vars, store
+                    )
 
                     # Log input and output vars
                     duplicate = input_vars
@@ -339,7 +339,7 @@ class Component(Base):
                             should_filter=False, **{var: val}
                         )
 
-                # If there were calls to mltrace.load and mltrace.save, log
+                # If there were calls to mltrace.load and mltrace.save, log them
 
                 if "_mltrace_loaded_artifacts" in local_vars:
                     input_pointers += [
@@ -372,7 +372,7 @@ class Component(Base):
                 store.assert_not_deleted_labels(
                     input_pointers, staleness_threshold=staleness_threshold
                 )
-
+                # Propagate labels
                 store.propagate_labels(input_pointers, output_pointers)
 
                 component_run.add_inputs(input_pointers)
@@ -405,7 +405,6 @@ class Component(Base):
 
                 # Perform after run tests
                 if not user_kwargs.get("skip_after"):
-                    # Run after test
                     after_run_args = {
                         k
                         if k not in inv_user_kwargs
