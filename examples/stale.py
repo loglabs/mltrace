@@ -1,12 +1,18 @@
 from datetime import datetime
-from mltrace import create_component, register, set_address, log_component_run
-from mltrace.entities import ComponentRun
+from mltrace import Component, ComponentRun, log_component_run
 
 import random
 import string
 
+training_component = Component(
+    "training", "Example of training a model.", "data_scientist"
+)
+inference_component = Component(
+    "inference", "Example of doing inference.", "ml_engineer"
+)
 
-@register(
+
+@training_component.run(
     component_name="training",
     input_vars=["version"],
     output_vars=["model_file"],
@@ -16,7 +22,7 @@ def training(version: str) -> str:
     return model_file
 
 
-@register(
+@inference_component.run(
     component_name="inference",
     input_vars=["model_files"],
     output_vars=["identifier"],
