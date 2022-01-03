@@ -1114,10 +1114,8 @@ class Store(object):
         stmt = "SELECT feedback_value, output_value FROM {}".format(view_name)
         res = self.session.execute(stmt).fetchall()
 
-        y_true = []
-        y_pred = []
-        for elem in res:
-            y_true.append(float(elem[0]))
-            y_pred.append(float(elem[1]))
+        # Apply the function to each pair of outputs and feedback
+        y_true = [float(out[0]) for out in res]
+        y_pred = [float(out[1]) for out in res]
 
         return metric_fn(y_true, y_pred)
