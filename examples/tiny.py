@@ -23,7 +23,7 @@ c = Component(
 )
 
 
-@c.run(input_vars=["inp_str"], output_vars=["out_str"])
+@c.run(input_filenames=["inp_str"], output_filenames=["out_str"])
 def increment(inp: int) -> int:
     inp_str = f"{_identifier}_{str(inp)}"
     out_str = f"{_identifier}_{str(inp + 1)}"

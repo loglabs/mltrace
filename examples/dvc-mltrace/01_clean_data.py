@@ -10,8 +10,8 @@ c = Component(
 
 
 @c.run(
-    input_vars=["input_filepath"],
-    output_vars=["output_filepath"],
+    input_filenames=["input_filepath"],
+    output_filenames=["output_filepath"],
 )
 def clean(input_filepath: str, output_filepath: str) -> str:
     """

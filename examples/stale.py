@@ -14,8 +14,8 @@ inference_component = Component(
 
 @training_component.run(
     component_name="training",
-    input_vars=["version"],
-    output_vars=["model_file"],
+    input_filenames=["version"],
+    output_filenames=["model_file"],
 )
 def training(version: str) -> str:
     model_file = "model_" + version
@@ -24,8 +24,8 @@ def training(version: str) -> str:
 
 @inference_component.run(
     component_name="inference",
-    input_vars=["model_files"],
-    output_vars=["identifier"],
+    input_filenames=["model_files"],
+    output_filenames=["identifier"],
 )
 def inference(model_files) -> str:
     identifier = "".join(
