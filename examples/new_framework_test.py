@@ -21,7 +21,7 @@ _identifier = "".join(random.choice(string.ascii_lowercase) for i in range(10))
 c = PreprocessingComponent("aditi")
 
 
-@c.run(input_vars=["type", "n"], output_vars=["testOutput"])
+@c.run(input_filenames=["type", "n"], output_filenames=["testOutput"])
 def gen_fake_data(
     type: str,
     n: int = 1000,

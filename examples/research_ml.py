@@ -31,8 +31,8 @@ c = Component(
 
 
 @c.run(
-    input_vars=["lr", "num_epochs", "hidden_size"],
-    output_vars=["model_metric"],
+    input_filenames=["lr", "num_epochs", "hidden_size"],
+    output_filenames=["model_metric"],
 )
 def train_and_evaluate_model(lr, num_epochs, hidden_size):
     # Grab some random accuracy
