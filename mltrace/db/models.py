@@ -218,6 +218,8 @@ class ComponentRun(Base):
     start_timestamp = Column(DateTime)
     end_timestamp = Column(DateTime)
     mlflow_run_id = Column(String)
+    mlflow_run_params = Column(PickleType)
+    mlflow_run_metrics = Column(PickleType)
     inputs = relationship(
         "IOPointer",
         secondary=component_run_input_association,
@@ -255,6 +257,14 @@ class ComponentRun(Base):
     def set_mlflow_run_id(self, mlflow_run_id : str):
         """Call this function to set the mlflow component run id"""
         self.mlflow_run_id = mlflow_run_id
+
+    def set_mlflow_run_metrics(self, mlflow_run_metrics: dict):
+        """Call this function to set the mlflow component run id"""
+        self.mlflow_run_metrics = mlflow_run_metrics
+    
+    def set_mlflow_run_params(self, mlflow_run_params : dict):
+        """Call this function to set the mlflow component run id"""
+        self.mlflow_run_params = mlflow_run_params
 
     def set_start_timestamp(self, ts: datetime = None):
         """Call this function to set the start timestamp

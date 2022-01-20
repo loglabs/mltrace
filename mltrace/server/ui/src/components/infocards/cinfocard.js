@@ -8,6 +8,7 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import { withRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history'
 
+
 // import { INTENT_DANGER } from '@blueprintjs/core/lib/esm/common/classes';
 const history = createBrowserHistory();
 const HISTORY_API_URL = '/api/history';
@@ -115,6 +116,7 @@ class CInfoCard extends Component {
                 </Tag>)
         });
 
+        console.log(this.state.history)
         let runElements = this.state.history.map((cr, index) => {
             let end = new Date(cr.end_timestamp);
             let start = new Date(cr.start_timestamp);
@@ -143,6 +145,9 @@ class CInfoCard extends Component {
                     <td style={{ fontFamily: 'monospace', maxWidth: '100%', wordWrap: 'break-word' }}>
                         {outputs}
                     </td>
+                    <td>{cr.mlflow_run_id}</td>
+                    <td>{cr.mlflow_run_id}</td>
+                    <td>{cr.mlflow_run_id}</td>
                 </tr>
             )
         });
@@ -164,6 +169,7 @@ class CInfoCard extends Component {
                                     <th>Start time</th>
                                     <th>Duration</th>
                                     <th>Outputs</th>
+                                    <th>Mlflow Run ID</th>
                                 </tr>
                             </thead>
                             <tbody style={{ maxWidth: '100%' }}>

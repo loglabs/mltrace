@@ -14,6 +14,7 @@ from mltrace.entities.base import Base
 import functools
 import inspect
 import git
+import mlflow
 
 
 class Component(Base):
@@ -51,6 +52,7 @@ class Component(Base):
         for test in self._afterTests:
             status.update(test().runTests(**local_vars))
         return status
+
 
     def run(
         self,
@@ -98,7 +100,6 @@ class Component(Base):
                 # Construct component run object
                 store = Store(clientUtils.get_db_uri())
                 component_run = store.initialize_empty_component_run(self.name)
-                component_run.set_start_timestamp()
 
                 # Assert key names are not in args or kwargs
                 if (
@@ -147,11 +148,35 @@ class Component(Base):
                         should_filter=True, **all_input_args
                     )
 
+
+                def mlflow_start_run_id():
+                    nonlocal mlflow_run_id
+                    res = mlflow_start_run_copy()
+                    if mlflow.active_run():
+                        mlflow_run_id = mlflow.active_run().info.run_id
+                    return res
+
+                mlflow_run_id = None
+                mlflow_start_run_copy = mlflow.start_run
+                mlflow.start_run = mlflow_start_run_id
+                # monkey patching mlflow.start_run method
+
+                component_run.set_start_timestamp()
                 # Run function
                 local_vars, value = utils.run_func_capture_locals(
                     func, *args, **kwargs
                 )
                 component_run.set_end_timestamp()
+
+                if mlflow_run_id is not None:
+                    mlflow_run = mlflow.get_run(mlflow_run_id)
+                    component_run.set_mlflow_run_id(mlflow_run_id)
+                    component_run.set_mlflow_run_metrics(mlflow_run.data.metrics)
+                    component_run.set_mlflow_run_params(mlflow_run.data.params)
+                    print(component_run.mlflow_run_id)
+                    print(mlflow_run.data.metrics)
+                    print(mlflow_run.data.params)
+                mlflow.start_run = mlflow_start_run_copy
 
                 if not callable(input_filenames):
 
