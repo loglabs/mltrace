@@ -16,16 +16,23 @@ research. This is because mltrace inputs and outputs are not stored
 as key/value pairs; only the values are stored.
 """
 
-from mltrace import create_component, register
+from mltrace import Component
 
 import itertools
 import random
 
 
-@register(
-    component_name="research_model_development",
-    input_vars=["lr", "num_epochs", "hidden_size"],
-    output_vars=["model_metric"],
+c = Component(
+    name="research_model_development",
+    description="Example of training a model for research.",
+    owner="neurips_queen",
+    tags=["example"],
+)
+
+
+@c.run(
+    input_filenames=["lr", "num_epochs", "hidden_size"],
+    output_filenames=["model_metric"],
 )
 def train_and_evaluate_model(lr, num_epochs, hidden_size):
     # Grab some random accuracy
@@ -34,14 +41,6 @@ def train_and_evaluate_model(lr, num_epochs, hidden_size):
 
 
 if __name__ == "__main__":
-
-    # Create component
-    create_component(
-        name="research_model_development",
-        description="Example of training a model for research.",
-        owner="neurips_queen",
-        tags=["example"],
-    )
 
     lr_candidates = [0.001, 0.01, 0.1]
     num_epochs_candidates = [10, 50, 100]

@@ -30,6 +30,7 @@ setup(
         "psycopg2-binary",
         "pytest",
         "python-dotenv",
+        "scikit-learn",
         "sqlalchemy",
     ],
     entry_points="""

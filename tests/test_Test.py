@@ -1,8 +1,5 @@
 import unittest
-from mltrace import \
-    Test, \
-    Component, \
-    set_db_uri
+from mltrace import Test, Component, set_db_uri
 
 
 class TestTest(unittest.TestCase):
@@ -26,10 +23,8 @@ class TestTest(unittest.TestCase):
                 raise Exception("TestNotCorrect called!")
 
         c = Component(
-            "aditi",
-            "test",
-            "test_description",
-            afterTests=[DummyTest])
+            "aditi", "test", "test_description", afterTests=[DummyTest]
+        )
         val = [100]
 
         @c.run
@@ -59,10 +54,8 @@ class TestTest(unittest.TestCase):
                 raise Exception("Test called!")
 
         c = Component(
-            "aditi",
-            "test",
-            "test_description",
-            afterTests=[DummyTest])
+            "aditi", "test", "test_description", afterTests=[DummyTest]
+        )
 
         @c.run
         def function():

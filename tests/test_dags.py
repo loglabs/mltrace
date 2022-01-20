@@ -203,7 +203,10 @@ class TestDags(unittest.TestCase):
 
         # Create first component
         cr = self.store.initialize_empty_component_run("component_1")
-        cr.set_start_timestamp(now.replace(month=now.month - 2))
+        start_month = now.month - 2 if now.month > 2 else (12 + now.month) - 2
+        start_year = now.year if now.month > 2 else now.year - 1
+        start_date = now.replace(month=start_month, year=start_year)
+        cr.set_start_timestamp(start_date)
         cr.set_end_timestamp()
         cr.add_input(iop1)
         cr.add_output(iop2)
@@ -229,7 +232,7 @@ class TestDags(unittest.TestCase):
                 2,
                 [
                     "component_1 (ID 1) was run "
-                    + f"{(now - now.replace(month=now.month - 2)).days} days"
+                    + f"{(now - start_date).days} days"
                     + " ago."
                 ],
             ),

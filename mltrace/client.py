@@ -656,4 +656,36 @@ def retrieve_io_pointers_for_label(label_id: str):
 
 def get_labels() -> typing.List[str]:
     store = Store(_db_uri)
-    return [label.id for label in store.get_labels()]
+    return [label.id for label in store.get_all_labels()]
+
+
+def create_labels(label_ids: typing.List[str]):
+    store = Store(_db_uri)
+    store.get_labels(label_ids)
+
+
+def log_output(
+    task_name: str,
+    identifier: str,
+    val: float,
+):
+    store = Store(_db_uri)
+    store.log_output(identifier=identifier, task_name=task_name, val=val)
+
+
+def log_feedback(
+    task_name: str,
+    identifier: str,
+    val: float,
+):
+    store = Store(_db_uri)
+    store.log_feedback(identifier=identifier, task_name=task_name, val=val)
+
+
+def compute_metric(
+    task_name: str,
+    metric_fn: typing.Callable,
+    window_size: int = None,
+):
+    store = Store(_db_uri)
+    store.compute_metric(task_name, metric_fn, window_size)

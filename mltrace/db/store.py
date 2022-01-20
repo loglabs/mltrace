@@ -11,6 +11,7 @@ from mltrace.db.utils import (
     _get_data_and_model_args,
     _load,
     _save,
+    _get_view_name,
 )
 from mltrace.db import (
     Component,
@@ -21,15 +22,18 @@ from mltrace.db import (
     Label,
     component_run_output_association,
     deleted_labels,
+    output_table,
+    feedback_table,
 )
 from mltrace.db.models import component_run_output_association
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, text
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.sql.expression import Tuple
 from sqlalchemy.dialects.postgresql import insert
 
 import ctypes
 import hashlib
+import inspect
 import logging
 import sqlalchemy
 import typing
@@ -195,7 +199,7 @@ class Store(object):
             .all()
         )
         # Create label vector
-        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        label_vec = self.get_labels(labels) if labels else None
         if res and labels:
             for iop in res:
                 iop.add_labels(label_vec)
@@ -254,7 +258,7 @@ class Store(object):
         same_name_res = [r[0] for r in same_name_res]
 
         # Create label vector
-        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        label_vec = self.get_labels(labels) if labels else None
 
         if len(same_name_res) > 0 and bytes(same_name_res[0]) != hval:
             logging.warning(
@@ -358,6 +362,12 @@ class Store(object):
         # Warn user if there is a staleness message
         if len(component_run.stale) > 0:
             logging.warning(component_run.stale)
+
+        # Dedup labels
+        for inp in component_run.inputs:
+            inp.dedup_labels()
+        for out in component_run.outputs:
+            out.dedup_labels()
 
         # Commit to DB
         self.session.add(component_run)
@@ -694,7 +704,7 @@ class Store(object):
             args_filtered = _get_data_and_model_args(**kwargs)
 
         # Create label vector
-        label_vec = [self.get_label(lab) for lab in labels] if labels else None
+        label_vec = self.get_labels(labels) if labels else None
 
         io_pointers = []
         # Hash each arg and see if the corresponding IOPointer exists
@@ -761,6 +771,19 @@ class Store(object):
             self.session.add(label)
             self.session.commit()
             return label
+
+        return res
+
+    def get_labels(self, label_ids: typing.List[str]):
+
+        res = self.session.query(Label).filter(Label.id.in_(label_ids)).all()
+        need_to_add = list(set(label_ids) - set([r.id for r in res]))
+
+        if len(need_to_add) > 0:
+            labels = [Label(id=label_id) for label_id in need_to_add]
+            self.session.add_all(labels)
+            self.session.commit()
+            return res + labels
 
         return res
 
@@ -849,5 +872,250 @@ class Store(object):
             raise RuntimeError(f"Label {label_id} does not exist.")
         return label.io_pointers
 
-    def get_labels(self):
+    def get_all_labels(self):
         return self.session.query(Label).all()
+
+    def log_output(
+        self,
+        task_name: str,
+        identifier: str,
+        val: float,
+    ):
+        """
+        Logs an output value to the output table.
+        """
+
+        stmt = insert(output_table).values(
+            timestamp=datetime.now(),
+            identifier=identifier,
+            task_name=task_name,
+            value=val,
+        )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def log_outputs(
+        self,
+        task_name: str,
+        identifiers: typing.List[str],
+        vals: typing.List[float],
+    ):
+        """
+        Logs an output value to the output table.
+        """
+
+        stmt = insert(output_table).values(
+            [
+                {
+                    "timestamp": datetime.now(),
+                    "identifier": i,
+                    "task_name": task_name,
+                    "value": v,
+                }
+                for i, v in zip(identifiers, vals)
+            ]
+        )
+
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def log_feedback(
+        self,
+        task_name: str,
+        identifier: str,
+        val: float,
+    ):
+        """
+        Logs a feedback value to the feedback table.
+        """
+
+        stmt = insert(feedback_table).values(
+            timestamp=datetime.now(),
+            identifier=identifier,
+            task_name=task_name,
+            value=val,
+        )
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def log_feedbacks(
+        self,
+        task_name: str,
+        identifiers: typing.List[str],
+        vals: typing.List[float],
+    ):
+        """
+        Logs an output value to the output table.
+        """
+
+        stmt = insert(feedback_table).values(
+            [
+                {
+                    "timestamp": datetime.now(),
+                    "identifier": i,
+                    "task_name": task_name,
+                    "value": v,
+                }
+                for i, v in zip(identifiers, vals)
+            ]
+        )
+
+        self.session.execute(stmt)
+        self.session.commit()
+
+    def get_outputs_or_feedback(
+        self,
+        task_name: str,
+        tablename: str = "output_table",
+        limit: int = None,
+        window_size: int = None,
+    ):
+        if tablename not in ["output_table", "feedback_table"]:
+            raise ValueError(f"Invalid table name {tablename}")
+
+        table = output_table if tablename == "output_table" else feedback_table
+
+        query = self.session.query(
+            table.c.timestamp,
+            table.c.identifier,
+            table.c.value,
+        ).filter(table.c.task_name == task_name)
+
+        if limit:
+            query = query.order_by(table.c.timestamp.desc()).limit(limit)
+
+        if window_size:
+            query = query.filter(
+                table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+
+        return query.all()
+
+    def compute_metric(
+        self,
+        task_name: str,
+        metric_fn: typing.Callable,
+        window_size: int = None,
+    ):
+        """
+        Computes a metric over the specified window (in seconds).
+        """
+        # Check the function is well formed (has y_true, y_pred signature)
+        args = inspect.signature(metric_fn)
+        if len(args.parameters) < 2:
+            raise RuntimeError(
+                "The function must take at least 2 arguments: y_true, y_pred."
+            )
+
+        output_join_conditions = [output_table.c.task_name == task_name]
+        feedback_join_conditions = [feedback_table.c.task_name == task_name]
+
+        if window_size:
+            output_join_conditions.append(
+                output_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+            feedback_join_conditions.append(
+                feedback_table.c.timestamp
+                >= datetime.now() - timedelta(seconds=window_size)
+            )
+
+        join_conditions = output_join_conditions + feedback_join_conditions
+        outputs_feedback_joined = (
+            self.session.query(feedback_table.c.value, output_table.c.value)
+            .join(
+                output_table,
+                output_table.c.identifier == feedback_table.c.identifier,
+            )
+            .filter(and_(*join_conditions))
+        ).all()
+
+        # Apply the function to each pair of outputs and feedback
+        y_true = [float(out[0]) for out in outputs_feedback_joined]
+        y_pred = [float(out[1]) for out in outputs_feedback_joined]
+
+        # Try computing metric function
+
+        return metric_fn(y_true, y_pred)
+
+    def create_view(self, task_name: str, window_size: int = None):
+        """
+        Creates a materialized view on joined outputs and feedback.
+        If window_size is specified, only the window_size most recent joined
+        values are kept.
+        """
+
+        output_join_conditions = [output_table.c.task_name == task_name]
+        feedback_join_conditions = [feedback_table.c.task_name == task_name]
+        join_conditions = output_join_conditions + feedback_join_conditions
+
+        stmt = (
+            self.session.query(
+                feedback_table.c.identifier.label("identifier"),
+                feedback_table.c.value.label("feedback_value"),
+                output_table.c.value.label("output_value"),
+            )
+            .join(
+                output_table,
+                output_table.c.identifier == feedback_table.c.identifier,
+            )
+            .filter(and_(*join_conditions))
+        )
+
+        if window_size:
+            stmt = stmt.order_by(feedback_table.c.timestamp.desc()).limit(
+                window_size
+            )
+
+        view_name = _get_view_name(task_name, window_size)
+        str_stmt = stmt.statement.compile(
+            compile_kwargs={"literal_binds": True}
+        )
+
+        self.session.execute(
+            f"CREATE MATERIALIZED VIEW IF NOT EXISTS {view_name} AS {str_stmt}"
+        )
+        self.session.execute(
+            f"CREATE UNIQUE INDEX ON {view_name} (identifier)"
+        )
+
+        # Create trigger to update the view when new feedbacks are logged
+        trigger_fn = f"""CREATE OR REPLACE FUNCTION refresh_view_{view_name}()
+            RETURNS TRIGGER LANGUAGE plpgsql
+            AS $$
+            BEGIN
+            REFRESH MATERIALIZED VIEW CONCURRENTLY {view_name};
+            RETURN NULL;
+            END $$;"""
+
+        trigger_stmt = f"""CREATE OR REPLACE TRIGGER refresh_view_{view_name}
+            AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+            ON feedback
+            FOR EACH STATEMENT
+            EXECUTE PROCEDURE refresh_view_{view_name}();"""
+
+        self.session.execute(trigger_fn)
+        self.session.execute(trigger_stmt)
+
+        self.session.commit()
+
+    def compute_metric_from_view(
+        self,
+        task_name: str,
+        metric_fn: typing.Callable,
+        window_size: int = None,
+    ):
+        """
+        Computes a metric over the specified window (in seconds).
+        """
+
+        view_name = _get_view_name(task_name, window_size)
+        stmt = "SELECT feedback_value, output_value FROM {}".format(view_name)
+        res = self.session.execute(stmt).fetchall()
+
+        # Apply the function to each pair of outputs and feedback
+        y_true = [float(out[0]) for out in res]
+        y_pred = [float(out[1]) for out in res]
+
+        return metric_fn(y_true, y_pred)

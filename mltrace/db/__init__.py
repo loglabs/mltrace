@@ -7,6 +7,8 @@ from mltrace.db.models import (
     Label,
     component_run_output_association,
     deleted_labels,
+    output_table,
+    feedback_table,
 )
 from mltrace.db.store import Store
 
@@ -19,4 +21,6 @@ __all__ = [
     "Tag",
     "Label",
     "deleted_labels",
+    "output_table",
+    "feedback_table",
 ]

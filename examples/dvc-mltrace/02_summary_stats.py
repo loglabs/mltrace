@@ -1,9 +1,16 @@
 import pandas as pd
-from mltrace import create_component, register
+from mltrace import Component
 
 
-@register(component_name="summary", input_vars=["input_filepath"],
-          output_vars=['output_filepath'])
+c = Component(
+    name="summary",
+    description="print some simple stats about dataset",
+    owner="jeanne",
+    tags=["eda"],
+)
+
+
+@c.run(input_vars=["input_filepath"], output_filenames=["output_filepath"])
 def summary(input_filepath: str, output_filepath: str) -> str:
     """
     print some simple stats about dataset
@@ -14,9 +21,4 @@ def summary(input_filepath: str, output_filepath: str) -> str:
 
 
 if __name__ == "__main__":
-    create_component(
-      name="summary",
-      description="print some simple stats about dataset",
-      owner="jeanne",
-      tags=['eda'],)
-    summary('data/abalone.csv', 'data/summary_stats.csv')
+    summary("data/abalone.csv", "data/summary_stats.csv")

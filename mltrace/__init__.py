@@ -31,12 +31,18 @@ from mltrace.client import (
     retract_labels,
     retrieve_io_pointers_for_label,
     get_labels,
+    log_output,
+    log_feedback,
+    compute_metric,
 )
 from mltrace.entities import (
     Component,
     Test,
     ComponentRun,
     IOPointer,
+    Task,
+    supported_sklearn_metrics,
+    Metric,
 )
 
 __all__ = [
@@ -76,4 +82,10 @@ __all__ = [
     "retract_labels",
     "retrieve_io_pointers_for_label",
     "get_labels",
+    "log_output",
+    "log_feedback",
+    "compute_metric",
+    "Task",
+    "supported_sklearn_metrics",
+    "Metric",
 ]
