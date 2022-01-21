@@ -41,4 +41,3 @@ if __name__ == "__main__":
     iops = retrieve_io_pointers_for_label("temp_label")
     for iop in iops:
         print(iop)
-        

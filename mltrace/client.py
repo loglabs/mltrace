@@ -588,6 +588,7 @@ def get_tags() -> typing.List[str]:
 
 # --------------- Complex retrieval functions ------------------ #
 
+
 def backtrace(output_pointer: str):
     """Prints trace for an output id.
     Returns list of tuples (level, ComponentRun) where level is how
