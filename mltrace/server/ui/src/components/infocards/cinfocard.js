@@ -5,7 +5,7 @@ import axios from "axios";
 import 'normalize.css/normalize.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { createBrowserHistory } from 'history'
 
 
@@ -67,28 +67,6 @@ class CInfoCard extends Component {
         this.setState({ isOpen: !this.state.isOpen });
     }
 
-    // componentDidUpdate() {
-    //     console.log("info card did update ")
-    //     if (this.state.componentName === this.props.src.name && this.props.limit === this.state.limit && this.props.dateUpper === this.state.dateUpper && this.props.dateLower === this.state.dateLower) {
-    //         return null;
-    //     }
-
-    //     axios.get(HISTORY_API_URL, {
-    //         params: {
-    //             component_name: this.props.src.name,
-    //             limit: this.props.limit,
-    //             date_lower: this.props.dateLower,
-    //             date_upper: this.props.dateUpper
-    //         }
-    //     }).then(
-    //         ({ data }) => {
-    //             this._isMounted && this.setState({ history: data, componentName: this.props.src.name, limit: this.props.limit, dateLower: this.props.dateLower, dateUpper: this.props.dateUpper });
-    //         }
-    //     ).catch(e => {
-    //         console.log(e);
-    //         // this.setState({ output_id: this.props.output_id });
-    //     });
-    // }
 
     render() {
         let info = this.props.src;
@@ -105,7 +83,7 @@ class CInfoCard extends Component {
                 <Tag
                     minimal={true}
                     onClick={() => {
-                        this.props.history.push(`/tag/${name}`);
+                        // this.props.history.push(`/tag/${name}`);
                         this.props.commandHandler("tag " + name);
                     }}
                     intent={Intent.PRIMARY}
@@ -134,21 +112,25 @@ class CInfoCard extends Component {
             }
 
             return (
-                <tr key={'componentrun_' + index} onClick={
-                    () => {
+             
+                    <tr key={'componentrun_' + index} 
+                    onClick={() => {
                         this.props.history.push(`/inspect/${cr.id}`);
                         this.props.commandHandler("inspect " + cr.id);
                     }}>
-                    <td>{id}</td>
-                    <td>{cr.start_timestamp}</td>
-                    <td>{(end - start) / 1000}sec</td>
-                    <td style={{ fontFamily: 'monospace', maxWidth: '100%', wordWrap: 'break-word' }}>
-                        {outputs}
-                    </td>
-                    <td>{cr.mlflow_run_id}</td>
-                    <td>{cr.mlflow_run_id}</td>
-                    <td>{cr.mlflow_run_id}</td>
-                </tr>
+                    {/* <Link to ={`/inspect/${cr.id}`}>   */}
+                        <td>{id}</td>
+                        {/* </Link> */}
+                        <td>{cr.start_timestamp}</td>
+                        <td>{(end - start) / 1000}sec</td>
+                        <td style={{ fontFamily: 'monospace', maxWidth: '100%', wordWrap: 'break-word' }}>
+                            {outputs}
+                        </td>
+                        <td>{cr.mlflow_run_id}</td>
+                        <td>{JSON.stringify(cr.mlflow_run_metrics, null, 2)}</td>
+                        <td>{JSON.stringify(cr.mlflow_run_params, null, 2)}</td>
+                     </tr>
+
             )
         });
 
@@ -170,6 +152,8 @@ class CInfoCard extends Component {
                                     <th>Duration</th>
                                     <th>Outputs</th>
                                     <th>Mlflow Run ID</th>
+                                    <th>Mlflow Run Metrics</th>
+                                    <th>Mlflow Run Params</th>
                                 </tr>
                             </thead>
                             <tbody style={{ maxWidth: '100%' }}>

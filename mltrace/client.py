@@ -9,10 +9,12 @@ import functools
 import git
 import inspect
 import logging
+import mlflow
 import os
 import sys
 import typing
 import uuid
+
 
 
 _db_uri = utils.get_db_uri()
@@ -545,6 +547,11 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     d.update(
         {"inputs": inputs, "outputs": outputs, "dependencies": dependencies}
     )
+    
+    """get mlflow params & metrics"""
+    mlflow_metrics = mlflow.get_run(cr.mlflow_run_id).info.metrics
+    mlflow_params = mlflow.get_run(cr.mlflow_run_id).info.params
+    d.update({"mlflow_metrics":mlflow_metrics, "mlflow_params":mlflow_params})
 
     return ComponentRun.from_dictionary(d)
 
@@ -586,6 +593,10 @@ def get_tags() -> typing.List[str]:
     res = store.get_tags()
     tags = [t.name for t in res]
     return tags
+
+
+
+
 
 
 # --------------- Complex retrieval functions ------------------ #

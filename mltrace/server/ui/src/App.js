@@ -9,7 +9,7 @@ import Inspect from "./pages/inspect.js"
 import Review from "./pages/review.js"
 import { CustomToaster } from "./components/toaster.js";
 import { Classes, Intent } from "@blueprintjs/core";
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 
 import axios from "axios";
 const FLAG_API_URL = "api/flag";
@@ -93,29 +93,12 @@ class App extends Component {
   }
 
 
-  handleUrl(input) {
-    update_url = true;
-    var args = input.split("/").filter(str => str !== "");
-    this.handleCommand(args.join(" "));
-  }
-
-  componentDidMount() {
-    this.handleUrl(window.location.pathname);
-  }
-
   handleCommand(input) {
     
     console.log("handleCommand")
     console.log(input)
 
     var args = input.split(" ").filter(str => str !== "");
-
-    if (update_url) {
-      var urlPath = "/" + args.join("/");
-      this.props.history.push(urlPath);
-      update_url = false;
-      console.log(urlPath);
-    }
 
     if (args.length === 0) return;
 
@@ -158,7 +141,7 @@ class App extends Component {
       if (args.length === 2) {
         newState.kwargs = { 'limit': args[1] };
       }
-
+      console.log("set")
       this.setState(newState);
     } else if (command === "recent") {
       if (args.length > 1) {
@@ -234,6 +217,12 @@ class App extends Component {
 
   render() {
 
+    // rerender the website if the url command does not match with current state command
+    var urlCommand = window.location.pathname.split("/").filter(str => str !== "");
+    if (urlCommand[0] !== this.state.command) {
+      this.handleCommand(urlCommand.join(" "));
+    }
+    
     let darkstr = "";
     if (this.state.useDarkTheme === true) {
       darkstr = "bp3-dark";
@@ -243,6 +232,7 @@ class App extends Component {
       minHeight: '100vh',
     };
 
+    // console.log(this.state.command)
     return (
       <div className={darkstr} style={style}>
         <Header
@@ -256,12 +246,7 @@ class App extends Component {
         <div id='spacing-div' style={{ paddingTop: '4em' }}></div>
         <Switch>
           <Route exact path="/">
-            {<TagView commandHandler={this.handleCommand} tagName={this.state.command === 'tag' ? this.state.id : ""} />}
             {<Recent render={this.state.command === "recent"} commandHandler={this.handleCommand} kwargs={this.state.kwargs} />}
-            {<Trace commandHandler={this.handleCommand} output_id={this.state.command === 'trace' ? this.state.id : ""} />}
-            {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}
-            {<Inspect commandHandler={this.handleCommand} runId={this.state.command === "inspect" ? this.state.id : ""} />}
-            {<Review commandHandler={this.handleCommand} render={this.state.command === "review"} />}
           </Route>
           <Route path="/history">
             {<History commandHandler={this.handleCommand} kwargs={this.state.kwargs} componentName={this.state.command === 'history' ? this.state.id : ""} />}

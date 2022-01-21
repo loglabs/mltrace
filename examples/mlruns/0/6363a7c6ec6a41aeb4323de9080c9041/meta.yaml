@@ -1,0 +1,15 @@
+artifact_uri: file:///home/boyuan/mltrace/examples/mlruns/0/6363a7c6ec6a41aeb4323de9080c9041/artifacts
+end_time: 1642792787163
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 6363a7c6ec6a41aeb4323de9080c9041
+run_uuid: 6363a7c6ec6a41aeb4323de9080c9041
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1642792787155
+status: 3
+tags: []
+user_id: boyuan

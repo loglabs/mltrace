@@ -12,7 +12,6 @@ def test_mlflow_run_id():
     mlflow.log_param("param1", 1)
 
     mlflow.log_metric("foo", 1)
-    mlflow.log_metric("foo", 1)
     mlflow.log_metric("foo", 2)
     mlflow.log_metric("zoo", 1)
     print("hello")

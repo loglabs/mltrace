@@ -33,8 +33,8 @@ class ComponentRun(Base):
         dependencies: typing.List[str] = [],
         test_results: json = None,
         mlflow_run_id: str = None,
-        mlflow_run_metrics: list = None,
-        mlflow_run_params: list = None,
+        mlflow_run_metrics: dict = None,
+        mlflow_run_params: dict = None,
     ):
         """Set class attributes. Note that timestamps are represented in
         seconds since epoch."""
