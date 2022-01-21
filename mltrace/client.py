@@ -14,8 +14,6 @@ import sys
 import typing
 import uuid
 
-
-
 _db_uri = utils.get_db_uri()
 
 # --------------------- Database management functions ------------------- #
@@ -588,13 +586,7 @@ def get_tags() -> typing.List[str]:
     tags = [t.name for t in res]
     return tags
 
-
-
-
-
-
 # --------------- Complex retrieval functions ------------------ #
-
 
 def backtrace(output_pointer: str):
     """Prints trace for an output id.

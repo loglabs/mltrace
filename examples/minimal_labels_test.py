@@ -15,7 +15,6 @@ third_component = Component("third", "shreya")
 def first(df, label):
     mlflow.start_run()
     first_df = df * 2
-    
     mlflow.end_run()
     return first_df
 
@@ -42,3 +41,4 @@ if __name__ == "__main__":
     iops = retrieve_io_pointers_for_label("temp_label")
     for iop in iops:
         print(iop)
+        
