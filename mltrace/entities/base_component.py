@@ -221,7 +221,6 @@ class Component(Base):
                 # Construct component run object
                 store = Store(clientUtils.get_db_uri())
                 component_run = store.initialize_empty_component_run(self.name)
-                component_run.set_start_timestamp()
 
                 # Assert key names are not in args or kwargs
                 if (
@@ -270,6 +269,7 @@ class Component(Base):
                         should_filter=True, **all_input_args
                     )
 
+                component_run.set_start_timestamp()
                 # Run function
                 local_vars, value = utils.run_func_capture_locals(
                     func, *args, **kwargs
