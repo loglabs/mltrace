@@ -2,7 +2,6 @@ from mltrace import Component
 
 import random
 import pandas as pd
-import mlflow
 
 from mltrace import retract_label, retrieve_io_pointers_for_label
 
@@ -13,9 +12,7 @@ third_component = Component("third", "shreya")
 
 @first_component.run(input_vars={"df": "label"}, output_vars=["first_df"])
 def first(df, label):
-    mlflow.start_run()
     first_df = df * 2
-    mlflow.end_run()
     return first_df
 
 
