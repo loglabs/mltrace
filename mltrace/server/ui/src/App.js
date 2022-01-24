@@ -94,9 +94,6 @@ class App extends Component {
 
 
   handleCommand(input) {
-    
-    console.log("handleCommand")
-    console.log(input)
 
     var args = input.split(" ").filter(str => str !== "");
 
@@ -141,7 +138,7 @@ class App extends Component {
       if (args.length === 2) {
         newState.kwargs = { 'limit': args[1] };
       }
-      console.log("set")
+      
       this.setState(newState);
     } else if (command === "recent") {
       if (args.length > 1) {
@@ -232,7 +229,6 @@ class App extends Component {
       minHeight: '100vh',
     };
 
-    // console.log(this.state.command)
     return (
       <div className={darkstr} style={style}>
         <Header

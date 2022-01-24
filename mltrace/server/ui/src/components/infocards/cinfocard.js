@@ -33,7 +33,6 @@ class CInfoCard extends Component {
     }
 
     componentDidMount() {
-        console.log("info card did Mount ")
 
         // set history if calling from history page
         if (this.props.showHistoryOnLoad === true) {
@@ -63,7 +62,6 @@ class CInfoCard extends Component {
     }
 
     handleClick() {
-        console.log("clicked");
         this.setState({ isOpen: !this.state.isOpen });
     }
 
@@ -72,7 +70,6 @@ class CInfoCard extends Component {
         let info = this.props.src;
         history.listen(location => {
             if (location.action === "POP") {
-                console.log("listened");
                 var args = location.pathname.split("/").filter(str => str !== "");
                 this.props.commandHandler(args.join(" "));
             }
@@ -94,7 +91,7 @@ class CInfoCard extends Component {
                 </Tag>)
         });
 
-        console.log(this.state.history)
+
         let runElements = this.state.history.map((cr, index) => {
             let end = new Date(cr.end_timestamp);
             let start = new Date(cr.start_timestamp);

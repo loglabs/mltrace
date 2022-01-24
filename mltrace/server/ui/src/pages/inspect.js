@@ -16,7 +16,6 @@ export default class Inspect extends Component {
             margin: '1em',
             // paddingRight: '10em'
         }
-        console.log("2")
 
         return (
             <InfoCard selected_id={this.props.runId} style={childStyle} commandHandler={this.props.commandHandler} />
