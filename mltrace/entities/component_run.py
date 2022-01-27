@@ -264,7 +264,9 @@ class ComponentRun(Base):
                 "%Y-%m-%d %l:%M:%S%z"
             )
         for inp in params["inputs"]:
-            del inp["value"]
+            if 'value' in inp.keys():
+                del inp['value']
         for out in params["outputs"]:
-            del out["value"]
+            if 'value' in out.keys():
+                del out["value"]
         return json.dumps(params)

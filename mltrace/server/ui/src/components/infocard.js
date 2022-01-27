@@ -50,6 +50,7 @@ export default class InfoCard extends Component {
             }
         }).then(
             ({ data }) => {
+                console.log(data)
                 this._isMounted && this.setState({ node: data, selected_id: this.props.selected_id, type: type });
             }
         ).catch(e => {

@@ -93,7 +93,7 @@ class CInfoCard extends Component {
                     {name}
                 </Tag>)
         });
-
+        
         console.log(this.state.history)
         let runElements = this.state.history.map((cr, index) => {
             let end = new Date(cr.end_timestamp);

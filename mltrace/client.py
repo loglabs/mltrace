@@ -548,11 +548,6 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
         {"inputs": inputs, "outputs": outputs, "dependencies": dependencies}
     )
     
-    """get mlflow params & metrics"""
-    mlflow_metrics = mlflow.get_run(cr.mlflow_run_id).info.metrics
-    mlflow_params = mlflow.get_run(cr.mlflow_run_id).info.params
-    d.update({"mlflow_metrics":mlflow_metrics, "mlflow_params":mlflow_params})
-
     return ComponentRun.from_dictionary(d)
 
 

@@ -293,11 +293,9 @@ class Component(Base):
                 if mlflow_run_id is not None:
                     mlflow_run = mlflow.get_run(mlflow_run_id)
                     component_run.set_mlflow_run_id(mlflow_run_id)
-                    # component_run.set_mlflow_run_metrics(mlflow_run.data.metrics)
-                    # component_run.set_mlflow_run_params(mlflow_run.data.params)
-                    print(component_run.mlflow_run_id)
-                    print(mlflow_run.data.metrics)
-                    print(mlflow_run.data.params)
+                    component_run.set_mlflow_run_metrics(mlflow_run.data.metrics)
+                    component_run.set_mlflow_run_params(mlflow_run.data.params)
+
                 mlflow.start_run = mlflow_start_run_copy
 
                 if not callable(input_filenames):
