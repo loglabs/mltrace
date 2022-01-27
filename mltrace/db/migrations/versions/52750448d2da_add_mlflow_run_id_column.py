@@ -18,8 +18,7 @@ depends_on = None
 
 def upgrade():
     op.add_column("component_runs", 
-    sa.Column("mlflow_run_id", sa.String, default=None))
-
+        sa.Column("mlflow_run_id", sa.String, default=None))
 
 def downgrade():
     op.drop_column("component_runs", "mlflow_run_id")
