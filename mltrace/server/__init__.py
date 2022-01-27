@@ -19,7 +19,6 @@ from mltrace import (
 import copy
 import json
 import logging
-import mlflow
 
 app = Flask(__name__, static_folder="ui/build", static_url_path="")
 api = Blueprint("api", __name__)

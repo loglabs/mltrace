@@ -149,7 +149,7 @@ class ComponentRun(Base):
     @property
     def test_result(self) -> json:
         return self._test_results
-    
+
     @property
     def mlflow_run_id(self) -> str:
         return self._mlflow_run_id
@@ -157,7 +157,7 @@ class ComponentRun(Base):
     @property
     def mlflow_run_metrics(self) -> dict:
         return self._mlflow_run_metrics
-    
+
     @property
     def mlflow_run_params(self) -> dict:
         return self._mlflow_run_params

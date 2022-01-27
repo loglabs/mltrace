@@ -294,15 +294,15 @@ class ComponentRun(Base):
         self.stale = []
         self.test_results = JSON.NULL
 
-    def set_mlflow_run_id(self, mlflow_run_id : str):
+    def set_mlflow_run_id(self, mlflow_run_id: str):
         """Call this function to set the mlflow component run id"""
         self.mlflow_run_id = mlflow_run_id
 
     def set_mlflow_run_metrics(self, mlflow_run_metrics: dict):
         """Call this function to set the mlflow component run id"""
         self.mlflow_run_metrics = mlflow_run_metrics
-    
-    def set_mlflow_run_params(self, mlflow_run_params : dict):
+
+    def set_mlflow_run_params(self, mlflow_run_params: dict):
         """Call this function to set the mlflow component run id"""
         self.mlflow_run_params = mlflow_run_params
 
