@@ -216,6 +216,9 @@ class App extends Component {
 
     // rerender the website if the url command does not match with current state command
     var urlCommand = window.location.pathname.split("/").filter(str => str !== "");
+    if (urlCommand.length === 0) {
+      this.props.history.push('/recent');
+    }
     if (urlCommand[0] !== this.state.command) {
       this.handleCommand(urlCommand.join(" "));
     }
