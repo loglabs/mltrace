@@ -9,10 +9,13 @@ import functools
 import git
 import inspect
 import logging
+import mlflow
 import os
 import sys
 import typing
 import uuid
+
+
 
 _db_uri = utils.get_db_uri()
 
@@ -585,6 +588,11 @@ def get_tags() -> typing.List[str]:
     res = store.get_tags()
     tags = [t.name for t in res]
     return tags
+
+
+
+
+
 
 # --------------- Complex retrieval functions ------------------ #
 
