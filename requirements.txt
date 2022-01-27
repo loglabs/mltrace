@@ -1,4 +1,4 @@
-alembic==1.4.1
+alembic==1.6.2
 attrs==20.3.0
 autopep8==1.5.6
 click==7.1.2
@@ -28,6 +28,5 @@ SQLAlchemy==1.4.3
 threadpoolctl==2.1.0
 toml==0.10.2
 Werkzeug==1.0.1
-mlflow==1.22.0
 scikit-learn
 

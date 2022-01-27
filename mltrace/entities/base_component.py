@@ -4,19 +4,18 @@ Base Component class. Other components should inherit from this class.
 import json
 import logging
 import typing
-
+ 
 from mltrace import client
 from mltrace import utils as clientUtils
 from mltrace.db import Store, PointerTypeEnum
 from mltrace.entities import utils
 from mltrace.entities.base import Base
-
+ 
 import functools
 import inspect
 import git
-import mlflow
-
-
+ 
+ 
 class Component(Base):
     def __init__(
         self,
@@ -36,7 +35,7 @@ class Component(Base):
         self._tags = tags
         self._beforeTests = beforeTests
         self._afterTests = afterTests
-
+ 
     def beforeRun(self, **kwargs) -> dict:
         """Computation to execute before running a component.
         Will run each test object listed in beforeTests."""
@@ -44,7 +43,7 @@ class Component(Base):
         for test in self._beforeTests:
             status.update(test().runTests(**kwargs))
         return status
-
+ 
     def afterRun(self, **local_vars) -> dict:
         """Computation to execute after running a component.
         Will run all test objects listed in afterTests."""
@@ -52,16 +51,16 @@ class Component(Base):
         for test in self._afterTests:
             status.update(test().runTests(**local_vars))
         return status
-
+ 
     def _logInputFilenames(
         self, input_filenames: typing.List[str], local_vars: dict, store: Store
     ):
         input_pointers = []
-
+ 
         duplicate = input_filenames
         if not isinstance(duplicate, dict):
             duplicate = {fname: None for fname in duplicate}
-
+ 
         for var, label_vars in duplicate.items():
             if var not in local_vars:
                 raise ValueError(f"Variable {var} not in current stack frame.")
@@ -91,7 +90,7 @@ class Component(Base):
                     store.get_io_pointer(str(val), labels=labels)
                 )
         return input_pointers
-
+ 
     def _logOutputFilenames(
         self,
         output_filenames: typing.List[str],
@@ -127,7 +126,7 @@ class Component(Base):
                     else [store.get_io_pointer(str(val))]
                 )
         return output_pointers
-
+ 
     def _logKwargs(
         self, kwargs: dict, endpoint: bool, local_vars: dict, store: Store
     ):
@@ -175,7 +174,7 @@ class Component(Base):
                     ]
                 )
         return pointers
-
+ 
     def run(
         self,
         input_filenames: typing.List[str] = [],
@@ -201,7 +200,7 @@ class Component(Base):
             We first execute the beforeRun method, then the function itself,
             then the afterRun method with the values of the args at the
             end of the function.
-
+ 
         @:param input_filenames - string variable representing the variable
             of the input
         @:param output_filenames - string variable representing the variable
@@ -215,14 +214,14 @@ class Component(Base):
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before", "skip_after"]
-
+ 
         def actual_decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 # Construct component run object
                 store = Store(clientUtils.get_db_uri())
                 component_run = store.initialize_empty_component_run(self.name)
-
+ 
                 # Assert key names are not in args or kwargs
                 if (
                     set(key_names) & set(inspect.getfullargspec(func).args)
@@ -231,10 +230,10 @@ class Component(Base):
                         "skip_before or skip_after cannot be in "
                         + f"the arguments of the function {func.__name__}"
                     )
-
+ 
                 # Make Dictionary of test status
                 status = {}
-
+ 
                 # Run before tests
                 if not user_kwargs.get("skip_before"):
                     all_args = dict(
@@ -248,11 +247,11 @@ class Component(Base):
                     }
                     all_args = {**all_args, **kwargs}
                     status.update(self.beforeRun(**all_args))
-
+ 
                 # Create input and output pointers
                 input_pointers = []
                 output_pointers = []
-
+ 
                 # Auto log inputs
                 if auto_log:
                     # Get IOPointers corresponding to args and f_locals
@@ -269,35 +268,14 @@ class Component(Base):
                     input_pointers += store.get_io_pointers_from_args(
                         should_filter=True, **all_input_args
                     )
-
-
-                def mlflow_start_run_id():
-                    nonlocal mlflow_run_id
-                    res = mlflow_start_run_copy()
-                    if mlflow.active_run():
-                        mlflow_run_id = mlflow.active_run().info.run_id
-                    return res
-
-                mlflow_run_id = None
-                mlflow_start_run_copy = mlflow.start_run
-                mlflow.start_run = mlflow_start_run_id
-                # monkey patching mlflow.start_run method
-
+ 
                 component_run.set_start_timestamp()
                 # Run function
                 local_vars, value = utils.run_func_capture_locals(
                     func, *args, **kwargs
                 )
                 component_run.set_end_timestamp()
-
-                if mlflow_run_id is not None:
-                    mlflow_run = mlflow.get_run(mlflow_run_id)
-                    component_run.set_mlflow_run_id(mlflow_run_id)
-                    component_run.set_mlflow_run_metrics(mlflow_run.data.metrics)
-                    component_run.set_mlflow_run_params(mlflow_run.data.params)
-
-                mlflow.start_run = mlflow_start_run_copy
-
+ 
                 if not callable(input_filenames):
                     # Log input and output filenames
                     input_pointers += self._logInputFilenames(
@@ -306,7 +284,7 @@ class Component(Base):
                     output_pointers += self._logOutputFilenames(
                         output_filenames, endpoint, local_vars, store
                     )
-
+ 
                     # Add input_kwargs and output_kwargs as pointers
                     input_pointers += self._logKwargs(
                         input_kwargs, False, local_vars, store
@@ -314,12 +292,12 @@ class Component(Base):
                     output_pointers += self._logKwargs(
                         output_kwargs, endpoint, local_vars, store
                     )
-
+ 
                     # Log input and output vars
                     duplicate = input_vars
                     if not isinstance(duplicate, dict):
                         duplicate = {vname: None for vname in input_vars}
-
+ 
                     for var, label_vars in duplicate.items():
                         if var not in local_vars:
                             raise ValueError(
@@ -347,7 +325,7 @@ class Component(Base):
                         input_pointers += store.get_io_pointers_from_args(
                             should_filter=False, labels=labels, **{var: val}
                         )
-
+ 
                     for var in output_vars:
                         if var not in local_vars:
                             raise ValueError(
@@ -360,9 +338,9 @@ class Component(Base):
                         output_pointers += store.get_io_pointers_from_args(
                             should_filter=False, **{var: val}
                         )
-
+ 
                 # If there were calls to mltrace.load and mltrace.save, log
-
+ 
                 if "_mltrace_loaded_artifacts" in local_vars:
                     input_pointers += [
                         store.get_io_pointer(name, val)
@@ -377,7 +355,7 @@ class Component(Base):
                             "_mltrace_saved_artifacts"
                         ].items()
                     ]
-
+ 
                 func_source_code = inspect.getsource(func)
                 if auto_log:
                     # Get IOPointers corresponding to args and f_locals
@@ -389,42 +367,42 @@ class Component(Base):
                     output_pointers += store.get_io_pointers_from_args(
                         should_filter=True, **all_output_args
                     )
-
+ 
                 # Check that none of the labels in the inputs are deleted
                 store.assert_not_deleted_labels(
                     input_pointers, staleness_threshold=staleness_threshold
                 )
                 # Propagate labels
                 store.propagate_labels(input_pointers, output_pointers)
-
+ 
                 component_run.add_inputs(input_pointers)
                 component_run.add_outputs(output_pointers)
-
+ 
                 # Add code versions
                 try:
                     repo = git.Repo(search_parent_directories=True)
                     component_run.set_git_hash(str(repo.head.object.hexsha))
                 except Exception as e:
                     logging.info("No git repo found.")
-
+ 
                 # Add git tags
                 if client.get_git_tags() is not None:
                     component_run.set_git_tags(client.get_git_tags())
-
+ 
                 # Add source code if less than 2^16
                 if len(func_source_code) < 2 ** 16:
                     component_run.set_code_snapshot(
                         bytes(func_source_code, "ascii")
                     )
-
+ 
                 # Create component if it does not exist
                 client.create_component(
                     self.name, self.description, self.owner, self.tags
                 )
-
+ 
                 # Set dependencies
                 store.set_dependencies_from_inputs(component_run)
-
+ 
                 # Perform after run tests
                 if not user_kwargs.get("skip_after"):
                     after_run_args = {
@@ -434,53 +412,55 @@ class Component(Base):
                         for k, v in local_vars.items()
                     }
                     status.update(self.afterRun(**after_run_args))
-
+ 
                 # update the component's testStatus, convert status to a json
                 component_run.set_test_result(status)
-
+ 
                 # Commit component run object to the DB
                 store.commit_component_run(
                     component_run, staleness_threshold=staleness_threshold
                 )
-
+ 
                 return value
-
+ 
             return wrapper
-
+ 
         if callable(input_filenames):
             # Used decorator without arguments
             return actual_decorator(input_filenames)
-
+ 
         else:
             # User passed in some kwargs
             return actual_decorator
-
+ 
     @property
     def name(self) -> str:
         return self._name
-
+ 
     @property
     def owner(self) -> str:
         return self._owner
-
+ 
     @property
     def description(self) -> str:
         return self._description
-
+ 
     @property
     def tags(self) -> typing.List[str]:
         return self._tags
-
+ 
     @property
     def beforeTests(self) -> list:
         return self._beforeTests
-
+ 
     @property
     def afterTests(self) -> list:
         return self._afterTests
-
+ 
     def __repr__(self):
         params = self.to_dictionary()
         del params["beforeTests"]
         del params["afterTests"]
         return json.dumps(params)
+ 
+
