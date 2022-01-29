@@ -277,10 +277,10 @@ class Component(Base):
                         mlflow_run_id = mlflow.active_run().info.run_id
                     return res
 
+                # monkey patching mlflow.start_run method
                 mlflow_run_id = None
                 mlflow_start_run_copy = mlflow.start_run
                 mlflow.start_run = mlflow_start_run_id
-                # monkey patching mlflow.start_run method
 
                 component_run.set_start_timestamp()
                 # Run function
