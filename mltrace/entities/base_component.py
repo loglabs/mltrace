@@ -298,9 +298,9 @@ class Component(Base):
                         component_run.set_mlflow_run_metrics(metrics)
                         component_run.set_mlflow_run_params(params)
                     except Exception as e:
-                        logging.warning(f"Mlflow.get_run {mlflow_run_id} 
-                                        failed.")
-
+                        logging.warning(
+                            f"Mlflow.get_run {mlflow_run_id} failed."
+                        )                        
                 mlflow.start_run = mlflow_start_run_copy
 
                 if not callable(input_filenames):
