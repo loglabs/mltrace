@@ -300,7 +300,7 @@ class Component(Base):
                     except Exception as e:
                         logging.warning(
                             f"Mlflow.get_run {mlflow_run_id} failed."
-                        )                   
+                        )
                 mlflow.start_run = mlflow_start_run_copy
 
                 if not callable(input_filenames):
