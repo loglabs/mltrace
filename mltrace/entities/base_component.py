@@ -290,11 +290,14 @@ class Component(Base):
                 component_run.set_end_timestamp()
 
                 if mlflow_run_id is not None:
-                    mlflow_run = mlflow.get_run(mlflow_run_id)
-                    component_run.set_mlflow_run_id(mlflow_run_id)
-                    metrics = mlflow_run.data.metrics
-                    component_run.set_mlflow_run_metrics(metrics)
-                    component_run.set_mlflow_run_params(mlflow_run.data.params)
+                    try:
+                        mlflow_run = mlflow.get_run(mlflow_run_id)
+                        component_run.set_mlflow_run_id(mlflow_run_id)
+                        metrics = mlflow_run.data.metrics
+                        component_run.set_mlflow_run_metrics(metrics)
+                        component_run.set_mlflow_run_params(mlflow_run.data.params)
+                    except Exception as e:
+                        logging.warning( f"Mlflow.get_run {mlflow_run_id} failed.")
 
                 mlflow.start_run = mlflow_start_run_copy
 

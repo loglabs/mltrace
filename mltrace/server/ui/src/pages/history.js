@@ -76,7 +76,6 @@ export default class History extends Component {
         if (this.state.componentName === "") {
             return null;
         }
-        console.log(this.state.componentName)
 
         let childStyle = {
             flex: '0',
