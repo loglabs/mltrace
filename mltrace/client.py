@@ -544,7 +544,6 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     d.update(
         {"inputs": inputs, "outputs": outputs, "dependencies": dependencies}
     )
-
     return ComponentRun.from_dictionary(d)
 
 
@@ -585,6 +584,7 @@ def get_tags() -> typing.List[str]:
     res = store.get_tags()
     tags = [t.name for t in res]
     return tags
+
 
 # --------------- Complex retrieval functions ------------------ #
 

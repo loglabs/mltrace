@@ -32,6 +32,9 @@ class ComponentRun(Base):
         stale: typing.List[str] = [],
         dependencies: typing.List[str] = [],
         test_results: json = None,
+        mlflow_run_id: str = None,
+        mlflow_run_metrics: dict = None,
+        mlflow_run_params: dict = None,
     ):
         """Set class attributes. Note that timestamps are represented in
         seconds since epoch."""
@@ -52,6 +55,9 @@ class ComponentRun(Base):
         self._stale = stale
         self._dependencies = dependencies
         self._test_results = test_results
+        self._mlflow_run_id = mlflow_run_id
+        self._mlflow_run_metrics = mlflow_run_metrics
+        self._mlflow_run_params = mlflow_run_params
 
     @property
     def component_name(self) -> str:
@@ -143,6 +149,18 @@ class ComponentRun(Base):
     @property
     def test_result(self) -> json:
         return self._test_results
+
+    @property
+    def mlflow_run_id(self) -> str:
+        return self._mlflow_run_id
+
+    @property
+    def mlflow_run_metrics(self) -> dict:
+        return self._mlflow_run_metrics
+
+    @property
+    def mlflow_run_params(self) -> dict:
+        return self._mlflow_run_params
 
     def set_start_timestamp(self, ts: datetime = None):
         if ts is None:
@@ -246,7 +264,9 @@ class ComponentRun(Base):
                 "%Y-%m-%d %l:%M:%S%z"
             )
         for inp in params["inputs"]:
-            del inp["value"]
+            if 'value' in inp.keys():
+                del inp['value']
         for out in params["outputs"]:
-            del out["value"]
+            if 'value' in out.keys():
+                del out["value"]
         return json.dumps(params)

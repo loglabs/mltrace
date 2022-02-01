@@ -54,6 +54,9 @@ class TestComponentRun(unittest.TestCase):
             "id": None,
             "stale": [],
             "test_result": None,
+            "mlflow_run_id": None,
+            "mlflow_run_params": None,
+            "mlflow_run_metrics": None,
         }
 
         self.mock_inputs = [

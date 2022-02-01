@@ -91,7 +91,6 @@ class CInfoCard extends Component {
                 </Tag>)
         });
 
-
         let runElements = this.state.history.map((cr, index) => {
             let end = new Date(cr.end_timestamp);
             let start = new Date(cr.start_timestamp);
@@ -123,6 +122,9 @@ class CInfoCard extends Component {
                         <td style={{ fontFamily: 'monospace', maxWidth: '100%', wordWrap: 'break-word' }}>
                             {outputs}
                         </td>
+                        <td>{cr.mlflow_run_id}</td>
+                        <td>{JSON.stringify(cr.mlflow_run_metrics, null, 2)}</td>
+                        <td>{JSON.stringify(cr.mlflow_run_params, null, 2)}</td>
                      </tr>
 
             )
@@ -145,6 +147,9 @@ class CInfoCard extends Component {
                                     <th>Start time</th>
                                     <th>Duration</th>
                                     <th>Outputs</th>
+                                    <th>Mlflow Run ID</th>
+                                    <th>Mlflow Run Metrics</th>
+                                    <th>Mlflow Run Params</th>
                                 </tr>
                             </thead>
                             <tbody style={{ maxWidth: '100%' }}>

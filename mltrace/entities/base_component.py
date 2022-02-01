@@ -14,6 +14,7 @@ from mltrace.entities.base import Base
 import functools
 import inspect
 import git
+import mlflow
 
 
 class Component(Base):
@@ -269,12 +270,38 @@ class Component(Base):
                         should_filter=True, **all_input_args
                     )
 
+                def mlflow_start_run_id():
+                    nonlocal mlflow_run_id
+                    res = mlflow_start_run_copy()
+                    if mlflow.active_run():
+                        mlflow_run_id = mlflow.active_run().info.run_id
+                    return res
+
+                # monkey patching mlflow.start_run method
+                mlflow_run_id = None
+                mlflow_start_run_copy = mlflow.start_run
+                mlflow.start_run = mlflow_start_run_id
+
                 component_run.set_start_timestamp()
                 # Run function
                 local_vars, value = utils.run_func_capture_locals(
                     func, *args, **kwargs
                 )
                 component_run.set_end_timestamp()
+
+                if mlflow_run_id is not None:
+                    try:
+                        mlflow_run = mlflow.get_run(mlflow_run_id)
+                        component_run.set_mlflow_run_id(mlflow_run_id)
+                        metrics = mlflow_run.data.metrics
+                        params = mlflow_run.data.params
+                        component_run.set_mlflow_run_metrics(metrics)
+                        component_run.set_mlflow_run_params(params)
+                    except Exception as e:
+                        logging.warning(
+                            f"Mlflow.get_run {mlflow_run_id} failed."
+                        )
+                mlflow.start_run = mlflow_start_run_copy
 
                 if not callable(input_filenames):
                     # Log input and output filenames
