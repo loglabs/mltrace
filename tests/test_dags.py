@@ -223,7 +223,18 @@ class TestDags(unittest.TestCase):
         trace = [
             (level, cr.id, cr.stale) for level, cr in self.store.trace("iop3")
         ]
-        res = [(0, 2, ["component_1 (ID 1) was run 61 days ago."]), (1, 1, [])]
+        res = [
+            (
+                0,
+                2,
+                [
+                    "component_1 (ID 1) was run "
+                    + f"{(now - now.replace(month=now.month - 2)).days} days"
+                    + " ago."
+                ],
+            ),
+            (1, 1, []),
+        ]
         self.assertEqual(trace, res)
 
 

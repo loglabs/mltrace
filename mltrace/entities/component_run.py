@@ -26,11 +26,12 @@ class ComponentRun(Base):
         inputs: typing.List[IOPointer] = [],
         outputs: typing.List[IOPointer] = [],
         git_hash: str = None,
-        git_tags: typing.List[str] = [],
+        git_tags: typing.List[str] = None,
         code_snapshot: str = None,
         id: str = None,
         stale: typing.List[str] = [],
         dependencies: typing.List[str] = [],
+        test_results: json = None,
     ):
         """Set class attributes. Note that timestamps are represented in
         seconds since epoch."""
@@ -50,6 +51,7 @@ class ComponentRun(Base):
         self._id = id
         self._stale = stale
         self._dependencies = dependencies
+        self._test_results = test_results
 
     @property
     def component_name(self) -> str:
@@ -137,6 +139,10 @@ class ComponentRun(Base):
     @property
     def stale(self) -> typing.List[str]:
         return self._stale
+
+    @property
+    def test_result(self) -> json:
+        return self._test_results
 
     def set_start_timestamp(self, ts: datetime = None):
         if ts is None:
@@ -239,4 +245,8 @@ class ComponentRun(Base):
             params["end_timestamp"] = params["end_timestamp"].strftime(
                 "%Y-%m-%d %l:%M:%S%z"
             )
+        for inp in params["inputs"]:
+            del inp["value"]
+        for out in params["outputs"]:
+            del out["value"]
         return json.dumps(params)

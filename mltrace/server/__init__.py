@@ -6,7 +6,7 @@ from mltrace.entities import Component, ComponentRun, IOPointer
 from mltrace import (
     get_component_information,
     get_component_run_information,
-    get_components_with_tag,
+    get_components,
     get_history,
     web_trace,
     get_recent_run_ids,
@@ -85,7 +85,7 @@ def tag():
 
     tag_name = request.args["id"]
     try:
-        components = get_components_with_tag(tag_name)
+        components = get_components(tag=tag_name)
         return str(components)
     except RuntimeError:
         return error(f"Tag {tag_name} not found", HTTPStatus.NOT_FOUND)

@@ -4,6 +4,10 @@ from mltrace.db.utils import (
     _initialize_db_tables,
     _drop_everything,
     _map_extension_to_enum,
+    _hash_value,
+    _get_data_and_model_args,
+    _load,
+    _save,
 )
 from mltrace.db import (
     Component,
@@ -16,7 +20,10 @@ from mltrace.db import (
 from mltrace.db.models import component_run_output_association
 from sqlalchemy import func, and_
 from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.sql.expression import Tuple
 
+import ctypes
+import hashlib
 import logging
 import typing
 
@@ -122,6 +129,19 @@ class Store(object):
         component.add_tags(tag_objects)
         self.session.commit()
 
+    def unflag_all(self):
+        """Unflags all IO Pointers and commits."""
+        flagged_iop = (
+            self.session.query(IOPointer)
+            .filter(IOPointer.flag.is_(True))
+            .all()
+        )
+
+        for iop in flagged_iop:
+            iop.clear_flag()
+
+        self.session.commit()
+
     def initialize_empty_component_run(
         self, component_name: str
     ) -> ComponentRun:
@@ -146,26 +166,42 @@ class Store(object):
         return res[0]
 
     def get_io_pointers(
-        self, names: typing.List[str], pointer_type: PointerTypeEnum = None
+        self,
+        names: typing.List[str],
+        values: typing.List[typing.Any] = None,
+        pointer_type: PointerTypeEnum = None,
     ) -> typing.List[IOPointer]:
         """Creates io pointers around the specified path names. Retrieves
         existing io pointer if exists in DB, otherwise creates a new one with
         inferred pointer type."""
+        values = (
+            [_hash_value(v) for v in values] if values else [b""] * len(names)
+        )
         res = (
             self.session.query(IOPointer)
-            .filter(IOPointer.name.in_(names))
+            .filter(
+                Tuple(IOPointer.name, IOPointer.value).in_(
+                    list(zip(names, values))
+                )
+            )
             .all()
         )
-        res_names = set([r.name for r in res])
-        need_to_add = set(names) - res_names
+        res_names_values = set([(r.name, r.value) for r in res])
+        need_to_add = set(zip(names, values)) - res_names_values
 
         if len(need_to_add) != 0:
             # Create new IOPointers
             if pointer_type is None:
-                pointer_type = _map_extension_to_enum(next(iter(need_to_add)))
+                pointer_type = _map_extension_to_enum(
+                    next(iter(need_to_add))[0]
+                )
             iops = [
-                IOPointer(name=name, pointer_type=pointer_type)
-                for name in need_to_add
+                IOPointer(
+                    name=name,
+                    value=value,
+                    pointer_type=pointer_type,
+                )
+                for name, value in need_to_add
             ]
             self.session.add_all(iops)
             self.session.commit()
@@ -174,13 +210,41 @@ class Store(object):
         return res
 
     def get_io_pointer(
-        self, name: str, pointer_type: PointerTypeEnum = None, create=True
+        self,
+        name: str,
+        value: typing.Any = "",
+        pointer_type: PointerTypeEnum = None,
+        create=True,
     ) -> IOPointer:
         """Creates an io pointer around the specified path.
         Retrieves existing io pointer if exists in DB,
         otherwise creates a new one if create flag is set."""
+
+        hval = _hash_value(value)
+        same_name_res = (
+            self.session.query(
+                component_run_output_association.c.output_path_value
+            )
+            .filter(
+                component_run_output_association.c.output_path_name == name
+            )
+            .order_by(
+                component_run_output_association.c.component_run_id.desc()
+            )
+            .all()
+        )
+        same_name_res = [r[0] for r in same_name_res]
+
+        if len(same_name_res) > 0 and bytes(same_name_res[0]) != hval:
+            logging.warning(
+                f'IOPointer with name "{name}" has a different value '
+                + "from the last write."
+            )
+
         res = (
-            self.session.query(IOPointer).filter(IOPointer.name == name).all()
+            self.session.query(IOPointer)
+            .filter(and_(IOPointer.name == name, IOPointer.value == hval))
+            .all()
         )
 
         # Must create new IOPointer
@@ -195,7 +259,7 @@ class Store(object):
             if pointer_type is None:
                 pointer_type = _map_extension_to_enum(name)
 
-            iop = IOPointer(name=name, pointer_type=pointer_type)
+            iop = IOPointer(name=name, value=hval, pointer_type=pointer_type)
             self.session.add(iop)
             self.session.commit()
             return iop
@@ -257,7 +321,7 @@ class Store(object):
             fresher_runs = [
                 cr for cr in fresher_runs if component_run.id != cr.id
             ]
-            if len(fresher_runs) != 1:
+            if len(fresher_runs) > 1:
                 run_or_runs = "run" if len(fresher_runs) - 1 == 1 else "runs"
                 component_run.add_staleness_message(
                     f"{dep.component_name} (ID {dep.id}) has "
@@ -281,6 +345,7 @@ class Store(object):
         """Gets IOPointers associated with component_run's inputs, checks
         against any ComponentRun's outputs, and if there are any matches,
         sets the ComponentRun's dependency on the most recent match."""
+
         input_ids = [inp.name for inp in component_run.inputs]
 
         if len(input_ids) == 0:
@@ -367,7 +432,7 @@ class Store(object):
 
         return res
 
-    def web_trace(self, output_id: str):
+    def web_trace(self, output_id: str, last_only: bool = False):
         """Prints list of ComponentRuns to display in the UI."""
         component_run_objects = (
             self.session.query(ComponentRun)
@@ -379,6 +444,9 @@ class Store(object):
 
         if len(component_run_objects) == 0:
             raise RuntimeError(f"ID {output_id} does not exist.")
+
+        if last_only:
+            component_run_objects = [component_run_objects[0]]
 
         return [self._web_trace_helper(cr) for cr in component_run_objects]
 
@@ -432,32 +500,40 @@ class Store(object):
 
         return history
 
-    def get_components_with_owner(self, owner: str) -> typing.List[Component]:
+    def get_components(self, tag: str = "", owner: str = ""):
         """Returns a list of all the components associated with the specified
-        order."""
-        components = (
-            self.session.query(Component)
-            .filter(Component.owner == owner)
-            .options(joinedload("tags"))
-            .all()
-        )
+        owner and/or tags."""
+        if tag and owner:
+            components = (
+                self.session.query(Component)
+                .join(Tag, Component.tags)
+                .filter(
+                    and_(
+                        Tag.name == tag,
+                        Component.owner == owner,
+                    )
+                )
+                .all()
+            )
+        elif tag:
+            components = (
+                self.session.query(Component)
+                .join(Tag, Component.tags)
+                .filter(Tag.name == tag)
+                .all()
+            )
+        elif owner:
+            components = (
+                self.session.query(Component)
+                .filter(Component.owner == owner)
+                .options(joinedload("tags"))
+                .all()
+            )
+        else:
+            components = self.session.query(Component).all()
 
         if len(components) == 0:
-            raise RuntimeError(f"Owner {owner} has no components.")
-
-        return components
-
-    def get_components_with_tag(self, tag: str) -> typing.List[Component]:
-        """Returns a list of all the components associated with that tag."""
-        components = (
-            self.session.query(Component)
-            .join(Tag, Component.tags)
-            .filter(Tag.name == tag)
-            .all()
-        )
-
-        if len(components) == 0:
-            raise RuntimeError(f"Tag {tag} has no components associated.")
+            raise RuntimeError(f"Search yielded no components.")
 
         return components
 
@@ -577,3 +653,63 @@ class Store(object):
 
         # Return a list of the ComponentRuns in the order
         return flagged_output_ids, trace_nodes_counts
+
+    def get_all_tags(self) -> typing.List[Tag]:
+        return self.session.query(Tag).all()
+
+    def get_io_pointers_from_args(self, **kwargs):
+        """Filters kwargs to data and model types,
+        then gets corresponding IOPointers."""
+
+        args_filtered = _get_data_and_model_args(**kwargs)
+        io_pointers = []
+        # Hash each arg and see if the corresponding IOPointer exists
+        for key, value in args_filtered.items():
+            hval = _hash_value(value)
+            same_name_res = (
+                self.session.query(
+                    component_run_output_association.c.output_path_name
+                )
+                .filter(
+                    component_run_output_association.c.output_path_value
+                    == hval
+                )
+                .order_by(
+                    component_run_output_association.c.component_run_id.desc()
+                )
+                .first()
+            )
+
+            if same_name_res:
+                res = (
+                    self.session.query(IOPointer)
+                    .filter(
+                        and_(
+                            IOPointer.name == same_name_res[0],
+                            IOPointer.value == hval,
+                        )
+                    )
+                    .all()
+                )
+                io_pointers.append(res[0])
+                continue
+
+            # See if IOPointer exists but not in output table
+            res = (
+                self.session.query(IOPointer)
+                .filter(
+                    IOPointer.value == hval,
+                )
+                .first()
+            )
+
+            if res:
+                io_pointers.append(res)
+                continue
+
+            # Save artifact and create new IOPointer
+            pathname = _save(value, var_name=key, from_client=False)
+            iop = self.get_io_pointer(pathname, value)
+            io_pointers.append(iop)
+
+        return io_pointers

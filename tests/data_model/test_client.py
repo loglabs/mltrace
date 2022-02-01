@@ -1,4 +1,5 @@
 import copy
+import json
 import unittest
 
 from mltrace.entities import Component, ComponentRun, IOPointer
@@ -21,8 +22,10 @@ class TestComponent(unittest.TestCase):
         """
         Test the serialization functionality.
         """
-        mock_component_dict = self.mock_component.to_dictionary()
-        self.assertEqual(mock_component_dict, self.mock_component_dict)
+        mock_component_dict = repr(self.mock_component)
+        self.assertEqual(
+            json.loads(mock_component_dict), self.mock_component_dict
+        )
 
     def testChangeProperty(self):
         """
@@ -43,13 +46,14 @@ class TestComponentRun(unittest.TestCase):
             "inputs": [],
             "outputs": [],
             "git_hash": None,
-            "git_tags": [],
+            "git_tags": None,
             "code_snapshot": None,
             "start_timestamp": None,
             "end_timestamp": None,
             "dependencies": [],
             "id": None,
             "stale": [],
+            "test_result": None,
         }
 
         self.mock_inputs = [

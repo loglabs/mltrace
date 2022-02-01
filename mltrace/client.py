@@ -1,5 +1,7 @@
 from datetime import datetime
+from mltrace import utils
 from mltrace.db import Store, PointerTypeEnum
+from mltrace.db.utils import _get_data_and_model_args, _load, _save
 from mltrace.entities import Component, ComponentRun, IOPointer
 
 import copy
@@ -13,39 +15,25 @@ import typing
 import uuid
 
 
-def _set_address_helper(old_uri: str, address: str):
-    first = old_uri.split("@")[0]
-    last = old_uri.split("@")[1].split(":")[1]
-    return first + "@" + address + ":" + last
-
-
-_db_uri = os.environ.get("DB_URI")
-if _db_uri is None:
-    _db_uri = "postgresql://admin:admin@localhost:5432/sqlalchemy"
-    if os.environ.get("DB_SERVER"):
-        _db_uri = _set_address_helper(_db_uri, os.environ.get("DB_SERVER"))
-    else:
-        logging.warning(
-            f"Please set DB_URI or DB_SERVER as an environment variable. \
-            Otherwise, DB_URI is set to {_db_uri}."
-        )
+_db_uri = utils.get_db_uri()
 
 # --------------------- Database management functions ------------------- #
 
 
 def set_db_uri(uri: str):
     global _db_uri
+    utils.set_db_uri(uri)
     _db_uri = uri
 
 
 def get_db_uri() -> str:
     global _db_uri
-    return _db_uri
+    return utils.get_db_uri()
 
 
 def set_address(address: str):
     global _db_uri
-    _db_uri = _set_address_helper(_db_uri, address)
+    _db_uri = utils.set_address(address)
 
 
 def clean_db():
@@ -53,11 +41,25 @@ def clean_db():
     store = Store(_db_uri, delete_first=True)
 
 
+# ----------------------- Load and save functions ---------------------- #
+
+
+def load(pathname: str):
+    """Loads joblib file at pathname."""
+    return _load(pathname)
+
+
+# TODO(shreyashankar): Handle multiple writes at the same second
+def save(obj, pathname: str = None) -> str:
+    """Saves joblib object to pathname."""
+    return _save(obj, pathname)
+
+
 # ----------------------- Creation functions ---------------------------- #
 
 
 def create_component(
-    name: str, description: str, owner: str, tags: typing.List[str] = []
+        name: str, description: str, owner: str, tags: typing.List[str] = []
 ):
     """Creates a component entity in the database."""
     store = Store(_db_uri)
@@ -71,9 +73,9 @@ def tag_component(component_name: str, tags: typing.List[str]):
 
 
 def log_component_run(
-    component_run: ComponentRun,
-    set_dependencies_from_inputs=True,
-    staleness_threshold: int = (60 * 60 * 24 * 30),
+        component_run: ComponentRun,
+        set_dependencies_from_inputs=True,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
 ):
     """Takes client-facing ComponentRun object and logs it to the DB."""
     store = Store(_db_uri)
@@ -106,16 +108,23 @@ def log_component_run(
     # Add I/O
     component_run_sql.add_inputs(
         [
-            store.get_io_pointer(inp.name, inp.pointer_type)
+            store.get_io_pointer(
+                inp.name, inp.value, pointer_type=inp.pointer_type
+            )
             for inp in component_run_dict["inputs"]
         ]
     )
     component_run_sql.add_outputs(
         [
-            store.get_io_pointer(out.name, out.pointer_type)
+            store.get_io_pointer(
+                out.name, out.value, pointer_type=out.pointer_type
+            )
             for out in component_run_dict["outputs"]
         ]
     )
+
+    # Create component if it does not exist
+    create_component(component_run.component_name, "", "")
 
     # Add dependencies if there is flag to automatically set
     if set_dependencies_from_inputs:
@@ -141,15 +150,18 @@ def create_random_ids(num_outputs=1) -> typing.List[str]:
 # Log input strings
 # function to apply to outputs to log those
 
-
+# TODO(shreyashankar): change logging.debug to thrown errors
 def register(
-    component_name: str,
-    inputs: typing.List[str] = [],
-    outputs: typing.List[str] = [],
-    input_vars: typing.List[str] = [],
-    output_vars: typing.List[str] = [],
-    endpoint: bool = False,
-    staleness_threshold: int = (60 * 60 * 24 * 30),
+        component_name: str,
+        inputs: typing.List[str] = [],
+        outputs: typing.List[str] = [],
+        input_vars: typing.List[str] = [],
+        output_vars: typing.List[str] = [],
+        input_kwargs: typing.Dict[str, str] = {},
+        output_kwargs: typing.Dict[str, str] = {},
+        endpoint: bool = False,
+        staleness_threshold: int = (60 * 60 * 24 * 30),
+        auto_log: bool = False,
 ):
     def actual_decorator(func):
         @functools.wraps(func)
@@ -179,22 +191,42 @@ def register(
             # Run function under the tracer
             sys.settrace(trace_helper)
             try:
+                # merge with existing run
                 value = func(*args, **kwargs)
             finally:
                 sys.settrace(trace)
+
+            component_run.set_end_timestamp()
 
             # Do logging here
             logging.info(f"Inspecting {frame.f_code.co_filename}")
             input_pointers = []
             output_pointers = []
             local_vars = frame.f_locals
+
+            # Auto log inputs
+            if auto_log:
+                # Get IOPointers corresponding to args and f_locals
+                all_input_args = {
+                    k: v.default
+                    for k, v in inspect.signature(func).parameters.items()
+                    if v.default is not inspect.Parameter.empty
+                }
+                all_input_args = {
+                    **all_input_args,
+                    **dict(zip(inspect.getfullargspec(func).args, args)),
+                }
+                all_input_args = {**all_input_args, **kwargs}
+                input_pointers += store.get_io_pointers_from_args(
+                    **all_input_args
+                )
+
             # Add input_vars and output_vars as pointers
             for var in input_vars:
                 if var not in local_vars:
-                    logging.debug(
+                    raise ValueError(
                         f"Variable {var} not in current stack frame."
                     )
-                    continue
                 val = local_vars[var]
                 if val is None:
                     logging.debug(f"Variable {var} has value {val}.")
@@ -205,17 +237,18 @@ def register(
                     input_pointers.append(store.get_io_pointer(str(val)))
             for var in output_vars:
                 if var not in local_vars:
-                    logging.debug(
+                    raise ValueError(
                         f"Variable {var} not in current stack frame."
                     )
-                    continue
                 val = local_vars[var]
                 if val is None:
                     logging.debug(f"Variable {var} has value {val}.")
                     continue
                 if isinstance(val, list):
                     output_pointers += (
-                        store.get_io_pointers(val, PointerTypeEnum.ENDPOINT)
+                        store.get_io_pointers(
+                            val, pointer_type=PointerTypeEnum.ENDPOINT
+                        )
                         if endpoint
                         else store.get_io_pointers(val)
                     )
@@ -223,29 +256,131 @@ def register(
                     output_pointers += (
                         [
                             store.get_io_pointer(
-                                str(val), PointerTypeEnum.ENDPOINT
+                                str(val), pointer_type=PointerTypeEnum.ENDPOINT
                             )
                         ]
                         if endpoint
                         else [store.get_io_pointer(str(val))]
                     )
-            component_run.add_inputs(input_pointers)
-            component_run.add_outputs(output_pointers)
+            # Add input_kwargs and output_kwargs as pointers
+            for key, val in input_kwargs.items():
+                if key not in local_vars or val not in local_vars:
+                    raise ValueError(
+                        f"Variables ({key}, {val}) not in current stack frame."
+                    )
+                if local_vars[key] is None:
+                    logging.debug(
+                        f"Variable {key} has value {local_vars[key]}."
+                    )
+                    continue
+                if isinstance(local_vars[key], list):
+                    if not isinstance(local_vars[val], list) or len(
+                            local_vars[key]
+                    ) != len(local_vars[val]):
+                        raise ValueError(
+                            f'Value "{val}" does not have the same length as'
+                            + f' the key "{key}."'
+                        )
+                    input_pointers += store.get_io_pointers(
+                        local_vars[key], values=local_vars[val]
+                    )
+                else:
+                    input_pointers.append(
+                        store.get_io_pointer(
+                            str(local_vars[key]), local_vars[val]
+                        )
+                    )
+            for key, val in output_kwargs.items():
+                if key not in local_vars or val not in local_vars:
+                    raise ValueError(
+                        f"Variables ({key}, {val}) not in current stack frame."
+                    )
+                if local_vars[key] is None:
+                    logging.debug(
+                        f"Variable {key} has value {local_vars[key]}."
+                    )
+                    continue
+                if isinstance(local_vars[key], list):
+                    if not isinstance(local_vars[val], list) or len(
+                            local_vars[key]
+                    ) != len(local_vars[val]):
+                        raise ValueError(
+                            f'Value "{val}" does not have the same length as'
+                            + f' the key "{key}."'
+                        )
+                    output_pointers += (
+                        store.get_io_pointers(
+                            local_vars[key],
+                            local_vars[val],
+                            pointer_type=PointerTypeEnum.ENDPOINT,
+                        )
+                        if endpoint
+                        else store.get_io_pointers(
+                            local_vars[key], local_vars[val]
+                        )
+                    )
+                else:
+                    output_pointers += (
+                        [
+                            store.get_io_pointer(
+                                str(local_vars[key]),
+                                local_vars[val],
+                                pointer_type=PointerTypeEnum.ENDPOINT,
+                            )
+                        ]
+                        if endpoint
+                        else [
+                            store.get_io_pointer(
+                                str(local_vars[key]), local_vars[val]
+                            )
+                        ]
+                    )
 
-            # Log relevant info
-            component_run.set_end_timestamp()
-            input_pointers = [store.get_io_pointer(inp) for inp in inputs]
-            output_pointers = (
+            # Directly specified I/O
+            if not callable(inputs):
+                input_pointers += [store.get_io_pointer(inp) for inp in inputs]
+            input_pointers += [store.get_io_pointer(inp) for inp in inputs]
+            output_pointers += (
                 [
-                    store.get_io_pointer(out, PointerTypeEnum.ENDPOINT)
+                    store.get_io_pointer(
+                        out, pointer_type=PointerTypeEnum.ENDPOINT
+                    )
                     for out in outputs
                 ]
                 if endpoint
                 else [store.get_io_pointer(out) for out in outputs]
             )
+
+            # If there were calls to mltrace.load and mltrace.save, log them
+            if "_mltrace_loaded_artifacts" in local_vars:
+                input_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_loaded_artifacts"
+                    ].items()
+                ]
+            if "_mltrace_saved_artifacts" in local_vars:
+                output_pointers += [
+                    store.get_io_pointer(name, val)
+                    for name, val in local_vars[
+                        "_mltrace_saved_artifacts"
+                    ].items()
+                ]
+
+            func_source_code = inspect.getsource(func)
+            if auto_log:
+                # Get IOPointers corresponding to args and f_locals
+                all_output_args = {
+                    k: v
+                    for k, v in local_vars.items()
+                    if k not in all_input_args
+                }
+                output_pointers += store.get_io_pointers_from_args(
+                    **all_output_args
+                )
+
             component_run.add_inputs(input_pointers)
             component_run.add_outputs(output_pointers)
-            store.set_dependencies_from_inputs(component_run)
 
             # Add code versions
             try:
@@ -259,11 +394,15 @@ def register(
                 component_run.set_git_tags(get_git_tags())
 
             # Add source code if less than 2^16
-            func_source_code = inspect.getsource(func)
             if len(func_source_code) < 2 ** 16:
                 component_run.set_code_snapshot(
                     bytes(func_source_code, "ascii")
                 )
+
+            # Create component if it does not exist
+            create_component(component_run.component_name, "", "")
+
+            store.set_dependencies_from_inputs(component_run)
 
             # Commit component run object to the DB
             store.commit_component_run(
@@ -288,7 +427,7 @@ def get_git_hash() -> str:
     return None
 
 
-def get_git_tags() -> str:
+def get_git_tags() -> typing.List[str]:
     """
     Gets tags associated with commit of parent git repo, if exists
     ref:https://stackoverflow.com/questions/34932306/get-tags-of-a-commit
@@ -322,14 +461,19 @@ def unflag_output_id(output_id: str) -> bool:
     return store.set_io_pointer_flag(output_id, False)
 
 
+def unflag_all():
+    store = Store(_db_uri)
+    store.unflag_all()
+
+
 # ----------------- Basic retrieval functions ------------------- #
 
 
 def get_history(
-    component_name: str,
-    limit: int = 10,
-    date_lower: typing.Union[datetime, str] = datetime.min,
-    date_upper: typing.Union[datetime, str] = datetime.max,
+        component_name: str,
+        limit: int = 10,
+        date_lower: typing.Union[datetime, str] = datetime.min,
+        date_upper: typing.Union[datetime, str] = datetime.max,
 ) -> typing.List[ComponentRun]:
     """Returns a list of ComponentRuns that are part of the component's
     history."""
@@ -368,23 +512,6 @@ def get_history(
     return component_runs
 
 
-def get_components_with_owner(owner: str) -> typing.List[Component]:
-    """Returns a list of all the components associated with the specified
-    order."""
-    store = Store(_db_uri)
-    res = store.get_components_with_owner(owner)
-
-    # Convert to client-facing Components
-    components = []
-    for c in res:
-        tags = [tag.name for tag in c.tags]
-        d = copy.deepcopy(c.__dict__)
-        d.update({"tags": tags})
-        components.append(Component.from_dictionary(d))
-
-    return components
-
-
 def get_component_information(component_name: str) -> Component:
     """Returns a Component with the name, info, owner, and tags."""
     store = Store(_db_uri)
@@ -418,13 +545,15 @@ def get_component_run_information(component_run_id: str) -> ComponentRun:
     d.update(
         {"inputs": inputs, "outputs": outputs, "dependencies": dependencies}
     )
+
     return ComponentRun.from_dictionary(d)
 
 
-def get_components_with_tag(tag: str) -> typing.List[Component]:
-    """Returns a list of components with the specified tag."""
+def get_components(tag="", owner="") -> typing.List[Component]:
+    """Returns all components with the specified owner and/or tag.
+    Else, returns all components."""
     store = Store(_db_uri)
-    res = store.get_components_with_tag(tag)
+    res = store.get_components(tag=tag, owner=owner)
 
     # Convert to client-facing Components
     components = []
@@ -443,11 +572,20 @@ def get_recent_run_ids(limit: int = 5, last_run_id=None):
     return store.get_recent_run_ids(limit, last_run_id)
 
 
-def get_io_pointer(io_pointer_id: str, create=True):
+def get_io_pointer(
+        io_pointer_id: str, io_pointer_val: typing.Any = None, create=True
+):
     """Returns IO Pointer metadata."""
     store = Store(_db_uri)
-    iop = store.get_io_pointer(io_pointer_id, create)
+    iop = store.get_io_pointer(io_pointer_id, io_pointer_val, create=create)
     return IOPointer.from_dictionary(iop.__dict__)
+
+
+def get_all_tags() -> typing.List[str]:
+    store = Store(_db_uri)
+    res = store.get_all_tags()
+    tags = [t.name for t in res]
+    return tags
 
 
 # --------------- Complex retrieval functions ------------------ #
@@ -483,7 +621,7 @@ def backtrace(output_pointer: str):
 
 def web_trace(output_id: str):
     store = Store(_db_uri)
-    return store.web_trace(output_id)
+    return store.web_trace(output_id, last_only=True)
 
 
 def review_flagged_outputs():

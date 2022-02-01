@@ -16,7 +16,7 @@ class TestStore(unittest.TestCase):
         self.assertEqual(component.name, "test_component")
 
         # Retrieve components with owner
-        components = self.store.get_components_with_owner("shreya")
+        components = self.store.get_components(owner="shreya")
         self.assertEqual(1, len(components))
 
     def testCompleteComponentRun(self):
@@ -35,6 +35,22 @@ class TestStore(unittest.TestCase):
 
         # Test retrieval
         component_runs = self.store.get_history("test_component", limit=None)
+        self.assertEqual(1, len(component_runs))
+        self.assertEqual(component_runs[0], cr)
+
+    def testLogComponentRunWithoutComponentCreated(self):
+        # Create a ComponentRun
+        cr = self.store.initialize_empty_component_run("test_component_new")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(IOPointer("inp"))
+        cr.add_output(IOPointer("out"))
+        self.store.commit_component_run(cr)
+
+        # Test retrieval
+        component_runs = self.store.get_history(
+            "test_component_new", limit=None
+        )
         self.assertEqual(1, len(component_runs))
         self.assertEqual(component_runs[0], cr)
 
@@ -97,6 +113,15 @@ class TestStore(unittest.TestCase):
         iops2 = self.store.get_io_pointers(iop_names)
 
         self.assertEqual(set(iops), set(iops2))
+
+    def testKVIOPointer(self):
+        iop_name = "name"
+        iop_value = "value"
+
+        iop = self.store.get_io_pointer(iop_name, iop_value)
+        iop2 = self.store.get_io_pointer(iop_name, iop_value)
+
+        self.assertEqual(iop, iop2)
 
     def testSetDependenciesFromInputs(self):
         # Create IO pointers

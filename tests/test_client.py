@@ -8,10 +8,10 @@ from mltrace import (
     create_component,
     log_component_run,
     register,
-    get_history,
-    get_recent_run_ids,
+    load,
+    save,
 )
-from mltrace.entities import ComponentRun
+from mltrace.entities import ComponentRun, IOPointer
 
 
 class TestClient(unittest.TestCase):
@@ -41,6 +41,28 @@ class TestClient(unittest.TestCase):
         cr.set_end_timestamp()
 
         # Log component run
+        log_component_run(cr)
+
+    def testLogKVComponentRun(self):
+        # Tests implementation of values in iopointer
+        create_component(
+            name="valtest",
+            description="Tests implementation of values in iopointer.",
+            owner="me",
+        )
+
+        iop1 = ["this", "is", "the", "first"]
+        iop2 = ["this", "is", "the", "second"]
+
+        # Create iopointers and CR
+        iop1 = IOPointer(name="iop1", value=iop1)
+        iop2 = IOPointer(name="iop2", value=iop2)
+
+        cr = ComponentRun("valtest")
+        cr.set_start_timestamp()
+        cr.set_end_timestamp()
+        cr.add_input(iop1)
+        cr.add_output(iop2)
         log_component_run(cr)
 
     def testRegister(self):
@@ -74,6 +96,128 @@ class TestClient(unittest.TestCase):
             bar = x + 2
 
         test_func()
+
+    def testRegisterWrongVar(self):
+        # Have a var not exist in the function and assert there is
+        # an error
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_vars=["foory"],  # Not valid
+            output_vars=["bar"],
+        )
+        def test_func():
+            x = 0
+            foo = x + 1
+            bar = x + 2
+
+        @register(
+            component_name="test_component",
+            input_vars=["foo"],
+            output_vars=["barry"],  # Not valid
+        )
+        def test_func2():
+            x = 0
+            foo = x + 1
+            bar = x + 2
+
+        with self.assertRaises(ValueError):
+            test_func()
+
+        with self.assertRaises(ValueError):
+            test_func2()
+
+    def testRegisterKWargs(self):
+        # Test that logs are successful with kwargs
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func(inp_key, inp_val):
+            out_key = "another_filename.pkl"
+            out_val = [1, 2, 3, 4, 5]
+
+        some_func(
+            inp_key="some_filename.pkl",
+            inp_val=[1, 2, 3, 4, 5],
+        )
+
+    def testRegisterKWargsList(self):
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func(inp_key, inp_val):
+            out_key = ["another_filename1.pkl", "another_filename2.pkl"]
+            out_val = [1, 2]
+
+        some_func(
+            inp_key=["some_filename1.pkl", "some_filename2.pkl"],
+            inp_val=[11, 22],
+        )
+
+    def testRegisterKWargsListWrongLengths(self):
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func(inp_key, inp_val):
+            out_key = ["another_filename1.pkl", "another_filename2.pkl"]
+            out_val = 1
+
+        with self.assertRaises(ValueError):
+            some_func(
+                inp_key=["some_filename1.pkl", "some_filename2.pkl"],
+                inp_val=1,
+            )
+
+    def testRegisterKWargsListWrongNames(self):
+        create_component("test_component", "test_description", "shreya")
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_keyeyey": "inp_valalalal"},
+            output_kwargs={"out_key": "out_val"},
+        )
+        def some_func_wrong_input(inp_key, inp_val):
+            out_key = "another_filename.pkl"
+            out_val = 1
+
+        @register(
+            component_name="test_component",
+            input_kwargs={"inp_key": "inp_val"},
+            output_kwargs={"out_keyeyeyey": "out_valalalal"},
+        )
+        def some_func_wrong_output(inp_key, inp_val):
+            out_key = "another_filename.pkl"
+            out_val = 1
+
+        with self.assertRaises(ValueError):
+            some_func_wrong_input(
+                inp_key="some_filename.pkl",
+                inp_val=[1],
+            )
+
+        with self.assertRaises(ValueError):
+            some_func_wrong_output(
+                inp_key="some_filename.pkl",
+                inp_val=[1],
+            )
+
+    def testSaveAndLoad(self):
+        obj = {"foo": "bar"}
+        pathname = save(obj)
+        self.assertEqual(obj, load(pathname))
 
 
 if __name__ == "__main__":
