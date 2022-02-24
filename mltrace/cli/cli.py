@@ -1,5 +1,5 @@
 # ------------------------- Imports ------------------------ #
-
+import json
 
 import click
 
@@ -95,7 +95,7 @@ def show_info_card(run_id: int, count: int = None, num_outputs: int = None):
         " ".join(cr_info.dependencies) if cr_info.dependencies else "None"
     )
     test_results = (
-        " ".join(cr_info.test_result, indent=2) if cr_info.test_result else "None"
+        " ".join(json.dumps(cr_info.test_result, indent=2)) if cr_info.test_result else "None"
     )
     click.echo(f"├─Dependencies: {dependencies}")
     click.echo(f"└─Test Results: {test_results}")
