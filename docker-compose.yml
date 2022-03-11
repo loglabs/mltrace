@@ -16,12 +16,10 @@ services:
 
   database:
     image: postgres
-    volumes:      
-       - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: sqlalchemy
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.postgresenv
     ports:
       - "5432:5432"
     restart: always
@@ -36,7 +34,6 @@ services:
       dockerfile: ./mltrace/server/Dockerfile
     environment:
       PYTHONPATH: /src
-      DB_URI: "postgresql://admin:admin@database:5432/sqlalchemy"
     volumes:
       - .:/src
     ports:
@@ -50,8 +47,8 @@ services:
       services-network:
         aliases:
           - api
-  
-volumes:  
+
+volumes:
   postgres_data:
 
 networks:
