@@ -29,7 +29,9 @@ If you are interested in learning about specific `mltrace` concepts, please read
 
 ### Database setup (server-side)
 
-We use Postgres-backed SQLAlchemy. Assuming you have Docker installed, you can run the following commands from the
+First, you will need to create DB credentials. We use Postgres. There is a `.postgresenv` file in the root directory, but you should set your own values for the params.
+
+Assuming you have Docker installed, you can run the following commands from the
 root directory after cloning the most recent release:
 
 ```
@@ -71,6 +73,8 @@ And if you trace this output in the UI (`trace aafknvtoag`), you will get:
 You can also look at `examples` for ways to integrate `mltrace` into your ML pipelines, or check out the [official documentation](https://mltrace.readthedocs.io/en/latest/).
 
 ### Launch UI (client-side)
+
+Double check the Postgres credentials in `.flaskenv` match the credentials set in `.postgresenv`.
 
 If you ran `docker-compose up` from the root directory, you can just navigate to the server's IP address at port 8080 (or `localhost:8080`) in your browser. To launch a dev version of the UI, navigate to `./mltrace/server/ui` and execute `yarn install` then `yarn start`. It should be served at [localhost:3000](localhost:3000). The UI is based on `create-react-app` and [`blueprintjs`](https://blueprintjs.com/docs/). Here's an example of what tracing an output would give:
 
