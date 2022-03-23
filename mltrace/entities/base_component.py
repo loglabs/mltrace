@@ -15,7 +15,7 @@ import functools
 import inspect
 import git
 import mlflow
-
+import history
 
 class Component(Base):
     def __init__(
@@ -36,6 +36,8 @@ class Component(Base):
         self._tags = tags
         self._beforeTests = beforeTests
         self._afterTests = afterTests
+        self._history = history.History(name)
+
 
     def beforeRun(self, **kwargs) -> dict:
         """Computation to execute before running a component.

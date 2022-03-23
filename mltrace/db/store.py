@@ -536,6 +536,35 @@ class Store(object):
 
         return history
 
+    def get_component_runs_by_index(
+        self,
+        component_name: str,
+        front_idx: int,
+        last_idx: int,
+    ) -> typing.List[ComponentRun]:
+        """Gets lineage for the component, or a history of all its runs."""
+
+        if front_idx < 0 or last_idx < 0:
+            total_length = self.session.query(ComponentRun).count()
+            if front_idx < 0:
+                front_idx = front_idx + total_length
+            if last_idx < 0:
+                last_idx = last_idx + total_length
+
+        history = (
+            self.session.query(ComponentRun)
+            .filter(ComponentRun.component_name == component_name)
+            .order_by(ComponentRun.start_timestamp)
+            .offset(front_idx)
+            .limit(last_idx - front_idx)
+            .all()
+        )
+        return history
+
+    def get_component_runs_count(self, component_name: str):
+        return  self.session.query(ComponentRun).count()
+
+
     def get_components(self, tag: str = "", owner: str = ""):
         """Returns a list of all the components associated with the specified
         owner and/or tags."""
