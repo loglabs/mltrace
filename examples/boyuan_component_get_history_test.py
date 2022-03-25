@@ -11,7 +11,8 @@ class BoyuanComponent(Component):
         afterTests=[],
         tags=[],
     ):
-        super().__init__(name, owner, description, beforeTests, afterTests, tags)
+        super().__init__(
+            name, owner, description, beforeTests, afterTests, tags)
 
     # overwrite afterRun
     def afterRun(self):
