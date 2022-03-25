@@ -562,8 +562,7 @@ class Store(object):
         return history
 
     def get_component_runs_count(self, component_name: str):
-        return  self.session.query(ComponentRun).count()
-
+        return self.session.query(ComponentRun).count()
 
     def get_components(self, tag: str = "", owner: str = ""):
         """Returns a list of all the components associated with the specified
