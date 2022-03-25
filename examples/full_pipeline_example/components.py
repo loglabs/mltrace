@@ -1,6 +1,6 @@
 """
 This file defines different kinds of components and the
-corresponding tests for before and afterRun.
+corresponding tests for preTest and postTest.
 """
 from mltrace.entities.base_component import Component
 from examples.full_pipeline_example.tests import OutliersTest

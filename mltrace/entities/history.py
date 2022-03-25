@@ -1,9 +1,11 @@
 
 
+import copy
 from datetime import datetime
 
 from mltrace.db import Store
 from mltrace import utils as clientUtils
+from mltrace.entities import ComponentRun, IOPointer
 
 
 class History(object):
@@ -11,21 +13,18 @@ class History(object):
         self,
         componentName,
     ):
-        # {component_run_id: component_run} sort by time
         self.component_name = componentName
 
-        # should I choose a ordered orderDict / list ?
-        # self.history_component_runs = {}
-        
     def get_runs_by_time(
         self,
         start_time: datetime,
         end_time: datetime,
     ):
         store = Store(clientUtils.get_db_uri())
-        history_runs = store.get_history(self.component_name, None, start_time, end_time)
-        # TODO: Client.py - convert to client facing component run object
-        return str(history_runs)
+        history_runs = store.get_history(
+            self.component_name, None, start_time, end_time)
+        history_runs = History.convertToClient(history_runs)
+        return history_runs
 
     def get_runs_by_index(
         self,
@@ -33,15 +32,41 @@ class History(object):
         last_idx: int,
     ):
         store = Store(clientUtils.get_db_uri())
-        history_runs = store.get_component_runs_by_index(self.component_name, front_idx, last_idx)
-        return str(history_runs)
+        history_runs = store.get_component_runs_by_index(
+            self.component_name, front_idx, last_idx)
+        history_runs = History.convertToClient(history_runs)
+        return history_runs
 
-    # all lazy loading functions
+    # helper function - convert to client facing component runs
+    def convertToClient(componentRuns):
+        component_runs = []
+        for cr in componentRuns:
+            inputs = [
+                IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+                for iop in cr.inputs
+            ]
+            outputs = [
+                IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+                for iop in cr.outputs
+            ]
+            dependencies = [dep.component_name for dep in cr.dependencies]
+            d = copy.deepcopy(cr.__dict__)
+            d.update(
+                {
+                    "inputs": inputs,
+                    "outputs": outputs,
+                    "dependencies": dependencies,
+                }
+            )
+            component_runs.append(ComponentRun.from_dictionary(d))
+        return component_runs
 
     def __getitem__(self, index):
         store = Store(clientUtils.get_db_uri())
-        history_run = store.get_component_runs_by_index(self.component_name, index, index + 1)
-        return str(history_run)
+        history_run = store.get_component_runs_by_index(
+            self.component_name, index, index + 1)
+        history_run = History.convertToClient(history_run)
+        return history_run
 
     def __len__(self):
         store = Store(clientUtils.get_db_uri())
