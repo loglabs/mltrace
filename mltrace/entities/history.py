@@ -5,7 +5,7 @@ from datetime import datetime
 
 from mltrace.db import Store
 from mltrace import utils as clientUtils
-from mltrace.entities import ComponentRun, IOPointer
+from mltrace.entities import base
 
 
 class History(object):
@@ -42,11 +42,11 @@ class History(object):
         component_runs = []
         for cr in componentRuns:
             inputs = [
-                IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+                base.from_dictionary(iop.__dict__).to_dictionary()
                 for iop in cr.inputs
             ]
             outputs = [
-                IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+                base.from_dictionary(iop.__dict__).to_dictionary()
                 for iop in cr.outputs
             ]
             dependencies = [dep.component_name for dep in cr.dependencies]
@@ -58,7 +58,7 @@ class History(object):
                     "dependencies": dependencies,
                 }
             )
-            component_runs.append(ComponentRun.from_dictionary(d))
+            component_runs.append(base.from_dictionary(d))
         return component_runs
 
     def __getitem__(self, index):
