@@ -492,6 +492,10 @@ class Component(Base):
     def afterTests(self) -> list:
         return self._afterTests
 
+    @property
+    def history(self) -> history.History:
+        return self._history
+
     def __repr__(self):
         params = self.to_dictionary()
         del params["beforeTests"]

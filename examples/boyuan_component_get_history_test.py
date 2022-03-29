@@ -16,7 +16,7 @@ class BoyuanComponent(Component):
 
     # overwrite afterRun
     def afterRun(self):
-        histories = self._history.get_runs_by_index(0, 1)
+        histories = self.history.get_runs_by_index(0, 1)
         history_length = len(self._history)
 
 

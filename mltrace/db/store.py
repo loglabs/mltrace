@@ -539,15 +539,15 @@ class Store(object):
     def get_component_runs_by_index(
         self,
         component_name: str,
-        front_idx: int,
+        first_idx: int,
         last_idx: int,
     ) -> typing.List[ComponentRun]:
         """Gets lineage for the component, or a history of all its runs."""
 
-        if front_idx < 0 or last_idx < 0:
+        if first_idx < 0 or last_idx < 0:
             total_length = self.session.query(ComponentRun).count()
-            if front_idx < 0:
-                front_idx = front_idx + total_length
+            if first_idx < 0:
+                first_idx = first_idx + total_length
             if last_idx < 0:
                 last_idx = last_idx + total_length
 
@@ -555,8 +555,8 @@ class Store(object):
             self.session.query(ComponentRun)
             .filter(ComponentRun.component_name == component_name)
             .order_by(ComponentRun.start_timestamp)
-            .offset(front_idx)
-            .limit(last_idx - front_idx)
+            .offset(first_idx)
+            .limit(last_idx - first_idx)
             .all()
         )
         return history

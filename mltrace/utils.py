@@ -1,5 +1,7 @@
 from mltrace.db import Store
+from mltrace.entities import IOPointer, ComponentRun
 
+import copy
 import logging
 import os
 
@@ -38,3 +40,29 @@ def get_db_uri() -> str:
 def set_address(address: str):
     global _db_uri
     _db_uri = _set_address_helper(_db_uri, address)
+
+# helper function - convert to client facing component runs
+
+
+def convertToClient(componentRuns):
+    component_runs = []
+    for cr in componentRuns:
+        inputs = [
+            IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+            for iop in cr.inputs
+        ]
+        outputs = [
+            IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+            for iop in cr.outputs
+        ]
+        dependencies = [dep.component_name for dep in cr.dependencies]
+        d = copy.deepcopy(cr.__dict__)
+        d.update(
+            {
+                "inputs": inputs,
+                "outputs": outputs,
+                "dependencies": dependencies,
+            }
+        )
+        component_runs.append(ComponentRun.from_dictionary(d))
+    return component_runs
