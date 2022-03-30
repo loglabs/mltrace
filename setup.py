@@ -27,6 +27,7 @@ setup(
         "flask",
         "furo",
         "gitpython",
+        "mlflow",
         "psycopg2-binary",
         "pytest",
         "python-dotenv",
