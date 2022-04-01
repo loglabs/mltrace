@@ -61,8 +61,8 @@ inference_component = Component(
 
 
 @ingest_component.run(
-    input_filenames=["client_data_filename"],
-    output_filenames=["ingested_data_filename"],
+    input_vars=["client_data_filename"],
+    output_vars=["ingested_data_filename"],
 )
 def ingest(client_data_filename: str) -> str:
     # Ingest client's data into our data lake
@@ -71,7 +71,7 @@ def ingest(client_data_filename: str) -> str:
 
 
 @clean_component.run(
-    input_filenames=["filename"], output_filenames=["clean_data_filename"]
+    input_vars=["filename"], output_vars=["clean_data_filename"]
 )
 def clean(filename: str) -> str:
     # Read data into dataframe and clean it
@@ -82,7 +82,7 @@ def clean(filename: str) -> str:
 
 
 @featuregen_component.run(
-    input_filenames=["filename"], output_filenames=["features_filename"]
+    input_vars=["filename"], output_vars=["features_filename"]
 )
 def featuregen(filename: str) -> str:
     # Read data and make features
@@ -93,8 +93,8 @@ def featuregen(filename: str) -> str:
 
 
 @training_component.run(
-    input_filenames=["filename", "dev_model"],
-    output_filenames=["model_filename"],
+    input_vars=["filename", "dev_model"],
+    output_vars=["model_filename"],
 )
 def training(filename: str, dev_model: str = "") -> str:
     # Read data and train model
@@ -108,7 +108,7 @@ def training(filename: str, dev_model: str = "") -> str:
 
 
 @inference_component.run(
-    input_filenames=["filename", "model_path"], output_filenames=["output_id"]
+    input_vars=["filename", "model_path"], output_vars=["output_id"]
 )
 def inference(filename: str, model_path: str) -> str:
     # Load model and data
