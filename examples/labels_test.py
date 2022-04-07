@@ -53,8 +53,8 @@ infer_component = Component(
 
 
 @ingest_component.run(
-    input_filenames={"client_data_filename": "labels"},
-    output_filenames=["ingested_data_filename"],
+    input_vars={"client_data_filename": "labels"},
+    output_vars=["ingested_data_filename"],
 )
 def ingest(client_data_filename: str, labels: list = []) -> str:
     # Ingest client's data into our data lake
@@ -63,8 +63,8 @@ def ingest(client_data_filename: str, labels: list = []) -> str:
 
 
 @merge_component.run(
-    input_filenames=["client_data_filename1", "client_data_filename2"],
-    output_filenames=["merged_data_filename"],
+    input_vars=["client_data_filename1", "client_data_filename2"],
+    output_vars=["merged_data_filename"],
 )
 def merge(
     client_data_filename1: str,
@@ -77,8 +77,8 @@ def merge(
 
 
 @train_component.run(
-    input_filenames=["filename"],
-    output_filenames=["model_filename"],
+    input_vars=["filename"],
+    output_vars=["model_filename"],
 )
 def training(filename: str, model_name: str = "") -> str:
     # Read data and train model
@@ -92,7 +92,7 @@ def training(filename: str, model_name: str = "") -> str:
 
 
 @infer_component.run(
-    input_filenames=["filename", "model_path"], output_filenames=["output_id"]
+    input_vars=["filename", "model_path"], output_vars=["output_id"]
 )
 def inference(filename: str, model_path: str) -> str:
     # Load model and data
