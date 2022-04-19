@@ -58,137 +58,10 @@ class Component(Base):
     def afterRun(self):
         pass
 
-    def _logInputFilenames(
-        self, input_filenames: typing.List[str], local_vars: dict, store: Store
-    ):
-        input_pointers = []
-
-        duplicate = input_filenames
-        if not isinstance(duplicate, dict):
-            duplicate = {fname: None for fname in duplicate}
-
-        for var, label_vars in duplicate.items():
-            if var not in local_vars:
-                raise ValueError(f"Variable {var} not in current stack frame.")
-            val = local_vars[var]
-            labels = None
-            if label_vars is not None:
-                try:
-                    labels = (
-                        [local_vars[lv] for lv in label_vars]
-                        if isinstance(label_vars, list)
-                        else local_vars[label_vars]
-                    )
-                    if isinstance(labels, str):
-                        labels = [labels]
-                except KeyError:
-                    raise ValueError(
-                        f"Variable {label_vars} not "
-                        + f"in current stack frame."
-                    )
-            if val is None:
-                logging.debug(f"Variable {var} has value {val}.")
-                continue
-            if isinstance(val, list):
-                input_pointers += store.get_io_pointers(val, labels=labels)
-            else:
-                input_pointers.append(
-                    store.get_io_pointer(str(val), labels=labels)
-                )
-        return input_pointers
-
-    def _logOutputFilenames(
-        self,
-        output_filenames: typing.List[str],
-        endpoint: bool,
-        local_vars: dict,
-        store: Store,
-    ):
-        output_pointers = []
-        for var in output_filenames:
-            if var not in local_vars:
-                raise ValueError(f"Variable {var} not in current stack frame.")
-            val = local_vars[var]
-            if val is None:
-                logging.debug(f"Variable {var} has value {val}.")
-                continue
-            if isinstance(val, list):
-                output_pointers += (
-                    store.get_io_pointers(
-                        val, pointer_type=PointerTypeEnum.ENDPOINT
-                    )
-                    if endpoint
-                    else store.get_io_pointers(val)
-                )
-            else:
-                output_pointers += (
-                    [
-                        store.get_io_pointer(
-                            str(val),
-                            pointer_type=PointerTypeEnum.ENDPOINT,
-                        )
-                    ]
-                    if endpoint
-                    else [store.get_io_pointer(str(val))]
-                )
-        return output_pointers
-
-    def _logKwargs(
-        self, kwargs: dict, endpoint: bool, local_vars: dict, store: Store
-    ):
-        """Logs the kwargs passed to the component."""
-        pointers = []
-        for key, val in kwargs.items():
-            if key not in local_vars or val not in local_vars:
-                raise ValueError(f"({key}, {val}) not in current stack frame.")
-            if local_vars[key] is None:
-                logging.debug(f"Variable {key} has value {local_vars[key]}.")
-                continue
-            if isinstance(local_vars[key], list):
-                if not isinstance(local_vars[val], list) or len(
-                    local_vars[key]
-                ) != len(local_vars[val]):
-                    raise ValueError(
-                        f'Value "{val}" does not have the same '
-                        + f'length as the key "{key}."'
-                    )
-                pointers += (
-                    store.get_io_pointers(
-                        local_vars[key],
-                        local_vars[val],
-                        pointer_type=PointerTypeEnum.ENDPOINT,
-                    )
-                    if endpoint
-                    else store.get_io_pointers(
-                        local_vars[key], local_vars[val]
-                    )
-                )
-            else:
-                pointers += (
-                    [
-                        store.get_io_pointer(
-                            str(local_vars[key]),
-                            local_vars[val],
-                            pointer_type=PointerTypeEnum.ENDPOINT,
-                        )
-                    ]
-                    if endpoint
-                    else [
-                        store.get_io_pointer(
-                            str(local_vars[key]), local_vars[val]
-                        )
-                    ]
-                )
-        return pointers
-
     def run(
         self,
-        input_filenames: typing.List[str] = [],
-        output_filenames: typing.List[str] = [],
         input_vars: typing.List[str] = [],
         output_vars: typing.List[str] = [],
-        input_kwargs: typing.Dict[str, str] = {},
-        output_kwargs: typing.Dict[str, str] = {},
         endpoint: bool = False,
         staleness_threshold: int = (60 * 60 * 24 * 30),
         auto_log: bool = False,
@@ -207,16 +80,8 @@ class Component(Base):
             then the postTest method with the values of the args at the
             end of the function.
 
-        @:param input_filenames - string variable representing the variable
-            of the input
-        @:param output_filenames - string variable representing the variable
-            of the output
         @:param input_vars - list of variables representing inputs
         @:param output_vars - list of variables representing outputs
-        @:param input_kwargs - string variable representing the file name
-            of the input
-        @:param output_kwargs - string variable representing the file name
-            of the output
         """
         inv_user_kwargs = {v: k for k, v in user_kwargs.items()}
         key_names = ["skip_before", "skip_after"]
@@ -308,23 +173,7 @@ class Component(Base):
                         )
                 mlflow.start_run = mlflow_start_run_copy
 
-                if not callable(input_filenames):
-                    # Log input and output filenames
-                    input_pointers += self._logInputFilenames(
-                        input_filenames, local_vars, store
-                    )
-                    output_pointers += self._logOutputFilenames(
-                        output_filenames, endpoint, local_vars, store
-                    )
-
-                    # Add input_kwargs and output_kwargs as pointers
-                    input_pointers += self._logKwargs(
-                        input_kwargs, False, local_vars, store
-                    )
-                    output_pointers += self._logKwargs(
-                        output_kwargs, endpoint, local_vars, store
-                    )
-
+                if not callable(input_vars):
                     # Log input and output vars
                     duplicate = input_vars
                     if not isinstance(duplicate, dict):
@@ -460,9 +309,9 @@ class Component(Base):
 
             return wrapper
 
-        if callable(input_filenames):
+        if callable(input_vars):
             # Used decorator without arguments
-            return actual_decorator(input_filenames)
+            return actual_decorator(input_vars)
 
         else:
             # User passed in some kwargs

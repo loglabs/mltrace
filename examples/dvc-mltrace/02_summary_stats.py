@@ -10,7 +10,7 @@ c = Component(
 )
 
 
-@c.run(input_vars=["input_filepath"], output_filenames=["output_filepath"])
+@c.run(input_vars=["input_filepath"], output_vars=["output_filepath"])
 def summary(input_filepath: str, output_filepath: str) -> str:
     """
     print some simple stats about dataset
