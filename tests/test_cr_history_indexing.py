@@ -55,7 +55,10 @@ class TestComponentRunHistory(unittest.TestCase):
             self.store.get_component_runs_by_index(
                 "mock_component", 1, 3)
 
-    # test all possible query with get_component_runs_by_index(positive idx, positive idx)
+    """ 
+    Test all possible queries: 
+        get_component_runs_by_index(positive idx, positive idx)
+    """
     def testPstPstIndex(self):
 
         # case 1: (0, 0) return zero componentRun
@@ -90,7 +93,10 @@ class TestComponentRunHistory(unittest.TestCase):
                 self.assertTrue(isEqualComponentRun(
                     cr, self.secondAndThirdComponentRun[idx]))
 
-    # test all possible query with get_component_runs_by_index(positive idx, negative idx)
+    """ 
+    Test all possible queries: 
+        get_component_runs_by_index(positive idx, negative idx)
+    """
     def testPstNgtIndex(self):
 
         # case 1: (0, -len(componentRun) + 1) return first componentRun)
@@ -111,7 +117,10 @@ class TestComponentRunHistory(unittest.TestCase):
             self.assertTrue(isEqualComponentRun(
                 cr, self.secondAndThirdComponentRun[idx]))
 
-    # test all possible query with get_component_runs_by_index(negative idx, positive idx)
+    """ 
+    Test all possible queries: 
+        get_component_runs_by_index(negative idx, positive idx)
+    """
     def testNgtPstIndex(self):
 
         # case 1: (-len(componentRun), 1) return the first componentRun)
@@ -137,7 +146,10 @@ class TestComponentRunHistory(unittest.TestCase):
             self.assertTrue(isEqualComponentRun(
                 cr, self.secondAndThirdComponentRun[idx]))
 
-    # test all possible query with get_component_runs_by_index(negative idx, negative idx)
+    """ 
+    Test all possible queries: 
+        get_component_runs_by_index(negative idx, negative idx)
+    """
     def testNgtNgtIndex(self):
 
         # case 1: (-len(componentRun), -len(componentRun) + 1)
