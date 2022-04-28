@@ -4,6 +4,7 @@ from mltrace.entities import IOPointer, ComponentRun
 import copy
 import logging
 import os
+import typing
 
 
 def _set_address_helper(old_uri: str, address: str):
@@ -44,7 +45,7 @@ def set_address(address: str):
 # helper function - convert to client facing component runs
 
 
-def convertToClient(componentRuns):
+def convertToClient(componentRuns: typing.List):
     component_runs = []
     for cr in componentRuns:
         inputs = [
