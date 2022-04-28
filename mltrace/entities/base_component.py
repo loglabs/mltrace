@@ -349,4 +349,5 @@ class Component(Base):
         params = self.to_dictionary()
         del params["beforeTests"]
         del params["afterTests"]
+        del params["history"]
         return json.dumps(params)

@@ -545,7 +545,7 @@ class Store(object):
         """Gets lineage for the component, or a history of all its runs."""
 
         if first_idx < 0 or last_idx < 0:
-            total_length = self.session.query(ComponentRun).count()
+            total_length = self.get_component_runs_count(component_name)
             if first_idx < 0:
                 first_idx = first_idx + total_length
             if last_idx < 0:
@@ -562,7 +562,8 @@ class Store(object):
         return history
 
     def get_component_runs_count(self, component_name: str):
-        return self.session.query(ComponentRun).count()
+        return self.session.query(ComponentRun)\
+            .filter(ComponentRun.component_name == component_name).count()
 
     def get_components(self, tag: str = "", owner: str = ""):
         """Returns a list of all the components associated with the specified
