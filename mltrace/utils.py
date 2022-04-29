@@ -1,4 +1,5 @@
 from mltrace.db import Store
+from mltrace.db.utils import _load
 from mltrace.entities import IOPointer, ComponentRun
 
 import copy
@@ -48,14 +49,19 @@ def set_address(address: str):
 def convertToClient(componentRuns: typing.List):
     component_runs = []
     for cr in componentRuns:
-        inputs = [
-            IOPointer.from_dictionary(iop.__dict__).to_dictionary()
-            for iop in cr.inputs
-        ]
-        outputs = [
-            IOPointer.from_dictionary(iop.__dict__).to_dictionary()
-            for iop in cr.outputs
-        ]
+
+        inputs = []
+        for iop in cr.inputs:
+            iop_dict = IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+            iop_dict['value'] = _load(iop_dict['name'])
+            inputs.append(iop_dict)
+
+        outputs = []
+        for iop in cr.outputs:
+            iop_dict = IOPointer.from_dictionary(iop.__dict__).to_dictionary()
+            iop_dict['value'] = _load(iop_dict['name'])
+            outputs.append(iop_dict)
+
         dependencies = [dep.component_name for dep in cr.dependencies]
         d = copy.deepcopy(cr.__dict__)
         d.update(
