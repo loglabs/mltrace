@@ -9,18 +9,24 @@ class IOPointer(Base):
     def __init__(
         self,
         name: str,
+        original_content: typing.Any = "",
         value: typing.Any = "",
         pointer_type: PointerTypeEnum = PointerTypeEnum.UNKNOWN,
         flag: bool = False,
     ):
         self._name = name
-        self._value = value
+        self._original_content = original_content
         self._pointer_type = pointer_type
         self._flag = flag
+        self._value = value
 
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def original_content(self) -> typing.Any:
+        return self._original_content
 
     @property
     def value(self) -> typing.Any:

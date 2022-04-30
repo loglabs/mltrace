@@ -53,13 +53,13 @@ def convertToClient(componentRuns: typing.List):
         inputs = []
         for iop in cr.inputs:
             iop_dict = IOPointer.from_dictionary(iop.__dict__).to_dictionary()
-            iop_dict['value'] = _load(iop_dict['name'])
+            iop_dict['original_content'] = _load(iop_dict['name'])
             inputs.append(iop_dict)
 
         outputs = []
         for iop in cr.outputs:
             iop_dict = IOPointer.from_dictionary(iop.__dict__).to_dictionary()
-            iop_dict['value'] = _load(iop_dict['name'])
+            iop_dict['original_content'] = _load(iop_dict['name'])
             outputs.append(iop_dict)
 
         dependencies = [dep.component_name for dep in cr.dependencies]
