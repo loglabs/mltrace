@@ -228,7 +228,8 @@ class TestDags(unittest.TestCase):
 
             # Trace
             trace = [
-                (level, cr.id, cr.stale) for level, cr in self.store.trace("iop3")
+                (level, cr.id, cr.stale) for level, cr in 
+                self.store.trace("iop3")
             ]
             res = [
                 (
@@ -244,7 +245,7 @@ class TestDags(unittest.TestCase):
             ]
             self.assertEqual(trace, res)
         except ValueError as err:
-            assert("day is out of range for month" in err.args[0]) == True
+            self.assertTrue("day is out of range for month" in err.args[0])
 
 
 if __name__ == "__main__":
