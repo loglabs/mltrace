@@ -228,7 +228,7 @@ class TestDags(unittest.TestCase):
 
             # Trace
             trace = [
-                (level, cr.id, cr.stale) for level, cr in 
+                (level, cr.id, cr.stale) for level, cr in
                 self.store.trace("iop3")
             ]
             res = [
