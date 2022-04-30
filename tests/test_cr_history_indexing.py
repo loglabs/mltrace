@@ -1,4 +1,3 @@
-from mltrace import Component
 import unittest
 from mltrace.db import Store
 
