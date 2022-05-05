@@ -8,7 +8,7 @@ import typing
 from mltrace import client
 from mltrace import utils as clientUtils
 from mltrace.db import Store, PointerTypeEnum
-from mltrace.entities import utils
+from mltrace.entities import utils, history
 from mltrace.entities.base import Base
 
 import functools
@@ -36,8 +36,9 @@ class Component(Base):
         self._tags = tags
         self._beforeTests = beforeTests
         self._afterTests = afterTests
+        self._history = history.History(name)
 
-    def beforeRun(self, **kwargs) -> dict:
+    def preTest(self, **kwargs) -> dict:
         """Computation to execute before running a component.
         Will run each test object listed in beforeTests."""
         status = {}
@@ -45,13 +46,17 @@ class Component(Base):
             status.update(test().runTests(**kwargs))
         return status
 
-    def afterRun(self, **local_vars) -> dict:
+    def postTest(self, **local_vars) -> dict:
         """Computation to execute after running a component.
         Will run all test objects listed in afterTests."""
         status = {}
         for test in self._afterTests:
             status.update(test().runTests(**local_vars))
         return status
+
+    # afterRun is define to be overwritten by subclasses
+    def afterRun(self):
+        pass
 
     def run(
         self,
@@ -70,9 +75,9 @@ class Component(Base):
         def my_function(arg1, arg2):
                 do_something()
             arg1 and arg2 are the arguments passed to the
-            beforeRun and afterRun methods.
-            We first execute the beforeRun method, then the function itself,
-            then the afterRun method with the values of the args at the
+            preTest and postTest methods.
+            We first execute the preTest method, then the function itself,
+            then the postTest method with the values of the args at the
             end of the function.
 
         @:param input_vars - list of variables representing inputs
@@ -112,7 +117,7 @@ class Component(Base):
                         for k, v in all_args.items()
                     }
                     all_args = {**all_args, **kwargs}
-                    status.update(self.beforeRun(**all_args))
+                    status.update(self.preTest(**all_args))
 
                 # Create input and output pointers
                 input_pointers = []
@@ -287,7 +292,7 @@ class Component(Base):
                         else inv_user_kwargs[k]: v
                         for k, v in local_vars.items()
                     }
-                    status.update(self.afterRun(**after_run_args))
+                    status.update(self.postTest(**after_run_args))
 
                 # update the component's testStatus, convert status to a json
                 component_run.set_test_result(status)
@@ -296,6 +301,9 @@ class Component(Base):
                 store.commit_component_run(
                     component_run, staleness_threshold=staleness_threshold
                 )
+
+                # trigger afterRun method to print out last component run
+                self.afterRun()
 
                 return value
 
@@ -333,8 +341,13 @@ class Component(Base):
     def afterTests(self) -> list:
         return self._afterTests
 
+    @property
+    def history(self) -> history.History:
+        return self._history
+
     def __repr__(self):
         params = self.to_dictionary()
         del params["beforeTests"]
         del params["afterTests"]
+        del params["history"]
         return json.dumps(params)
