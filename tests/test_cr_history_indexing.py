@@ -1,23 +1,5 @@
-from mltrace import Component
 import unittest
-from mltrace import (
-    set_db_uri,
-)
 from mltrace.db import Store
-
-
-class TestHistoryComponent(Component):
-    def __init__(
-        self,
-        name="",
-        owner="",
-        description="",
-        beforeTests=[],
-        afterTests=[],
-        tags=[],
-    ):
-        super().__init__(
-            name, owner, description, beforeTests, afterTests, tags)
 
 
 def isEqualComponentRun(crOne, crTwo):
@@ -55,13 +37,11 @@ class TestComponentRunHistory(unittest.TestCase):
             self.store.get_component_runs_by_index(
                 "mock_component", 1, 3)
 
-    """
-    Test all possible queries:
-        get_component_runs_by_index(positive idx, positive idx)
-    """
-
     def testPstPstIndex(self):
-
+        """
+        Test all possible queries:
+            get_component_runs_by_index(positive idx, positive idx)
+        """
         # case 1: (0, 0) return zero componentRun
         resCrList = self.store.get_component_runs_by_index(
             "mock_component", 0, 0)
@@ -94,12 +74,11 @@ class TestComponentRunHistory(unittest.TestCase):
                 self.assertTrue(isEqualComponentRun(
                     cr, self.secondAndThirdComponentRun[idx]))
 
-    """
-    Test all possible queries:
-        get_component_runs_by_index(positive idx, negative idx)
-    """
-
     def testPstNgtIndex(self):
+        """
+        Test all possible queries:
+            get_component_runs_by_index(positive idx, negative idx)
+        """
 
         # case 1: (0, -len(componentRun) + 1) return first componentRun)
         resCrList = self.store.get_component_runs_by_index(
@@ -119,13 +98,11 @@ class TestComponentRunHistory(unittest.TestCase):
             self.assertTrue(isEqualComponentRun(
                 cr, self.secondAndThirdComponentRun[idx]))
 
-    """
-    Test all possible queries:
-        get_component_runs_by_index(negative idx, positive idx)
-    """
-
     def testNgtPstIndex(self):
-
+        """
+        Test all possible queries:
+            get_component_runs_by_index(negative idx, positive idx)
+        """
         # case 1: (-len(componentRun), 1) return the first componentRun)
         resCrList = self.store.get_component_runs_by_index(
             "mock_component", -self.historyLength, 1)
@@ -149,13 +126,11 @@ class TestComponentRunHistory(unittest.TestCase):
             self.assertTrue(isEqualComponentRun(
                 cr, self.secondAndThirdComponentRun[idx]))
 
-    """
-    Test all possible queries:
-        get_component_runs_by_index(negative idx, negative idx)
-    """
-
     def testNgtNgtIndex(self):
-
+        """
+        Test all possible queries:
+            get_component_runs_by_index(negative idx, negative idx)
+        """
         # case 1: (-len(componentRun), -len(componentRun) + 1)
         # return first componentRun)
         resCrList = self.store.get_component_runs_by_index(

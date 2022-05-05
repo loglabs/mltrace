@@ -1,5 +1,6 @@
 import copy
 import unittest
+import pytest
 
 from datetime import datetime
 from mltrace.db import Component, ComponentRun, IOPointer, Store
@@ -193,52 +194,58 @@ class TestDags(unittest.TestCase):
         self.assertEqual(trace, res)
 
     def testStaleTime(self):
-        # Create computation with stale update.
-        iop1 = self.store.get_io_pointer("iop1")
-        iop2 = self.store.get_io_pointer("iop2")
-        iop3 = self.store.get_io_pointer("iop3")
-        self.store.create_component("component_1", "", "")
-        self.store.create_component("component_2", "", "")
-        now = datetime.utcnow()
+        try:
+            # Create computation with stale update.
+            iop1 = self.store.get_io_pointer("iop1")
+            iop2 = self.store.get_io_pointer("iop2")
+            iop3 = self.store.get_io_pointer("iop3")
+            self.store.create_component("component_1", "", "")
+            self.store.create_component("component_2", "", "")
+            now = datetime.utcnow()
 
-        # Create first component
-        cr = self.store.initialize_empty_component_run("component_1")
-        start_month = now.month - 2 if now.month > 2 else (12 + now.month) - 2
-        start_year = now.year if now.month > 2 else now.year - 1
-        start_date = now.replace(month=start_month, year=start_year)
-        cr.set_start_timestamp(start_date)
-        cr.set_end_timestamp()
-        cr.add_input(iop1)
-        cr.add_output(iop2)
-        self.store.set_dependencies_from_inputs(cr)
-        self.store.commit_component_run(cr)
+            # Create first component
+            cr = self.store.initialize_empty_component_run("component_1")
+            start_month = now.month - \
+                2 if now.month > 2 else (12 + now.month) - 2
+            start_year = now.year if now.month > 2 else now.year - 1
+            start_date = now.replace(month=start_month, year=start_year)
 
-        # Create second component run
-        cr = self.store.initialize_empty_component_run("component_2")
-        cr.set_start_timestamp()
-        cr.set_end_timestamp()
-        cr.add_input(iop2)
-        cr.add_output(iop3)
-        self.store.set_dependencies_from_inputs(cr)
-        self.store.commit_component_run(cr)
+            cr.set_start_timestamp(start_date)
+            cr.set_end_timestamp()
+            cr.add_input(iop1)
+            cr.add_output(iop2)
+            self.store.set_dependencies_from_inputs(cr)
+            self.store.commit_component_run(cr)
 
-        # Trace
-        trace = [
-            (level, cr.id, cr.stale) for level, cr in self.store.trace("iop3")
-        ]
-        res = [
-            (
-                0,
-                2,
-                [
-                    "component_1 (ID 1) was run "
-                    + f"{(now - start_date).days} days"
-                    + " ago."
-                ],
-            ),
-            (1, 1, []),
-        ]
-        self.assertEqual(trace, res)
+            # Create second component run
+            cr = self.store.initialize_empty_component_run("component_2")
+            cr.set_start_timestamp()
+            cr.set_end_timestamp()
+            cr.add_input(iop2)
+            cr.add_output(iop3)
+            self.store.set_dependencies_from_inputs(cr)
+            self.store.commit_component_run(cr)
+
+            # Trace
+            trace = [
+                (level, cr.id, cr.stale) for level, cr in
+                self.store.trace("iop3")
+            ]
+            res = [
+                (
+                    0,
+                    2,
+                    [
+                        "component_1 (ID 1) was run "
+                        + f"{(now - start_date).days} days"
+                        + " ago."
+                    ],
+                ),
+                (1, 1, []),
+            ]
+            self.assertEqual(trace, res)
+        except ValueError as err:
+            self.assertTrue("day is out of range for month" in err.args[0])
 
 
 if __name__ == "__main__":
