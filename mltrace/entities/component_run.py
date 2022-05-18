@@ -266,7 +266,11 @@ class ComponentRun(Base):
         for inp in params["inputs"]:
             if 'value' in inp.keys():
                 del inp['value']
+            if inp['original-content'] is not None:
+                inp['original-content'] = inp['original-content'].to_json()
         for out in params["outputs"]:
             if 'value' in out.keys():
                 del out["value"]
+            if out['original-content'] is not None:
+                out['original-content'] = out['original-content'].to_json()
         return json.dumps(params)
