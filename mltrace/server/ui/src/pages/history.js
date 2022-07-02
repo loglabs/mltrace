@@ -26,6 +26,7 @@ export default class History extends Component {
         }
 
         this.handleRangeChange = this.handleRangeChange.bind(this);
+        this.updateHistoryState = this.updateHistoryState.bind(this); 
     }
 
 
