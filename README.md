@@ -74,7 +74,7 @@ You can also look at `examples` for ways to integrate `mltrace` into your ML pip
 
 ### Launch UI (client-side)
 
-Double check the Postgres credentials in `.flaskenv` match the credentials set in `.postgresenv`.
+Double check the Postgres credentials in `.flaskenv` match the credentials set in `.postgresenv`.git s
 
 If you ran `docker-compose up` from the root directory, you can just navigate to the server's IP address at port 8080 (or `localhost:8080`) in your browser. To launch a dev version of the UI, navigate to `./mltrace/server/ui` and execute `yarn install` then `yarn start`. It should be served at [localhost:3000](localhost:3000). The UI is based on `create-react-app` and [`blueprintjs`](https://blueprintjs.com/docs/). Here's an example of what tracing an output would give:
 
